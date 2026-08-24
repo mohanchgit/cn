@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>IP Addressing - IPv4 & IPv6</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* HEADER */
+header {
+    background: #1d4ed8;
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 40px;
+}
+
+header p {
+    font-size: 20px;
+    margin: 8px 0 0;
+    color: #e0e7ff;
+}
+
+/* CONTAINER */
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+/* SECTION */
+.section {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 28px;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+/* INFO BOX */
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* NETWORK DIAGRAM */
+.network {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.device {
+    width: 160px;
+    padding: 18px;
+    text-align: center;
+    background: white;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+}
+
+.device .icon {
+    font-size: 40px;
+}
+
+.device h3 {
+    color: #1d4ed8;
+    margin: 5px 0;
+}
+
+.arrow {
+    font-size: 38px;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* CARDS */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+/* ADDRESS VISUALIZER */
+.visualizer {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.visualizer h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.address-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 14px;
+    font-size: 20px;
+    border: 2px solid #94a3b8;
+    border-radius: 8px;
+    margin: 10px auto;
+    display: block;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 8px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.result {
+    margin-top: 20px;
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    min-height: 60px;
+}
+
+/* BINARY DISPLAY */
+.binary {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.byte {
+    background: #dbeafe;
+    color: #1e3a8a;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* COMPARISON */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: left;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+/* IPv6 BLOCK */
+.ipv6-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.hextet {
+    background: #ecfdf5;
+    border: 2px solid #16a34a;
+    padding: 15px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #166534;
+}
+
+/* KEY POINT */
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+/* FOOTER */
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+/* RESPONSIVE */
+@media(max-width: 700px) {
+    header h1 {
+        font-size: 28px;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>IP Addressing, IPv4 & IPv6</h1>
+    <p>Network Layer | Logical Addressing</p>
+</header>
+
+
+<div class="container">
+
+<!-- INTRODUCTION -->
+<section class="section">
+
+    <h2>🌐 What is IP Addressing?</h2>
+
+    <p>
+        An <strong>IP address</strong> is a logical address assigned to a
+        device connected to a network.
+    </p>
+
+    <p>
+        It helps the Network Layer identify the
+        <strong>source</strong> and <strong>destination</strong>
+        of packets.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Example:</strong>
+
+        <br>
+
+        Just as a postal address identifies a house,
+        an IP address identifies a device or network interface
+        in a computer network.
+
+    </div>
+
+</section>
+
+
+<!-- NETWORK DIAGRAM -->
+<section class="section">
+
+    <h2>📦 How IP Addressing Works</h2>
+
+    <div class="network">
+
+        <div class="device">
+            <div class="icon">💻</div>
+            <h3>Source</h3>
+            <p>192.168.1.10</p>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="device">
+            <div class="icon">📡</div>
+            <h3>Router</h3>
+            <p>192.168.1.1</p>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="device">
+            <div class="icon">🖥️</div>
+            <h3>Destination</h3>
+            <p>192.168.2.20</p>
+        </div>
+
+    </div>
+
+    <div class="info-box">
+
+        The router examines the destination IP address and
+        determines where the packet should be forwarded.
+
+    </div>
+
+</section>
+
+
+<!-- IPV4 -->
+<section class="section">
+
+    <h2>🔢 IPv4 – Internet Protocol Version 4</h2>
+
+    <p>
+        IPv4 uses a <strong>32-bit address</strong>.
+        It is normally written as four decimal numbers separated
+        by dots.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Example:</strong>
+
+        <br><br>
+
+        <strong style="font-size:25px;">
+            192.168.1.10
+        </strong>
+
+        <br><br>
+
+        Each number is called an <strong>octet</strong>.
+
+    </div>
+
+    <h3>IPv4 Structure</h3>
+
+    <div class="binary">
+
+        <div class="byte">
+            192<br>
+            8 bits
+        </div>
+
+        <div class="byte">
+            168<br>
+            8 bits
+        </div>
+
+        <div class="byte">
+            1<br>
+            8 bits
+        </div>
+
+        <div class="byte">
+            10<br>
+            8 bits
+        </div>
+
+    </div>
+
+    <p style="text-align:center;font-weight:bold;">
+        8 bits + 8 bits + 8 bits + 8 bits = 32 bits
+    </p>
+
+</section>
+
+
+<!-- IPV4 ADDRESS TYPES -->
+<section class="section">
+
+    <h2>📚 Important IPv4 Address Concepts</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                Network Address
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Identifies the network to which a device belongs.
+                </p>
+
+                <div class="info-box">
+                    Example:
+                    <strong>192.168.1.0/24</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Host Address
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Identifies a particular device within a network.
+                </p>
+
+                <div class="info-box">
+                    Example:
+                    <strong>192.168.1.10</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">3</span>
+                Subnet Mask
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    The subnet mask separates the network portion
+                    from the host portion of an IPv4 address.
+                </p>
+
+                <div class="info-box">
+                    Example:
+                    <strong>255.255.255.0</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">4</span>
+                Default Gateway
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    The default gateway is normally the router interface
+                    used to reach other networks.
+                </p>
+
+                <div class="info-box">
+                    Example:
+                    <strong>192.168.1.1</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- IPV4 VISUALIZER -->
+<section class="visualizer">
+
+    <h2>🔍 IPv4 Address Visualizer</h2>
+
+    <p style="text-align:center;">
+        Enter an IPv4 address to view its binary representation.
+    </p>
+
+    <input
+        id="ipv4Input"
+        class="address-input"
+        type="text"
+        value="192.168.1.10"
+        placeholder="Example: 192.168.1.10"
+    >
+
+    <div style="text-align:center;">
+
+        <button onclick="convertIPv4()">
+            Convert to Binary
+        </button>
+
+    </div>
+
+    <div id="ipv4Result" class="result">
+
+        Enter an IPv4 address and click
+        <strong>Convert to Binary</strong>.
+
+    </div>
+
+</section>
+
+
+<!-- IPV6 -->
+<section class="section">
+
+    <h2>🚀 IPv6 – Internet Protocol Version 6</h2>
+
+    <p>
+        IPv6 was developed to overcome the limited address space
+        of IPv4.
+    </p>
+
+    <p>
+        IPv6 uses a <strong>128-bit address</strong>.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Example IPv6 Address:</strong>
+
+        <br><br>
+
+        <span style="font-size:22px;font-weight:bold;">
+            2001:0db8:85a3:0000:0000:8a2e:0370:7334
+        </span>
+
+    </div>
+
+
+    <h3>IPv6 Address Structure</h3>
+
+    <div class="ipv6-box">
+
+        <div class="hextet">2001</div>
+
+        <div class="hextet">0db8</div>
+
+        <div class="hextet">85a3</div>
+
+        <div class="hextet">0000</div>
+
+        <div class="hextet">0000</div>
+
+        <div class="hextet">8a2e</div>
+
+        <div class="hextet">0370</div>
+
+        <div class="hextet">7334</div>
+
+    </div>
+
+    <p style="text-align:center;font-weight:bold;">
+        8 groups × 16 bits = 128 bits
+    </p>
+
+</section>
+
+
+<!-- IPV6 FEATURES -->
+<section class="section">
+
+    <h2>⭐ Important IPv6 Features</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                Larger Address Space
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    IPv6 provides 128-bit addresses, creating an
+                    extremely large number of possible addresses.
+                </p>
+
+                <div class="info-box">
+                    IPv4 → 32 bits<br>
+                    IPv6 → 128 bits
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Hexadecimal Notation
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    IPv6 addresses use hexadecimal digits
+                    separated by colons.
+                </p>
+
+                <div class="info-box">
+                    Example:
+                    <strong>2001:db8::1</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">3</span>
+                Address Compression
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Consecutive groups of zeros can be compressed
+                    using <strong>::</strong>.
+                </p>
+
+                <div class="info-box">
+
+                    Full:
+                    <br>
+                    2001:0db8:0000:0000:0000:0000:0000:0001
+
+                    <br><br>
+
+                    Compressed:
+                    <br>
+                    <strong>2001:db8::1</strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">4</span>
+                No Broadcast
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    IPv6 does not use traditional broadcast.
+                    Multicast and anycast mechanisms are used instead.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- IPV4 VS IPV6 -->
+<section class="section">
+
+    <h2>⚖️ IPv4 vs IPv6</h2>
+
+    <table>
+
+        <tr>
+            <th>Feature</th>
+            <th>IPv4</th>
+            <th>IPv6</th>
+        </tr>
+
+        <tr>
+            <td>Address Size</td>
+            <td>32 bits</td>
+            <td>128 bits</td>
+        </tr>
+
+        <tr>
+            <td>Notation</td>
+            <td>Decimal</td>
+            <td>Hexadecimal</td>
+        </tr>
+
+        <tr>
+            <td>Example</td>
+            <td>192.168.1.10</td>
+            <td>2001:db8::1</td>
+        </tr>
+
+        <tr>
+            <td>Separator</td>
+            <td>Dot (.)</td>
+            <td>Colon (:)</td>
+        </tr>
+
+        <tr>
+            <td>Broadcast</td>
+            <td>Supported</td>
+            <td>Not used</td>
+        </tr>
+
+        <tr>
+            <td>Address Space</td>
+            <td>Limited</td>
+            <td>Extremely large</td>
+        </tr>
+
+        <tr>
+            <td>Address Configuration</td>
+            <td>Manual / DHCP</td>
+            <td>Manual / SLAAC / DHCPv6</td>
+        </tr>
+
+        <tr>
+            <td>Header</td>
+            <td>Variable length</td>
+            <td>Fixed basic header</td>
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- CIDR -->
+<section class="section">
+
+    <h2>📐 CIDR – Classless Inter-Domain Routing</h2>
+
+    <p>
+        CIDR represents an IP address together with the number of
+        network bits using slash notation.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Example:</strong>
+
+        <br><br>
+
+        <span style="font-size:24px;">
+            192.168.1.0/24
+        </span>
+
+        <br><br>
+
+        <strong>/24</strong> means that the first 24 bits
+        represent the network portion.
+
+    </div>
+
+</section>
+
+
+<!-- KEY POINT -->
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+    <ul>
+
+        <li>
+            <strong>IPv4 → 32 bits → Decimal → Dotted notation</strong>
+        </li>
+
+        <li>
+            <strong>IPv6 → 128 bits → Hexadecimal → Colon notation</strong>
+        </li>
+
+        <li>
+            <strong>IPv4 Example:</strong>
+            192.168.1.10
+        </li>
+
+        <li>
+            <strong>IPv6 Example:</strong>
+            2001:db8::1
+        </li>
+
+    </ul>
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        IPv4 = <strong>32-bit + Decimal + Dot</strong>
+
+        <br>
+
+        IPv6 = <strong>128-bit + Hexadecimal + Colon</strong>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<footer>
+
+    Network Layer | IP Addressing | IPv4 & IPv6 |
+    Computer Networks
+
+</footer>
+
+
+<script>
+
+/* ==============================
+   CARD INTERACTION
+   ============================== */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* ==============================
+   IPV4 VALIDATION
+   ============================== */
+
+function isValidIPv4(ip) {
+
+    const parts = ip.split(".");
+
+    if (parts.length !== 4) {
+        return false;
+    }
+
+    for (let part of parts) {
+
+        if (part === "" || isNaN(part)) {
+            return false;
+        }
+
+        const number = Number(part);
+
+        if (number < 0 || number > 255) {
+            return false;
+        }
+
+        if (!Number.isInteger(number)) {
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
+
+/* ==============================
+   IPV4 TO BINARY
+   ============================== */
+
+function convertIPv4() {
+
+    const input =
+        document.getElementById("ipv4Input").value.trim();
+
+    const result =
+        document.getElementById("ipv4Result");
+
+
+    if (!isValidIPv4(input)) {
+
+        result.innerHTML =
+            "❌ <strong>Invalid IPv4 address.</strong><br>" +
+            "Please enter an address such as 192.168.1.10";
+
+        return;
+
+    }
+
+
+    const parts = input.split(".");
+
+    let binaryParts = [];
+
+    for (let part of parts) {
+
+        binaryParts.push(
+            Number(part)
+            .toString(2)
+            .padStart(8, "0")
+        );
+
+    }
+
+
+    result.innerHTML = `
+
+        <strong>IPv4 Address:</strong>
+
+        <span style="font-size:22px;">
+            ${input}
+        </span>
+
+        <br><br>
+
+        <strong>Binary Representation:</strong>
+
+        <div class="binary">
+
+            <div class="byte">
+                ${binaryParts[0]}
+            </div>
+
+            <div class="byte">
+                ${binaryParts[1]}
+            </div>
+
+            <div class="byte">
+                ${binaryParts[2]}
+            </div>
+
+            <div class="byte">
+                ${binaryParts[3]}
+            </div>
+
+        </div>
+
+        <br>
+
+        <strong>Total:</strong>
+        32 bits
+
+    `;
+
+}
+
+
+/* ==============================
+   ENTER KEY SUPPORT
+   ============================== */
+
+document
+.getElementById("ipv4Input")
+.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+        convertIPv4();
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Network Layer - Design Issues</title>
+
+<style>
+
+/* ==============================
+   GLOBAL CLASSROOM PROJECTOR THEME
+   ============================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+
+/* ==============================
+   HEADER
+   ============================== */
+
+header {
+    background: #1d4ed8;
+    color: #ffffff;
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 700;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+
+/* ==============================
+   MAIN CONTAINER
+   ============================== */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+
+/* ==============================
+   INTRODUCTION
+   ============================== */
+
+.intro {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-left: 7px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.intro h2 {
+    margin-top: 0;
+    color: #1d4ed8;
+    font-size: 28px;
+}
+
+.intro p {
+    font-size: 18px;
+}
+
+
+/* ==============================
+   EXAMPLE BOX
+   ============================== */
+
+.example {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    color: #1e3a8a;
+}
+
+.example strong {
+    color: #1d4ed8;
+}
+
+
+/* ==============================
+   SECTION TITLE
+   ============================== */
+
+.section-title {
+    text-align: center;
+    color: #1d4ed8;
+    font-size: 30px;
+    margin: 40px 0 20px;
+}
+
+
+/* ==============================
+   NETWORK FLOW
+   ============================== */
+
+.flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+
+    padding: 35px 15px;
+    border-radius: 15px;
+
+    margin: 25px 0;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    width: 150px;
+
+    text-align: center;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 2px solid #2563eb;
+
+    border-radius: 12px;
+
+    position: relative;
+
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+}
+
+.device .icon {
+    font-size: 40px;
+}
+
+.device h3 {
+    margin: 5px 0;
+
+    color: #1d4ed8;
+
+    font-size: 18px;
+}
+
+.device small {
+    color: #475569;
+}
+
+.arrow {
+    font-size: 40px;
+
+    color: #2563eb;
+
+    font-weight: bold;
+
+    margin: 0 15px;
+}
+
+
+/* ==============================
+   PACKET ANIMATION
+   ============================== */
+
+.packet {
+    position: absolute;
+
+    font-size: 30px;
+
+    display: none;
+
+    z-index: 10;
+
+    top: 48%;
+}
+
+
+/* ==============================
+   BUTTON
+   ============================== */
+
+button {
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    padding: 13px 24px;
+
+    border-radius: 8px;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    margin: 8px;
+
+    font-weight: 600;
+
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-2px);
+}
+
+
+/* ==============================
+   DESIGN ISSUE CARDS
+   ============================== */
+
+.cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(280px, 1fr));
+
+    gap: 20px;
+}
+
+.card {
+    background: #ffffff;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    cursor: pointer;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+
+    border-color: #2563eb;
+
+    box-shadow: 0 8px 20px rgba(37,99,235,0.15);
+}
+
+.card h3 {
+    color: #1e40af;
+
+    margin-top: 0;
+
+    font-size: 20px;
+}
+
+
+/* ==============================
+   NUMBER CIRCLE
+   ============================== */
+
+.number {
+    display: inline-block;
+
+    background: #2563eb;
+
+    color: white;
+
+    width: 36px;
+
+    height: 36px;
+
+    line-height: 36px;
+
+    text-align: center;
+
+    border-radius: 50%;
+
+    margin-right: 8px;
+
+    font-weight: bold;
+}
+
+
+/* ==============================
+   CARD DETAILS
+   ============================== */
+
+.details {
+    display: none;
+
+    margin-top: 15px;
+
+    background: #f8fafc;
+
+    padding: 16px;
+
+    border-radius: 8px;
+
+    border-left: 4px solid #16a34a;
+
+    color: #334155;
+}
+
+.card.active .details {
+    display: block;
+
+    animation: showDetails 0.3s ease;
+}
+
+@keyframes showDetails {
+
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* ==============================
+   SIMULATION
+   ============================== */
+
+.simulation {
+    background: #ffffff;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    margin-top: 40px;
+
+    text-align: center;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.simulation h2 {
+    color: #1d4ed8;
+}
+
+#status {
+    margin: 20px auto;
+
+    padding: 14px;
+
+    min-height: 48px;
+
+    background: #eff6ff;
+
+    border: 1px solid #93c5fd;
+
+    border-radius: 8px;
+
+    color: #1e3a8a;
+
+    font-size: 17px;
+
+    font-weight: 600;
+}
+
+
+/* ==============================
+   ROUTING TABLE
+   ============================== */
+
+.route-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 20px;
+
+    font-size: 16px;
+}
+
+.route-table th,
+.route-table td {
+    border: 1px solid #cbd5e1;
+
+    padding: 13px;
+
+    text-align: center;
+}
+
+.route-table th {
+    background: #1d4ed8;
+
+    color: white;
+}
+
+.route-table td {
+    background: #ffffff;
+
+    color: #1f2937;
+}
+
+.route-table tr:hover td {
+    background: #eff6ff;
+}
+
+
+/* ==============================
+   ROUTING VS FORWARDING
+   ============================== */
+
+.comparison {
+    margin-top: 40px;
+
+    background: #ffffff;
+
+    border: 1px solid #cbd5e1;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.comparison h2 {
+    text-align: center;
+
+    color: #1d4ed8;
+}
+
+.comparison table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.comparison th,
+.comparison td {
+    border: 1px solid #cbd5e1;
+
+    padding: 13px;
+
+    text-align: left;
+}
+
+.comparison th {
+    background: #2563eb;
+
+    color: white;
+}
+
+.comparison td {
+    background: #ffffff;
+}
+
+
+/* ==============================
+   KEY POINT
+   ============================== */
+
+.keypoint {
+    background: #ecfdf5;
+
+    border-left: 6px solid #16a34a;
+
+    padding: 22px;
+
+    margin-top: 40px;
+
+    border-radius: 10px;
+
+    color: #14532d;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+.keypoint strong {
+    color: #166534;
+}
+
+
+/* ==============================
+   FOOTER
+   ============================== */
+
+footer {
+    text-align: center;
+
+    padding: 25px;
+
+    margin-top: 45px;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    border-top: 1px solid #cbd5e1;
+}
+
+
+/* ==============================
+   RESPONSIVE DESIGN
+   ============================== */
+
+@media(max-width: 700px) {
+
+    header h1 {
+        font-size: 28px;
+    }
+
+    header p {
+        font-size: 16px;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+
+        margin: 15px;
+    }
+
+    .device {
+        width: 130px;
+    }
+
+    .intro p {
+        font-size: 16px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header>
+
+    <h1>Network Layer – Design Issues</h1>
+
+    <p>
+        Computer Networks | OSI Layer 3
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ==========================================
+     INTRODUCTION
+========================================== -->
+
+<section class="intro">
+
+    <h2>🌐 What is the Network Layer?</h2>
+
+    <p>
+        The <strong>Network Layer</strong> is the
+        <strong>third layer of the OSI model</strong>.
+        It is responsible for delivering packets from a
+        source network to a destination network.
+    </p>
+
+    <p>
+        The Network Layer mainly answers two important questions:
+    </p>
+
+    <ul>
+
+        <li>
+            <strong>Where should the packet go?</strong>
+        </li>
+
+        <li>
+            <strong>Which path should the packet take?</strong>
+        </li>
+
+    </ul>
+
+
+    <div class="example">
+
+        <strong>Real-Life Example:</strong>
+
+        When you access a website hosted in another country,
+        your packets travel through several routers.
+        The Network Layer helps determine how those packets
+        reach the destination network.
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     PACKET JOURNEY
+========================================== -->
+
+<h2 class="section-title">
+
+    📦 Packet Journey Through the Network
+
+</h2>
+
+
+<div class="flow" id="networkFlow">
+
+
+    <div class="device">
+
+        <div class="icon">💻</div>
+
+        <h3>Source</h3>
+
+        <small>
+            Computer A
+        </small>
+
+    </div>
+
+
+    <div class="arrow">
+        →
+    </div>
+
+
+    <div class="device">
+
+        <div class="icon">📡</div>
+
+        <h3>Router 1</h3>
+
+        <small>
+            First Hop
+        </small>
+
+    </div>
+
+
+    <div class="arrow">
+        →
+    </div>
+
+
+    <div class="device">
+
+        <div class="icon">📡</div>
+
+        <h3>Router 2</h3>
+
+        <small>
+            Intermediate
+        </small>
+
+    </div>
+
+
+    <div class="arrow">
+        →
+    </div>
+
+
+    <div class="device">
+
+        <div class="icon">🖥️</div>
+
+        <h3>Destination</h3>
+
+        <small>
+            Server B
+        </small>
+
+    </div>
+
+
+</div>
+
+
+<div style="text-align:center;">
+
+    <button onclick="startPacket()">
+
+        ▶ Start Packet Animation
+
+    </button>
+
+</div>
+
+
+
+<!-- ==========================================
+     DESIGN ISSUES
+========================================== -->
+
+<h2 class="section-title">
+
+    ⚙️ Major Design Issues of the Network Layer
+
+</h2>
+
+
+<div class="cards">
+
+
+<!-- ISSUE 1 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+        <span class="number">1</span>
+        Store-and-Forward Packet Switching
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            A router receives a packet and temporarily stores
+            it before forwarding the packet to the next router.
+
+        </p>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            Router R1 receives the complete packet,
+            checks it, and then forwards it to R2.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 2 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">2</span>
+
+        Services Provided to Transport Layer
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            The Network Layer provides communication services
+            to the Transport Layer.
+
+        </p>
+
+
+        <ul>
+
+            <li>Connectionless service</li>
+
+            <li>Connection-oriented service</li>
+
+            <li>Packet delivery service</li>
+
+        </ul>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            IP provides a connectionless datagram service.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 3 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">3</span>
+
+        Routing
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Routing determines the best path for packets
+            from the source network to the destination network.
+
+        </p>
+
+
+        <p>
+
+            Routers use routing algorithms and routing tables
+            to make path-selection decisions.
+
+        </p>
+
+
+        <div class="example">
+
+            <strong>Examples:</strong>
+
+            RIP, OSPF, IS-IS and BGP.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 4 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">4</span>
+
+        Forwarding
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Forwarding is the actual process of moving a packet
+            from an incoming interface to the correct outgoing
+            interface.
+
+        </p>
+
+
+        <div class="example">
+
+            <strong>Remember:</strong>
+
+            Routing decides the path.
+
+            <br><br>
+
+            Forwarding sends the packet to the next hop.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 5 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">5</span>
+
+        Congestion Control
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Congestion occurs when too many packets are
+            present in the network and routers cannot process
+            them fast enough.
+
+        </p>
+
+
+        <ul>
+
+            <li>Packet delay increases</li>
+
+            <li>Packets may be dropped</li>
+
+            <li>Network performance decreases</li>
+
+        </ul>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            A router receives packets faster than it can
+            transmit them.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 6 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">6</span>
+
+        Quality of Service – QoS
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            QoS determines how different types of network
+            traffic should be handled.
+
+        </p>
+
+
+        <ul>
+
+            <li>Bandwidth</li>
+
+            <li>Delay</li>
+
+            <li>Jitter</li>
+
+            <li>Packet Loss</li>
+
+        </ul>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            Voice and video applications generally require
+            low delay and low jitter.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 7 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">7</span>
+
+        Addressing
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Logical addressing identifies source and destination
+            devices across different networks.
+
+        </p>
+
+
+        <ul>
+
+            <li>IPv4</li>
+
+            <li>IPv6</li>
+
+            <li>Network Address</li>
+
+            <li>Host Address</li>
+
+        </ul>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            192.168.1.10 is an IPv4 address.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 8 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">8</span>
+
+        Internetworking
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Internetworking allows different networks and
+            network technologies to communicate with each other.
+
+        </p>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            A Wi-Fi network can communicate with a remote
+            Ethernet network using IP.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ISSUE 9 -->
+
+<div class="card" onclick="toggleCard(this)">
+
+    <h3>
+
+        <span class="number">9</span>
+
+        Packet Fragmentation
+
+    </h3>
+
+
+    <div class="details">
+
+        <p>
+
+            Different networks may support different
+            Maximum Transmission Units (MTUs).
+
+        </p>
+
+
+        <p>
+
+            In IPv4, a packet that is larger than the outgoing
+            network's MTU may need to be fragmented.
+
+        </p>
+
+
+        <div class="example">
+
+            <strong>Example:</strong>
+
+            A large IPv4 packet may be divided into smaller
+            fragments before transmission.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- ==========================================
+     ROUTING SIMULATION
+========================================== -->
+
+<section class="simulation">
+
+    <h2>
+
+        🔀 Interactive Routing Simulation
+
+    </h2>
+
+
+    <p>
+
+        Click the button to simulate how a router
+        finds the next hop using its routing table.
+
+    </p>
+
+
+    <button onclick="simulateRouting()">
+
+        🔎 Find Best Route
+
+    </button>
+
+
+    <div id="status">
+
+        Waiting for simulation...
+
+    </div>
+
+
+    <table class="route-table">
+
+        <tr>
+
+            <th>
+                Destination Network
+            </th>
+
+            <th>
+                Next Hop
+            </th>
+
+            <th>
+                Interface
+            </th>
+
+            <th>
+                Metric
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.10.0/24
+            </td>
+
+            <td>
+                Direct
+            </td>
+
+            <td>
+                G0/0
+            </td>
+
+            <td>
+                0
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.20.0/24
+            </td>
+
+            <td>
+                10.0.0.2
+            </td>
+
+            <td>
+                G0/1
+            </td>
+
+            <td>
+                2
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.30.0/24
+            </td>
+
+            <td>
+                10.0.0.6
+            </td>
+
+            <td>
+                G0/2
+            </td>
+
+            <td>
+                3
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+
+<!-- ==========================================
+     ROUTING VS FORWARDING
+========================================== -->
+
+<section class="comparison">
+
+    <h2>
+
+        Routing vs Forwarding
+
+    </h2>
+
+
+    <table>
+
+        <tr>
+
+            <th>
+                Routing
+            </th>
+
+            <th>
+                Forwarding
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Determines the best path.
+            </td>
+
+            <td>
+                Moves the packet to the next hop.
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Uses routing algorithms.
+            </td>
+
+            <td>
+                Uses the forwarding table.
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Path calculation.
+            </td>
+
+            <td>
+                Packet movement.
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Examples: RIP, OSPF, BGP.
+            </td>
+
+            <td>
+                Uses the selected outgoing interface.
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+
+<!-- ==========================================
+     EASY MEMORY SECTION
+========================================== -->
+
+<section class="keypoint">
+
+    <h2>
+        🎯 Easy Way to Remember
+    </h2>
+
+
+    <p>
+
+        The Network Layer mainly answers these questions:
+
+    </p>
+
+
+    <ol>
+
+        <li>
+            <strong>Who?</strong>
+            → Addressing
+        </li>
+
+        <li>
+            <strong>Where?</strong>
+            → Destination Network
+        </li>
+
+        <li>
+            <strong>Which Path?</strong>
+            → Routing
+        </li>
+
+        <li>
+            <strong>How to Send?</strong>
+            → Forwarding
+        </li>
+
+        <li>
+            <strong>How to Handle Traffic?</strong>
+            → Congestion Control & QoS
+        </li>
+
+    </ol>
+
+
+    <div class="example">
+
+        <strong>One-Line Summary:</strong>
+
+        <br>
+
+        Address → Route → Forward → Manage Traffic
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+
+<footer>
+
+    Network Layer | Design Issues | Computer Networks
+
+</footer>
+
+
+
+<script>
+
+/* ==========================================
+   CARD INTERACTION
+========================================== */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* ==========================================
+   PACKET ANIMATION
+========================================== */
+
+function startPacket() {
+
+    const flow =
+        document.getElementById("networkFlow");
+
+
+    const packet =
+        document.createElement("div");
+
+
+    packet.innerHTML = "📦";
+
+
+    packet.className = "packet";
+
+
+    flow.appendChild(packet);
+
+
+    packet.style.display = "block";
+
+
+    let position = 5;
+
+
+    const animation =
+        setInterval(function() {
+
+            position += 1.5;
+
+
+            packet.style.left =
+                position + "%";
+
+
+            if (position >= 88) {
+
+                clearInterval(animation);
+
+
+                packet.innerHTML = "✅";
+
+
+                setTimeout(function() {
+
+                    packet.remove();
+
+                }, 1000);
+
+            }
+
+        }, 50);
+
+}
+
+
+/* ==========================================
+   ROUTING SIMULATION
+========================================== */
+
+function simulateRouting() {
+
+    const status =
+        document.getElementById("status");
+
+
+    status.innerHTML =
+        "🔎 Checking destination address...";
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📋 Searching the routing table...";
+
+    }, 1000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🎯 Destination: 192.168.30.0/24";
+
+    }, 2000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🔀 Comparing available routes...";
+
+    }, 3000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🚀 Best Route → Next Hop: 10.0.0.6 → Interface: G0/2 → Metric: 3";
+
+    }, 4000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "✅ Packet will be forwarded through interface G0/2.";
+
+    }, 5500);
+
+}
+
+</script>
+
+
+</body>
+</html>

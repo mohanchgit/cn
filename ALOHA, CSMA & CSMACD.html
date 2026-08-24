@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ALOHA, CSMA & CSMA/CD - Computer Networks</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+    background: #1d4ed8;
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 29px;
+}
+
+.section h3 {
+    color: #1e40af;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   INFO BOX
+===================================================== */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+
+/* =====================================================
+   CONCEPT CARDS
+===================================================== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+
+/* =====================================================
+   ACCESS DIAGRAM
+===================================================== */
+
+.access-network {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 35px 20px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stations {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.station {
+    width: 150px;
+    padding: 18px;
+    text-align: center;
+    background: white;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+}
+
+.station .icon {
+    font-size: 40px;
+}
+
+.station h3 {
+    color: #1d4ed8;
+    margin: 5px 0;
+}
+
+.channel {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 50%;
+    height: 7px;
+    background: #94a3b8;
+    z-index: 1;
+}
+
+
+/* =====================================================
+   PACKETS
+===================================================== */
+
+.packet {
+    position: absolute;
+    display: none;
+    font-size: 30px;
+    z-index: 10;
+}
+
+
+/* =====================================================
+   PROCESS FLOW
+===================================================== */
+
+.flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.flow-step {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.flow-step span {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+
+/* =====================================================
+   SIMULATOR
+===================================================== */
+
+.simulator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.simulator h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.button-row {
+    text-align: center;
+    margin: 20px 0;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.result {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 60px;
+    text-align: center;
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   COLLISION VISUAL
+===================================================== */
+
+.collision-area {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 25px;
+    position: relative;
+    min-height: 230px;
+    overflow: hidden;
+}
+
+.collision-packet {
+    position: absolute;
+    font-size: 34px;
+}
+
+#packetA {
+    left: 15%;
+    top: 45%;
+}
+
+#packetB {
+    right: 15%;
+    top: 45%;
+}
+
+
+/* =====================================================
+   BACKOFF VISUAL
+===================================================== */
+
+.backoff {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.slot {
+    width: 55px;
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.slot.active {
+    background: #facc15;
+    border-color: #ca8a04;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: center;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+
+/* =====================================================
+   STEP
+===================================================== */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   KEY POINT
+===================================================== */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 850px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .flow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 600px) {
+
+    .flow {
+        grid-template-columns: 1fr;
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+
+    .channel {
+        display: none;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>ALOHA, CSMA & CSMA/CD</h1>
+
+    <p>
+        Data Link Layer | Medium Access Control Protocols
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     INTRODUCTION
+===================================================== -->
+
+<section class="section">
+
+    <h2>🌐 What is a Medium Access Control Protocol?</h2>
+
+    <p>
+        When many devices share the same communication medium,
+        they need rules to decide <strong>when a device can transmit</strong>.
+    </p>
+
+    <p>
+        These rules help reduce collisions and improve the
+        efficiency of the shared communication channel.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Basic Problem:</strong>
+
+        <br><br>
+
+        Many devices → One shared channel → Who should transmit?
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ALOHA
+===================================================== -->
+
+<section class="section">
+
+    <h2>📡 1. ALOHA</h2>
+
+    <p>
+        <strong>ALOHA</strong> is one of the earliest random-access
+        protocols for shared communication channels.
+    </p>
+
+    <p>
+        A station can transmit when it has data. It does not first
+        check whether another station is transmitting.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Idea:</strong>
+
+        <br><br>
+
+        "I have data → I transmit."
+
+        <br><br>
+
+        If a collision occurs → wait a random time → retransmit.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PURE ALOHA
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔵 Pure ALOHA</h2>
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>📦</span>
+
+            Data Ready
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>📡</span>
+
+            Transmit
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>💥</span>
+
+            Collision?
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>⏳</span>
+
+            Random Wait
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retransmit
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        Pure ALOHA allows transmission at any time.
+
+        <br><br>
+
+        Maximum theoretical throughput is approximately
+        <strong>18.4%</strong>.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SLOTTED ALOHA
+===================================================== -->
+
+<section class="section">
+
+    <h2>🕐 Slotted ALOHA</h2>
+
+    <p>
+        Slotted ALOHA divides time into equal-sized slots.
+        A station can begin transmission only at the
+        beginning of a time slot.
+    </p>
+
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>🕐</span>
+
+            Time Slot
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>📦</span>
+
+            Prepare
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>📡</span>
+
+            Transmit
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>💥</span>
+
+            Collision
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retry
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        Maximum theoretical throughput of Slotted ALOHA is
+        approximately <strong>36.8%</strong>.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ALOHA SIMULATION
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive ALOHA Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Two stations attempt to transmit at the same time.
+
+    </p>
+
+
+    <div class="button-row">
+
+        <button onclick="startALOHA()">
+
+            ▶ Start ALOHA
+
+        </button>
+
+    </div>
+
+
+    <div class="collision-area">
+
+        <div class="station"
+             style="position:absolute;left:5%;top:35%;">
+
+            📡 Station A
+
+        </div>
+
+
+        <div class="station"
+             style="position:absolute;right:5%;top:35%;">
+
+            📡 Station B
+
+        </div>
+
+
+        <div id="alohaPacketA"
+             class="collision-packet"
+             style="left:18%;top:50%;">
+
+            📦
+
+        </div>
+
+
+        <div id="alohaPacketB"
+             class="collision-packet"
+             style="right:18%;top:50%;">
+
+            📦
+
+        </div>
+
+    </div>
+
+
+    <div id="alohaStatus"
+         class="result">
+
+        Waiting for ALOHA simulation...
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA
+===================================================== -->
+
+<section class="section">
+
+    <h2>👂 2. CSMA – Carrier Sense Multiple Access</h2>
+
+    <p>
+        <strong>CSMA</strong> improves on ALOHA by requiring a station
+        to listen to the communication channel before transmitting.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Idea:</strong>
+
+        <br><br>
+
+        "Listen before you transmit."
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA TYPES
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔄 Types of CSMA</h2>
+
+
+    <div class="cards">
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">1</span>
+
+                1-Persistent CSMA
+
+            </h3>
+
+
+            <div class="details">
+
+                <p>
+                    The station continuously senses the channel.
+                    When the channel becomes idle, it transmits.
+                </p>
+
+                <div class="info-box">
+
+                    <strong>Idea:</strong>
+
+                    Listen → Idle → Transmit immediately
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">2</span>
+
+                Non-Persistent CSMA
+
+            </h3>
+
+
+            <div class="details">
+
+                <p>
+                    If the channel is busy, the station waits for
+                    a random period before sensing again.
+                </p>
+
+                <div class="info-box">
+
+                    Listen → Busy → Random wait → Listen again
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">3</span>
+
+                p-Persistent CSMA
+
+            </h3>
+
+
+            <div class="details">
+
+                <p>
+                    Used with slotted channels. When the channel is
+                    idle, transmission occurs with probability p.
+                </p>
+
+                <div class="info-box">
+
+                    Idle → Transmit with probability p
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA PROCESS
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔍 Basic CSMA Process</h2>
+
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>👂</span>
+
+            Sense Channel
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>❓</span>
+
+            Is it Idle?
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>📡</span>
+
+            Transmit
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>💥</span>
+
+            Collision?
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retry
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA SIMULATION
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive CSMA Simulation</h2>
+
+    <p style="text-align:center;">
+
+        See how a station checks the channel before transmitting.
+
+    </p>
+
+
+    <div class="button-row">
+
+        <button onclick="startCSMA()">
+
+            ▶ Start CSMA
+
+        </button>
+
+    </div>
+
+
+    <div id="csmaStatus"
+         class="result">
+
+        Waiting for CSMA simulation...
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA CD
+===================================================== -->
+
+<section class="section">
+
+    <h2>💥 3. CSMA/CD – Collision Detection</h2>
+
+    <p>
+        <strong>CSMA/CD</strong> stands for
+        <strong>Carrier Sense Multiple Access with Collision Detection</strong>.
+    </p>
+
+    <p>
+        It was historically used with shared, half-duplex Ethernet
+        networks to detect collisions while transmitting.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Idea:</strong>
+
+        <br><br>
+
+        Listen → Transmit → Detect Collision → Stop → Backoff → Retry
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA CD PROCESS
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔄 CSMA/CD Process</h2>
+
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>👂</span>
+
+            Sense
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>📡</span>
+
+            Transmit
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>🔎</span>
+
+            Detect
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>💥</span>
+
+            Collision
+
+        </div>
+
+
+        <div class="flow-step">
+
+            <span>⏳</span>
+
+            Backoff & Retry
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CSMA CD SIMULATION
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive CSMA/CD Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Simulate two stations transmitting on a shared Ethernet medium.
+
+    </p>
+
+
+    <div class="button-row">
+
+        <button onclick="startCSMACD()">
+
+            ▶ Start CSMA/CD
+
+        </button>
+
+    </div>
+
+
+    <div class="collision-area">
+
+        <div class="station"
+             style="position:absolute;left:5%;top:35%;">
+
+            💻 Station A
+
+        </div>
+
+
+        <div class="station"
+             style="position:absolute;right:5%;top:35%;">
+
+            💻 Station B
+
+        </div>
+
+
+        <div id="packetA"
+             class="collision-packet">
+
+            📦
+
+        </div>
+
+
+        <div id="packetB"
+             class="collision-packet">
+
+            📦
+
+        </div>
+
+    </div>
+
+
+    <div id="cdStatus"
+         class="result">
+
+        Waiting for CSMA/CD simulation...
+
+    </div>
+
+
+    <div class="backoff">
+
+        <div class="slot">1</div>
+        <div class="slot">2</div>
+        <div class="slot">3</div>
+        <div class="slot">4</div>
+        <div class="slot">5</div>
+        <div class="slot">6</div>
+        <div class="slot">7</div>
+        <div class="slot">8</div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     BINARY EXPONENTIAL BACKOFF
+===================================================== -->
+
+<section class="section">
+
+    <h2>⏳ Binary Exponential Backoff</h2>
+
+    <p>
+        After a collision, CSMA/CD uses a backoff mechanism
+        before attempting retransmission.
+    </p>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            1
+        </div>
+
+        <div>
+
+            Collision occurs.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            2
+        </div>
+
+        <div>
+
+            Transmission stops and a random waiting time
+            is selected from an increasing range.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            3
+        </div>
+
+        <div>
+
+            The station waits for the selected number
+            of time slots.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            4
+        </div>
+
+        <div>
+
+            The station attempts transmission again.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     COMPARISON
+===================================================== -->
+
+<section class="section">
+
+    <h2>⚖️ ALOHA vs CSMA vs CSMA/CD</h2>
+
+
+    <table>
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                ALOHA
+            </th>
+
+            <th>
+                CSMA
+            </th>
+
+            <th>
+                CSMA/CD
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Channel Sensing
+            </td>
+
+            <td>
+                No
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Collision Handling
+            </td>
+
+            <td>
+                Retransmission
+            </td>
+
+            <td>
+                Depends on variant
+            </td>
+
+            <td>
+                Detect and retransmit
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Main Idea
+            </td>
+
+            <td>
+                Transmit whenever needed
+            </td>
+
+            <td>
+                Listen before transmitting
+            </td>
+
+            <td>
+                Listen + Detect collision
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Typical Historical Use
+            </td>
+
+            <td>
+                Shared radio/data networks
+            </td>
+
+            <td>
+                Shared communication media
+            </td>
+
+            <td>
+                Shared half-duplex Ethernet
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Collision Avoidance
+            </td>
+
+            <td>
+                Low
+            </td>
+
+            <td>
+                Better than ALOHA
+            </td>
+
+            <td>
+                Detection after transmission begins
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     MODERN ETHERNET NOTE
+===================================================== -->
+
+<section class="section">
+
+    <h2>💡 Important Note About Modern Ethernet</h2>
+
+    <div class="info-box">
+
+        <strong>
+            CSMA/CD is mainly a historical Ethernet access method.
+        </strong>
+
+        <br><br>
+
+        Modern switched Ethernet networks normally operate using
+        <strong>full-duplex links</strong>, where collisions do not
+        occur on the link. Therefore, CSMA/CD is generally not used
+        on modern full-duplex switched Ethernet.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MEMORY
+===================================================== -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+
+    <ul>
+
+        <li>
+
+            <strong>ALOHA:</strong>
+
+            "Transmit first."
+
+        </li>
+
+
+        <li>
+
+            <strong>CSMA:</strong>
+
+            "Listen before transmitting."
+
+        </li>
+
+
+        <li>
+
+            <strong>CSMA/CD:</strong>
+
+            "Listen + transmit + detect collision."
+
+        </li>
+
+    </ul>
+
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        ALOHA → <strong>Transmit</strong>
+
+        <br>
+
+        CSMA → <strong>Listen</strong>
+
+        <br>
+
+        CSMA/CD → <strong>Listen + Detect</strong>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Data Link Layer |
+    ALOHA | CSMA | CSMA/CD
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   CARD INTERACTION
+===================================================== */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* =====================================================
+   ALOHA SIMULATION
+===================================================== */
+
+function startALOHA() {
+
+    const status =
+        document.getElementById("alohaStatus");
+
+    const packetA =
+        document.getElementById("alohaPacketA");
+
+    const packetB =
+        document.getElementById("alohaPacketB");
+
+
+    packetA.style.display = "block";
+    packetB.style.display = "block";
+
+
+    packetA.style.left = "18%";
+    packetB.style.right = "18%";
+
+
+    status.innerHTML =
+        "📦 Station A and Station B transmit without sensing the channel.";
+
+
+    setTimeout(function() {
+
+        packetA.style.left = "47%";
+        packetB.style.right = "47%";
+
+
+        status.innerHTML =
+            "📡 Both packets are moving toward the shared channel.";
+
+    }, 1000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "💥 COLLISION! Both stations transmitted at overlapping times.";
+
+    }, 2000);
+
+
+    setTimeout(function() {
+
+        packetA.style.display = "none";
+        packetB.style.display = "none";
+
+
+        status.innerHTML =
+            "⏳ Stations wait for random times before retransmitting.";
+
+    }, 3200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🔄 ALOHA demonstrates why random access can produce collisions.";
+
+    }, 4700);
+
+}
+
+
+/* =====================================================
+   CSMA SIMULATION
+===================================================== */
+
+function startCSMA() {
+
+    const status =
+        document.getElementById("csmaStatus");
+
+
+    status.innerHTML =
+        "👂 Station A senses the channel.";
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "👂 Station B also senses the channel.";
+
+    }, 1200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🔎 Channel is currently busy.";
+
+    }, 2400);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "⏳ Stations wait according to the CSMA method.";
+
+    }, 3600);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📡 Channel becomes idle.";
+
+    }, 4800);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📦 One station begins transmission.";
+
+    }, 6000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "✅ CSMA reduces the probability of collision by sensing first.";
+
+    }, 7400);
+
+}
+
+
+/* =====================================================
+   CSMA/CD SIMULATION
+===================================================== */
+
+function startCSMACD() {
+
+    const status =
+        document.getElementById("cdStatus");
+
+    const packetA =
+        document.getElementById("packetA");
+
+    const packetB =
+        document.getElementById("packetB");
+
+
+    packetA.style.display = "block";
+    packetB.style.display = "block";
+
+
+    packetA.style.left = "18%";
+    packetB.style.right = "18%";
+
+    packetA.style.top = "48%";
+    packetB.style.top = "48%";
+
+
+    status.innerHTML =
+        "👂 Both stations sense the shared Ethernet medium.";
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📡 Both stations detect an idle channel and begin transmitting.";
+
+        packetA.style.left = "44%";
+        packetB.style.right = "44%";
+
+    }, 1300);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "💥 COLLISION DETECTED! Both stations stop transmitting.";
+
+    }, 2500);
+
+
+    setTimeout(function() {
+
+        packetA.style.display = "none";
+        packetB.style.display = "none";
+
+        status.innerHTML =
+            "📢 Collision signal is detected and transmission is aborted.";
+
+        highlightBackoff();
+
+    }, 3600);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "⏳ Stations select random backoff intervals.";
+
+    }, 4800);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🔄 After backoff, a station attempts retransmission.";
+
+    }, 6200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "✅ CSMA/CD successfully handles the collision.";
+
+    }, 7600);
+
+}
+
+
+/* =====================================================
+   BACKOFF HIGHLIGHT
+===================================================== */
+
+function highlightBackoff() {
+
+    const slots =
+        document.querySelectorAll(".slot");
+
+
+    slots.forEach(function(slot) {
+
+        slot.classList.remove("active");
+
+    });
+
+
+    let index = 0;
+
+
+    const timer =
+        setInterval(function() {
+
+            if (index > 7) {
+
+                clearInterval(timer);
+
+                return;
+
+            }
+
+
+            slots[index]
+                .classList.add("active");
+
+
+            index++;
+
+        }, 250);
+
+}
+
+</script>
+
+</body>
+</html>

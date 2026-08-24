@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Introduction to Computer Networks</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    background: #ffffff;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    color: #173b75;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 10px;
+    margin: 4px 0;
+    border: 1px solid #bcc9da;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    padding: 20px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .35s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    color: #173b75;
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* ================= CARDS ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 16px;
+    min-height: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.card h3 {
+    margin: 0 0 7px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.45;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 14px;
+    background: #edf4ff;
+    border: 1px solid #bfd2ec;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+/* ================= NETWORK DIAGRAM ================= */
+
+.network-area {
+    height: 300px;
+    border: 1px solid #ccd6e3;
+    border-radius: 12px;
+    background: #fbfcfe;
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    position: absolute;
+    width: 105px;
+    height: 60px;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.server {
+    width: 120px;
+}
+
+.network-line {
+    position: absolute;
+    height: 3px;
+    background: #9baabd;
+    transform-origin: left center;
+}
+
+.packet {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #2f6fbe;
+    z-index: 10;
+}
+
+/* ================= INTERNET CLOUD ================= */
+
+.cloud {
+    position: absolute;
+    left: 43%;
+    top: 90px;
+    width: 160px;
+    height: 90px;
+    border: 3px solid #173b75;
+    border-radius: 50%;
+    background: #f4f8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+/* ================= CLASSIFICATION ================= */
+
+.classification {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.class-box {
+    width: 180px;
+    min-height: 115px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #ffffff;
+    text-align: center;
+    padding: 18px 10px;
+    transition: .3s;
+}
+
+.class-box:hover {
+    transform: translateY(-6px);
+    background: #f8fbff;
+}
+
+.class-box h3 {
+    color: #173b75;
+    margin: 5px 0;
+}
+
+.class-box p {
+    color: #555;
+    font-size: 13px;
+}
+
+/* ================= SCALE ================= */
+
+.scale {
+    position: relative;
+    height: 110px;
+    margin: 25px auto;
+    width: 85%;
+}
+
+.scale-line {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    top: 52px;
+    height: 5px;
+    background: #173b75;
+}
+
+.scale-point {
+    position: absolute;
+    top: 37px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 4px solid #2f6fbe;
+}
+
+.scale-label {
+    position: absolute;
+    top: 75px;
+    transform: translateX(-50%);
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= TABLE ================= */
+
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 10px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* ================= INFO ================= */
+
+.info {
+    margin-top: 15px;
+    padding: 14px;
+    background: #f8fbff;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    padding: 9px 15px;
+    border: 1px solid #173b75;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:950px) {
+
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .classification {
+        gap: 8px;
+    }
+
+    .class-box {
+        width: 150px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="title">
+        Introduction to Computer Networks
+    </div>
+
+    <div class="subtitle">
+        Computer Networks
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. What is a Network?
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Basic Components
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. How Communication Works
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Characteristics of CN
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Uses of Computer Networks
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Resource Sharing
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Communication & Collaboration
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Network Classification
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. PAN & LAN
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. MAN & WAN
+        </button>
+
+        <button onclick="showSlide(10)">
+            11. Classification Comparison
+        </button>
+
+        <button onclick="showSlide(11)">
+            12. Summary
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        What is a Computer Network?
+    </div>
+
+    <div class="description">
+        A computer network is a collection of interconnected devices that
+        communicate and share data and resources.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device" style="left:8%;top:110px;">
+            COMPUTER
+        </div>
+
+        <div class="device" style="right:8%;top:110px;">
+            COMPUTER
+        </div>
+
+        <div class="cloud">
+            NETWORK
+        </div>
+
+        <div class="network-line"
+             style="
+             left:18%;
+             top:143px;
+             width:27%;">
+        </div>
+
+        <div class="network-line"
+             style="
+             left:55%;
+             top:143px;
+             width:27%;">
+        </div>
+
+        <div class="packet"
+             style="
+             left:20%;
+             top:135px;
+             animation:dataFlow 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes dataFlow {
+
+        0% {
+            left:20%;
+            opacity:0;
+        }
+
+        10% {
+            opacity:1;
+        }
+
+        50% {
+            left:48%;
+        }
+
+        90% {
+            opacity:1;
+        }
+
+        100% {
+            left:77%;
+            opacity:0;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Simple Definition:
+        </span>
+
+        Connected devices + Communication links + Protocols
+        = Computer Network
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Basic Components of a Computer Network
+    </div>
+
+    <div class="description">
+        A network requires devices, transmission media and communication protocols.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                End Devices
+            </span>
+
+            <h3>
+                Hosts
+            </h3>
+
+            <p>
+                Computers, smartphones, servers, printers, IoT devices
+                and other network-connected systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Intermediary Devices
+            </span>
+
+            <h3>
+                Network Devices
+            </h3>
+
+            <p>
+                Switches, routers, access points, firewalls and other
+                devices help move or control traffic.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Transmission
+            </span>
+
+            <h3>
+                Communication Media
+            </h3>
+
+            <p>
+                Copper cables, optical fiber and wireless signals carry
+                information between devices.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Rules
+            </span>
+
+            <h3>
+                Protocols
+            </h3>
+
+            <p>
+                TCP/IP and other protocols define how devices communicate.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Identification
+            </span>
+
+            <h3>
+                Addresses
+            </h3>
+
+            <p>
+                MAC addresses, IP addresses and port numbers identify
+                interfaces and applications.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Services
+            </span>
+
+            <h3>
+                Network Applications
+            </h3>
+
+            <p>
+                Web, email, file sharing, cloud services and communication
+                applications use the network.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        How Network Communication Works
+    </div>
+
+    <div class="description">
+        Data travels from a source device through network infrastructure to a destination device.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:6%;top:110px;">
+            SENDER
+        </div>
+
+
+        <div class="device"
+             style="left:30%;top:110px;">
+            SWITCH
+        </div>
+
+
+        <div class="device"
+             style="left:55%;top:110px;">
+            ROUTER
+        </div>
+
+
+        <div class="device"
+             style="right:6%;top:110px;">
+            RECEIVER
+        </div>
+
+
+        <div class="network-line"
+             style="
+             left:16%;
+             top:143px;
+             width:15%;">
+        </div>
+
+
+        <div class="network-line"
+             style="
+             left:40%;
+             top:143px;
+             width:15%;">
+        </div>
+
+
+        <div class="network-line"
+             style="
+             left:65%;
+             top:143px;
+             width:15%;">
+        </div>
+
+
+        <div class="packet"
+             style="
+             left:18%;
+             top:135px;
+             animation:communicationFlow 4s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes communicationFlow {
+
+        0% {
+            left:18%;
+        }
+
+        30% {
+            left:35%;
+        }
+
+        60% {
+            left:60%;
+        }
+
+        100% {
+            left:78%;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Communication Process:
+        </span>
+
+        Source → Network Devices → Destination
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Characteristics of Computer Networks
+    </div>
+
+    <div class="description">
+        Important characteristics determine the performance and usefulness of a network.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Connectivity
+            </h3>
+
+            <p>
+                Devices can communicate with other devices through
+                wired or wireless links.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Resource Sharing
+            </h3>
+
+            <p>
+                Hardware, software, files and services can be shared
+                among multiple users.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Reliability
+            </h3>
+
+            <p>
+                Redundant paths and backup systems can improve network
+                availability.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Scalability
+            </h3>
+
+            <p>
+                Networks can grow by adding devices, links and services.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Performance
+            </h3>
+
+            <p>
+                Bandwidth, latency, throughput and packet loss influence
+                network performance.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Security
+            </h3>
+
+            <p>
+                Authentication, encryption, firewalls and access control
+                help protect network resources.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Uses of Computer Networks
+    </div>
+
+    <div class="description">
+        Computer networks support communication, information sharing, business,
+        education, entertainment and many other activities.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Communication
+            </h3>
+
+            <p>
+                Email, messaging, voice calls and video conferencing.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Education
+            </h3>
+
+            <p>
+                Online classes, digital libraries, learning platforms
+                and virtual laboratories.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Business
+            </h3>
+
+            <p>
+                Enterprise applications, collaboration, e-commerce and
+                remote work.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Banking
+            </h3>
+
+            <p>
+                Online banking, digital payments and financial services.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Healthcare
+            </h3>
+
+            <p>
+                Telemedicine, electronic records and connected medical systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Entertainment
+            </h3>
+
+            <p>
+                Video streaming, online gaming, music and social media.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Resource Sharing
+    </div>
+
+    <div class="description">
+        One of the major purposes of networking is to allow users and systems
+        to share resources efficiently.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:7%;top:45px;">
+            PC 1
+        </div>
+
+        <div class="device"
+             style="left:7%;top:220px;">
+            PC 2
+        </div>
+
+
+        <div class="cloud">
+            NETWORK
+        </div>
+
+
+        <div class="device server"
+             style="right:7%;top:110px;">
+            SHARED<br>
+            SERVER
+        </div>
+
+
+        <div class="network-line"
+             style="
+             left:18%;
+             top:78px;
+             width:27%;
+             transform:rotate(15deg);">
+        </div>
+
+        <div class="network-line"
+             style="
+             left:18%;
+             top:250px;
+             width:27%;
+             transform:rotate(-15deg);">
+        </div>
+
+        <div class="network-line"
+             style="
+             left:55%;
+             top:143px;
+             width:27%;">
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                Hardware Sharing
+            </h3>
+
+            <p>
+                Printers, scanners, storage devices and other peripherals
+                can be shared.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                File Sharing
+            </h3>
+
+            <p>
+                Users can access files stored on network servers or
+                shared storage.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Software Sharing
+            </h3>
+
+            <p>
+                Network applications and services can be centrally
+                hosted and accessed.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Communication & Collaboration
+    </div>
+
+    <div class="description">
+        Networks enable people and organizations to communicate and collaborate from different locations.
+    </div>
+
+
+    <div class="classification">
+
+        <div class="class-box">
+
+            <div style="font-size:35px;">
+                ✉
+            </div>
+
+            <h3>
+                Email
+            </h3>
+
+            <p>
+                Electronic communication
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:35px;">
+                ☎
+            </div>
+
+            <h3>
+                Voice
+            </h3>
+
+            <p>
+                Internet-based calls
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:35px;">
+                ◉
+            </div>
+
+            <h3>
+                Video
+            </h3>
+
+            <p>
+                Online meetings
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:35px;">
+                ☁
+            </div>
+
+            <h3>
+                Cloud
+            </h3>
+
+            <p>
+                Shared online services
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Example:
+        </span>
+
+        A student can attend an online class,
+        access cloud files and communicate with classmates
+        using the same network infrastructure.
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Classification of Computer Networks
+    </div>
+
+    <div class="description">
+        Networks can be classified according to geographical coverage, ownership,
+        architecture and communication technology.
+    </div>
+
+
+    <div class="classification">
+
+        <div class="class-box">
+
+            <div style="font-size:30px;">
+                📱
+            </div>
+
+            <h3>
+                PAN
+            </h3>
+
+            <p>
+                Personal Area Network
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:30px;">
+                🏠
+            </div>
+
+            <h3>
+                LAN
+            </h3>
+
+            <p>
+                Local Area Network
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:30px;">
+                🏙
+            </div>
+
+            <h3>
+                MAN
+            </h3>
+
+            <p>
+                Metropolitan Area Network
+            </p>
+
+        </div>
+
+
+        <div class="class-box">
+
+            <div style="font-size:30px;">
+                🌍
+            </div>
+
+            <h3>
+                WAN
+            </h3>
+
+            <p>
+                Wide Area Network
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Coverage:
+        </span>
+
+        PAN → LAN → MAN → WAN
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        PAN and LAN
+    </div>
+
+    <div class="description">
+        PAN covers a very small personal area, while LAN normally covers a limited local area.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                PAN
+            </span>
+
+            <h3>
+                Personal Area Network
+            </h3>
+
+            <p>
+                Connects devices around an individual, such as smartphones,
+                smartwatches, headphones and personal computers.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                LAN
+            </span>
+
+            <h3>
+                Local Area Network
+            </h3>
+
+            <p>
+                Connects devices within a limited area such as a home,
+                office, laboratory, building or campus segment.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                PAN Technologies
+            </h3>
+
+            <p>
+                Bluetooth and other short-range wireless technologies
+                are common examples.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                LAN Technologies
+            </h3>
+
+            <p>
+                Ethernet and Wi-Fi are widely used for LAN connectivity.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                PAN Example
+            </h3>
+
+            <p>
+                Smartphone connected to a wireless headset.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                LAN Example
+            </h3>
+
+            <p>
+                Computers connected to switches in a university laboratory.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        MAN and WAN
+    </div>
+
+    <div class="description">
+        MAN and WAN cover larger geographic areas than PAN and LAN.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                MAN
+            </span>
+
+            <h3>
+                Metropolitan Area Network
+            </h3>
+
+            <p>
+                Connects networks across a city or metropolitan region.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                WAN
+            </span>
+
+            <h3>
+                Wide Area Network
+            </h3>
+
+            <p>
+                Connects networks over large geographic areas such as
+                countries or continents.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                MAN Example
+            </h3>
+
+            <p>
+                Interconnected institutional or municipal networks
+                across a metropolitan region.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                WAN Example
+            </h3>
+
+            <p>
+                The Internet is the most prominent example of a global
+                interconnected network.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="scale">
+
+        <div class="scale-line"></div>
+
+        <div class="scale-point"
+             style="left:5%;">
+        </div>
+
+        <div class="scale-point"
+             style="left:32%;">
+        </div>
+
+        <div class="scale-point"
+             style="left:60%;">
+        </div>
+
+        <div class="scale-point"
+             style="left:90%;">
+        </div>
+
+
+        <div class="scale-label"
+             style="left:5%;">
+            PAN
+        </div>
+
+        <div class="scale-label"
+             style="left:32%;">
+            LAN
+        </div>
+
+        <div class="scale-label"
+             style="left:60%;">
+            MAN
+        </div>
+
+        <div class="scale-label"
+             style="left:90%;">
+            WAN
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Geographic Coverage:
+        </span>
+
+        Personal → Local → Metropolitan → Wide
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 11 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Classification Comparison
+    </div>
+
+    <div class="description">
+        PAN, LAN, MAN and WAN differ mainly in their geographic coverage and typical applications.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+
+            <th>
+                Type
+            </th>
+
+            <th>
+                Full Form
+            </th>
+
+            <th>
+                Coverage
+            </th>
+
+            <th>
+                Example
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                PAN
+            </td>
+
+            <td>
+                Personal Area Network
+            </td>
+
+            <td>
+                Very small personal area
+            </td>
+
+            <td>
+                Phone + Smartwatch
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                LAN
+            </td>
+
+            <td>
+                Local Area Network
+            </td>
+
+            <td>
+                Home, office, building, lab
+            </td>
+
+            <td>
+                Computer Lab
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                MAN
+            </td>
+
+            <td>
+                Metropolitan Area Network
+            </td>
+
+            <td>
+                City / metropolitan region
+            </td>
+
+            <td>
+                City-wide network
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                WAN
+            </td>
+
+            <td>
+                Wide Area Network
+            </td>
+
+            <td>
+                Countries / continents
+            </td>
+
+            <td>
+                Internet
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Easy Memory:
+        </span>
+
+        PAN = Personal |
+        LAN = Local |
+        MAN = Metropolitan |
+        WAN = Wide
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 12 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Introduction to Computer Networks — Summary
+    </div>
+
+    <div class="description">
+        Computer networks connect devices so that users and systems can communicate
+        and share information and resources.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Computer Network
+            </h3>
+
+            <p>
+                Interconnected devices communicating through wired or
+                wireless media.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Major Uses
+            </h3>
+
+            <p>
+                Communication, education, business, banking, healthcare,
+                entertainment and resource sharing.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                PAN
+            </h3>
+
+            <p>
+                Personal-scale networking.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                LAN
+            </h3>
+
+            <p>
+                Local networking within a limited area.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                MAN
+            </h3>
+
+            <p>
+                Metropolitan or city-scale networking.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                WAN
+            </h3>
+
+            <p>
+                Large geographic and global networking.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Remember:
+        </span>
+
+        <br><br>
+
+        <b>
+            Computer Network = Devices + Media + Protocols + Services
+        </b>
+
+        <br><br>
+
+        <b>
+            PAN → LAN → MAN → WAN
+        </b>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+
+<div class="progress" id="progress"></div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0) {
+        index = 0;
+    }
+
+    if (index >= slides.length) {
+        index = slides.length - 1;
+    }
+
+    currentSlide = index;
+
+
+    slides.forEach((slide, i) => {
+
+        slide.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    buttons.forEach((button, i) => {
+
+        button.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    progress.style.width =
+        (
+            (currentSlide + 1) /
+            slides.length *
+            100
+        ) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT SLIDE
+===================================================== */
+
+function nextSlide() {
+
+    if (
+        currentSlide <
+        slides.length - 1
+    ) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS SLIDE
+===================================================== */
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>

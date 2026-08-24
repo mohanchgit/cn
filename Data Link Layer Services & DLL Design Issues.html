@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Link Layer Services & DLL Design Issues</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+.header {
+    height: 78px;
+    background: #ffffff;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+.container {
+    height: calc(100vh - 78px);
+    display: grid;
+    grid-template-columns: 270px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d6deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    font-weight: 700;
+    font-size: 17px;
+    color: #173b75;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    margin: 6px 0;
+    padding: 11px;
+    border: 1px solid #bdc9da;
+    background: white;
+    color: #173b75;
+    border-radius: 7px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e7effb;
+    border-color: #173b75;
+}
+
+.main {
+    padding: 22px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .4s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-title {
+    font-size: 27px;
+    color: #173b75;
+    margin-bottom: 6px;
+}
+
+.slide-description {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 18px;
+    min-height: 135px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    line-height: 1.5;
+    color: #444;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    background: #edf4ff;
+    border: 1px solid #bdd1ef;
+    border-radius: 15px;
+    font-size: 12px;
+    color: #173b75;
+    margin-bottom: 8px;
+}
+
+.layer-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    margin-top: 35px;
+}
+
+.device {
+    width: 180px;
+    height: 120px;
+    border: 3px solid #173b75;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f7faff;
+    font-weight: 700;
+}
+
+.device span {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+}
+
+.arrow {
+    font-size: 42px;
+    color: #2f6fbe;
+}
+
+.frame {
+    margin: 35px auto;
+    max-width: 800px;
+}
+
+.frame-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #173b75;
+    margin-bottom: 10px;
+}
+
+.frame-box {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    border: 3px solid #173b75;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.frame-box div {
+    padding: 20px 10px;
+    text-align: center;
+    border-right: 1px solid white;
+    font-weight: 700;
+}
+
+.frame-box div:last-child {
+    border-right: none;
+}
+
+.address {
+    background: #e8f1ff;
+}
+
+.data {
+    background: #f7f7f7;
+}
+
+.fcs {
+    background: #fff1df;
+}
+
+.flow-area {
+    margin-top: 20px;
+    position: relative;
+    height: 270px;
+    border: 1px solid #ccd6e5;
+    border-radius: 10px;
+    background: #fbfcfe;
+}
+
+.node {
+    position: absolute;
+    top: 95px;
+    width: 130px;
+    padding: 17px 10px;
+    text-align: center;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    background: white;
+    font-weight: 700;
+}
+
+.sender {
+    left: 7%;
+}
+
+.receiver {
+    right: 7%;
+}
+
+.connection {
+    position: absolute;
+    top: 125px;
+    left: 20%;
+    width: 60%;
+    height: 3px;
+    background: #8ba3c2;
+}
+
+.packet {
+    position: absolute;
+    top: 108px;
+    left: 20%;
+    padding: 8px 13px;
+    border: 2px solid #2f6fbe;
+    border-radius: 6px;
+    background: #e9f3ff;
+    font-weight: 700;
+    color: #173b75;
+    animation: movePacket 4s linear infinite;
+}
+
+@keyframes movePacket {
+    0% { left: 20%; }
+    100% { left: 72%; }
+}
+
+.issue-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.issue {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+}
+
+.issue-number {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background: #173b75;
+    color: white;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.issue strong {
+    color: #173b75;
+}
+
+.issue p {
+    margin: 8px 0 0 40px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.comparison {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.comparison th,
+.comparison td {
+    border: 1px solid #c8d2df;
+    padding: 13px;
+    text-align: left;
+}
+
+.comparison th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+.controls {
+    position: fixed;
+    right: 25px;
+    bottom: 18px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    border: 1px solid #173b75;
+    background: white;
+    color: #173b75;
+    border-radius: 6px;
+    padding: 9px 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+.definition {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 25px;
+    border: 2px solid #173b75;
+    border-radius: 12px;
+    background: #f8fbff;
+    text-align: center;
+}
+
+.definition h2 {
+    color: #173b75;
+}
+
+.definition p {
+    font-size: 19px;
+    line-height: 1.6;
+}
+
+@media(max-width:900px) {
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="title">Data Link Layer</div>
+    <div class="subtitle">Services & DLL Design Issues</div>
+</header>
+
+<div class="container">
+
+<aside class="sidebar">
+
+    <div class="menu-title">Lecture Sections</div>
+
+    <div class="menu">
+        <button onclick="showSlide(0)" class="active">1. Introduction</button>
+        <button onclick="showSlide(1)">2. DLL Services</button>
+        <button onclick="showSlide(2)">3. Framing</button>
+        <button onclick="showSlide(3)">4. Physical Addressing</button>
+        <button onclick="showSlide(4)">5. Flow Control</button>
+        <button onclick="showSlide(5)">6. Error Control</button>
+        <button onclick="showSlide(6)">7. DLL Design Issues</button>
+        <button onclick="showSlide(7)">8. Design Summary</button>
+    </div>
+
+</aside>
+
+<main class="main">
+
+<!-- SLIDE 1 -->
+<section class="slide active">
+
+    <div class="slide-title">Data Link Layer</div>
+    <div class="slide-description">
+        The Data Link Layer provides reliable node-to-node delivery over a physical link.
+    </div>
+
+    <div class="definition">
+        <h2>What is the Data Link Layer?</h2>
+        <p>
+            It is Layer 2 of the OSI model and is responsible for
+            <b>framing, physical addressing, flow control, error control</b>
+            and reliable delivery of frames between directly connected nodes.
+        </p>
+    </div>
+
+    <div class="layer-box">
+
+        <div class="device">
+            Computer A
+            <span>Source Node</span>
+        </div>
+
+        <div class="arrow">⇄</div>
+
+        <div class="device">
+            Data Link
+            <span>Frames</span>
+        </div>
+
+        <div class="arrow">⇄</div>
+
+        <div class="device">
+            Computer B
+            <span>Destination Node</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 2 -->
+<section class="slide">
+
+    <div class="slide-title">Data Link Layer Services</div>
+    <div class="slide-description">
+        Main services offered by the Data Link Layer to the Network Layer.
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <span class="badge">Service 01</span>
+            <h3>Framing</h3>
+            <p>
+                Divides the network-layer packets into manageable units
+                called <b>frames</b>.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Service 02</span>
+            <h3>Physical Addressing</h3>
+            <p>
+                Adds source and destination MAC addresses to identify
+                devices on the local network.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Service 03</span>
+            <h3>Flow Control</h3>
+            <p>
+                Prevents a fast sender from overwhelming a slower receiver.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Service 04</span>
+            <h3>Error Control</h3>
+            <p>
+                Detects and may correct damaged or lost frames using
+                acknowledgements and retransmissions.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Service 05</span>
+            <h3>Access Control</h3>
+            <p>
+                Determines which device can use a shared communication
+                medium.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Service 06</span>
+            <h3>Reliable Delivery</h3>
+            <p>
+                Some DLL protocols provide reliable delivery between
+                directly connected nodes.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 3 -->
+<section class="slide">
+
+    <div class="slide-title">Framing</div>
+    <div class="slide-description">
+        The Data Link Layer converts packets into frames before transmission.
+    </div>
+
+    <div class="frame">
+
+        <div class="frame-label">Data Link Layer Frame</div>
+
+        <div class="frame-box">
+            <div class="address">HEADER<br>Address</div>
+            <div class="data">DATA<br>Network Layer Packet</div>
+            <div class="fcs">TRAILER<br>FCS</div>
+        </div>
+
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <h3>Header</h3>
+            <p>
+                Contains control information such as source and
+                destination addresses.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Payload</h3>
+            <p>
+                Contains the packet received from the Network Layer.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Trailer</h3>
+            <p>
+                Usually contains error-detection information such as
+                Frame Check Sequence.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 4 -->
+<section class="slide">
+
+    <div class="slide-title">Physical Addressing</div>
+    <div class="slide-description">
+        MAC addresses identify devices on a local network.
+    </div>
+
+    <div class="flow-area">
+
+        <div class="node sender">
+            Sender<br>
+            <small>MAC: AA:AA</small>
+        </div>
+
+        <div class="connection"></div>
+
+        <div class="packet">FRAME</div>
+
+        <div class="node receiver">
+            Receiver<br>
+            <small>MAC: BB:BB</small>
+        </div>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:20px">
+
+        <div class="card">
+            <h3>Source MAC</h3>
+            <p>
+                Identifies the device that transmitted the frame.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Destination MAC</h3>
+            <p>
+                Identifies the intended receiving device on the local link.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Switch Operation</h3>
+            <p>
+                Ethernet switches use MAC addresses to forward frames
+                toward the correct port.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 5 -->
+<section class="slide">
+
+    <div class="slide-title">Flow Control</div>
+    <div class="slide-description">
+        Flow control coordinates the transmission rate between sender and receiver.
+    </div>
+
+    <div class="flow-area">
+
+        <div class="node sender">
+            Sender<br>
+            <small>Fast</small>
+        </div>
+
+        <div class="connection"></div>
+
+        <div class="node receiver">
+            Receiver<br>
+            <small>Slow</small>
+        </div>
+
+        <div class="packet">DATA →</div>
+
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <h3>Stop-and-Wait</h3>
+            <p>
+                Sender transmits one frame and waits for an acknowledgement
+                before sending the next frame.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Sliding Window</h3>
+            <p>
+                Multiple frames can be transmitted before receiving
+                acknowledgements.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Main Goal</h3>
+            <p>
+                Avoid receiver buffer overflow and improve communication
+                efficiency.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 6 -->
+<section class="slide">
+
+    <div class="slide-title">Error Control</div>
+    <div class="slide-description">
+        Error control helps detect damaged frames and recover from transmission errors.
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <h3>Error Detection</h3>
+            <p>
+                Techniques such as parity, checksum and CRC are used
+                to detect errors.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Acknowledgement</h3>
+            <p>
+                The receiver sends ACK to indicate successful reception.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Negative ACK</h3>
+            <p>
+                NAK can indicate that a frame was received incorrectly
+                and needs retransmission.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Retransmission</h3>
+            <p>
+                Lost or damaged frames may be retransmitted using
+                ARQ mechanisms.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Sequence Numbers</h3>
+            <p>
+                Help identify frames and maintain the correct order
+                during retransmission.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Timeout</h3>
+            <p>
+                If an expected acknowledgement does not arrive within
+                a specified period, retransmission may occur.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 7 -->
+<section class="slide">
+
+    <div class="slide-title">DLL Design Issues</div>
+    <div class="slide-description">
+        Important design questions that must be considered when developing a Data Link Layer protocol.
+    </div>
+
+    <div class="issue-list">
+
+        <div class="issue">
+            <span class="issue-number">1</span>
+            <strong>Services to Network Layer</strong>
+            <p>
+                What type of service should the DLL provide to the
+                Network Layer?
+            </p>
+        </div>
+
+        <div class="issue">
+            <span class="issue-number">2</span>
+            <strong>Framing</strong>
+            <p>
+                How should a continuous stream of bits be divided
+                into frames?
+            </p>
+        </div>
+
+        <div class="issue">
+            <span class="issue-number">3</span>
+            <strong>Error Control</strong>
+            <p>
+                How can damaged or lost frames be detected and recovered?
+            </p>
+        </div>
+
+        <div class="issue">
+            <span class="issue-number">4</span>
+            <strong>Flow Control</strong>
+            <p>
+                How can the sender avoid transmitting faster than
+                the receiver can process?
+            </p>
+        </div>
+
+        <div class="issue">
+            <span class="issue-number">5</span>
+            <strong>Access Control</strong>
+            <p>
+                How should multiple devices share a common communication
+                channel?
+            </p>
+        </div>
+
+        <div class="issue">
+            <span class="issue-number">6</span>
+            <strong>Addressing</strong>
+            <p>
+                How should source and destination devices be identified
+                on the data-link network?
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- SLIDE 8 -->
+<section class="slide">
+
+    <div class="slide-title">DLL Design Issues — Summary</div>
+    <div class="slide-description">
+        A good Data Link Layer protocol must efficiently manage frames and communication between neighboring nodes.
+    </div>
+
+    <table class="comparison">
+
+        <tr>
+            <th>Design Issue</th>
+            <th>Main Question</th>
+            <th>Purpose</th>
+        </tr>
+
+        <tr>
+            <td>Services</td>
+            <td>What should DLL provide?</td>
+            <td>Define interface with Network Layer</td>
+        </tr>
+
+        <tr>
+            <td>Framing</td>
+            <td>Where does a frame start/end?</td>
+            <td>Organize transmitted bits</td>
+        </tr>
+
+        <tr>
+            <td>Addressing</td>
+            <td>Who is the sender/receiver?</td>
+            <td>Identify nodes</td>
+        </tr>
+
+        <tr>
+            <td>Flow Control</td>
+            <td>How fast should data be sent?</td>
+            <td>Prevent receiver overload</td>
+        </tr>
+
+        <tr>
+            <td>Error Control</td>
+            <td>Was the frame received correctly?</td>
+            <td>Reliable communication</td>
+        </tr>
+
+        <tr>
+            <td>Access Control</td>
+            <td>Who can use the channel?</td>
+            <td>Manage shared media</td>
+        </tr>
+
+    </table>
+
+    <div class="definition" style="margin-top:20px; padding:15px">
+        <b>Key Idea:</b>
+        Data Link Layer = 
+        <b>Framing + Addressing + Flow Control + Error Control + Access Control</b>
+    </div>
+
+</section>
+
+</main>
+</div>
+
+<div class="controls">
+    <button onclick="previousSlide()">◀ Previous</button>
+    <button onclick="nextSlide()">Next ▶</button>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<script>
+
+let currentSlide = 0;
+
+const slides = document.querySelectorAll(".slide");
+const buttons = document.querySelectorAll(".menu button");
+const progress = document.getElementById("progress");
+
+function showSlide(index) {
+
+    if (index < 0) index = 0;
+    if (index >= slides.length) index = slides.length - 1;
+
+    currentSlide = index;
+
+    slides.forEach((slide, i) => {
+        slide.classList.toggle("active", i === currentSlide);
+    });
+
+    buttons.forEach((button, i) => {
+        button.classList.toggle("active", i === currentSlide);
+    });
+
+    const percentage =
+        ((currentSlide + 1) / slides.length) * 100;
+
+    progress.style.width = percentage + "%";
+}
+
+function nextSlide() {
+    if (currentSlide < slides.length - 1) {
+        showSlide(currentSlide + 1);
+    }
+}
+
+function previousSlide() {
+    if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+    }
+}
+
+/* Keyboard navigation */
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "ArrowRight" ||
+        event.key === "PageDown") {
+        nextSlide();
+    }
+
+    if (event.key === "ArrowLeft" ||
+        event.key === "PageUp") {
+        previousSlide();
+    }
+
+});
+
+/* Initialize */
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+```

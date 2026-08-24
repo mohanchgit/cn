@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Stop-and-Wait & Sliding Window Protocols</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+header {
+    background: #1d4ed8;
+    color: #ffffff;
+    text-align: center;
+    padding: 32px 20px;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    font-size: 29px;
+    margin-top: 0;
+}
+
+.section h3 {
+    color: #1e40af;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+/* =========================================================
+   INFO BOX
+========================================================= */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+/* =========================================================
+   FLOW
+========================================================= */
+
+.flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.flow-step {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.flow-step span {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+/* =========================================================
+   NETWORK DIAGRAM
+========================================================= */
+
+.network {
+    position: relative;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 35px 20px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.network-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+}
+
+.device {
+    width: 190px;
+    padding: 20px;
+    text-align: center;
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    z-index: 2;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.device .icon {
+    font-size: 42px;
+}
+
+.device h3 {
+    color: #1d4ed8;
+    margin: 5px 0;
+}
+
+.communication-line {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    top: 50%;
+    height: 6px;
+    background: #94a3b8;
+    z-index: 1;
+}
+
+/* =========================================================
+   FRAME
+========================================================= */
+
+.frame {
+    position: absolute;
+    display: none;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* =========================================================
+   SIMULATOR
+========================================================= */
+
+.simulator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.simulator h2 {
+    text-align: center;
+    color: #1d4ed8;
+}
+
+.button-row {
+    text-align: center;
+    margin: 20px 0;
+}
+
+button {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button.secondary {
+    background: #475569;
+}
+
+button.secondary:hover {
+    background: #334155;
+}
+
+.result {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 65px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* =========================================================
+   STOP WAIT VISUAL
+========================================================= */
+
+.stopwait-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.message-box {
+    padding: 22px;
+    border: 3px solid #2563eb;
+    border-radius: 12px;
+    background: #eff6ff;
+    text-align: center;
+    min-width: 190px;
+}
+
+.ack-box {
+    padding: 22px;
+    border: 3px solid #16a34a;
+    border-radius: 12px;
+    background: #ecfdf5;
+    text-align: center;
+    min-width: 190px;
+}
+
+/* =========================================================
+   WINDOW
+========================================================= */
+
+.window-area {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.window-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1d4ed8;
+    margin-bottom: 15px;
+}
+
+.packet-row {
+    display: flex;
+    gap: 10px;
+    min-width: 900px;
+}
+
+.packet {
+    width: 90px;
+    height: 90px;
+    border: 3px solid #64748b;
+    background: #ffffff;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 14px;
+    font-weight: bold;
+}
+
+.packet-number {
+    font-size: 25px;
+    color: #1d4ed8;
+    display: block;
+}
+
+.packet-status {
+    font-size: 13px;
+    display: block;
+    margin-top: 5px;
+}
+
+.packet.window {
+    border-color: #2563eb;
+    background: #dbeafe;
+}
+
+.packet.sent {
+    border-color: #2563eb;
+    background: #dbeafe;
+}
+
+.packet.ack {
+    border-color: #16a34a;
+    background: #dcfce7;
+}
+
+.packet.waiting {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+}
+
+.packet.error {
+    border-color: #dc2626;
+    background: #fee2e2;
+}
+
+.packet.retransmit {
+    border-color: #d97706;
+    background: #fef3c7;
+}
+
+/* =========================================================
+   WINDOW MOVEMENT
+========================================================= */
+
+.window-highlight {
+    margin-top: 18px;
+    padding: 14px;
+    background: #ecfdf5;
+    border-left: 5px solid #16a34a;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: center;
+}
+
+th {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+td {
+    background: #ffffff;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+/* =========================================================
+   STEPS
+========================================================= */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+/* =========================================================
+   KEY POINT
+========================================================= */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width: 850px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .flow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 600px) {
+
+    .flow {
+        grid-template-columns: 1fr;
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+
+    .communication-line {
+        display: none;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <h1>Stop-and-Wait & Sliding Window Protocols</h1>
+
+    <p>
+        Data Link Layer | Flow Control | Error Control | ARQ
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =========================================================
+     INTRODUCTION
+========================================================= -->
+
+<section class="section">
+
+    <h2>📡 What are Flow Control Protocols?</h2>
+
+    <p>
+        <strong>Flow control</strong> manages the rate at which a sender
+        transmits data so that a receiver is not overwhelmed by
+        incoming frames.
+    </p>
+
+    <p>
+        Two important approaches are:
+    </p>
+
+    <ul>
+        <li><strong>Stop-and-Wait Protocol</strong></li>
+        <li><strong>Sliding Window Protocol</strong></li>
+    </ul>
+
+    <div class="info-box">
+
+        <strong>Basic Difference:</strong>
+
+        <br><br>
+
+        Stop-and-Wait → Send <strong>one frame</strong>, then wait.
+
+        <br><br>
+
+        Sliding Window → Send <strong>multiple frames</strong>
+        before waiting for all acknowledgments.
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP AND WAIT
+========================================================= -->
+
+<section class="section">
+
+    <h2>🛑 1. Stop-and-Wait Protocol</h2>
+
+    <p>
+        In the <strong>Stop-and-Wait</strong> protocol, the sender
+        transmits one frame and waits for an acknowledgment before
+        sending the next frame.
+    </p>
+
+    <div class="stopwait-box">
+
+        <div class="message-box">
+
+            📦
+
+            <h3>Sender</h3>
+
+            Send Frame 0
+
+        </div>
+
+        <div class="arrow-flow">
+
+            →
+
+        </div>
+
+        <div class="message-box">
+
+            📡
+
+            <h3>Receiver</h3>
+
+            Receive Frame 0
+
+        </div>
+
+        <div class="arrow-flow">
+
+            →
+
+        </div>
+
+        <div class="ack-box">
+
+            ✅
+
+            <h3>ACK 0</h3>
+
+            Acknowledgment
+
+        </div>
+
+    </div>
+
+    <div class="info-box">
+
+        Only after receiving <strong>ACK 0</strong> does the sender
+        transmit Frame 1.
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP WAIT PROCESS
+========================================================= -->
+
+<section class="section">
+
+    <h2>🔄 Stop-and-Wait Process</h2>
+
+    <div class="flow">
+
+        <div class="flow-step">
+            <span>📦</span>
+            Create Frame
+        </div>
+
+        <div class="flow-step">
+            <span>📡</span>
+            Send Frame
+        </div>
+
+        <div class="flow-step">
+            <span>⏳</span>
+            Wait for ACK
+        </div>
+
+        <div class="flow-step">
+            <span>✅</span>
+            Receive ACK
+        </div>
+
+        <div class="flow-step">
+            <span>🔄</span>
+            Send Next Frame
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP WAIT SIMULATOR
+========================================================= -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive Stop-and-Wait Simulation</h2>
+
+    <p style="text-align:center;">
+
+        The simulation demonstrates Frame → ACK → Next Frame.
+
+    </p>
+
+    <div class="button-row">
+
+        <button onclick="startStopWait()">
+            ▶ Start Stop-and-Wait
+        </button>
+
+        <button class="secondary" onclick="resetStopWait()">
+            ↺ Reset
+        </button>
+
+    </div>
+
+    <div class="network" id="stopWaitNetwork">
+
+        <div class="communication-line"></div>
+
+        <div class="network-row">
+
+            <div class="device">
+
+                <div class="icon">💻</div>
+
+                <h3>Sender</h3>
+
+                <small>
+                    Transmits one frame
+                </small>
+
+            </div>
+
+            <div class="device">
+
+                <div class="icon">🖥️</div>
+
+                <h3>Receiver</h3>
+
+                <small>
+                    Sends ACK
+                </small>
+
+            </div>
+
+        </div>
+
+        <div id="swFrame"
+             class="frame">
+            Frame 0
+        </div>
+
+    </div>
+
+    <div id="stopWaitStatus"
+         class="result">
+
+        Waiting for simulation...
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP WAIT ERROR
+========================================================= -->
+
+<section class="section">
+
+    <h2>⚠️ Stop-and-Wait with Error</h2>
+
+    <p>
+        If a frame or its acknowledgment is lost, the sender waits
+        until a <strong>timeout</strong> occurs and then retransmits
+        the frame.
+    </p>
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>📦</span>
+
+            Send Frame
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>❌</span>
+
+            Frame / ACK Lost
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>⏰</span>
+
+            Timeout
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retransmit
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>✅</span>
+
+            ACK
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP WAIT ARQ
+========================================================= -->
+
+<section class="section">
+
+    <h2>🔐 Stop-and-Wait ARQ</h2>
+
+    <p>
+        <strong>Stop-and-Wait ARQ</strong> combines stop-and-wait flow
+        control with error recovery using acknowledgments and
+        retransmissions.
+    </p>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">1</span>
+
+                ACK
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    ACK confirms successful reception of a frame.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">2</span>
+
+                Timeout
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    If the expected ACK does not arrive within
+                    the timeout period, the sender retransmits.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">3</span>
+
+                Sequence Number
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    A small sequence-number field can help distinguish
+                    new frames from duplicates after retransmission.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SLIDING WINDOW
+========================================================= -->
+
+<section class="section">
+
+    <h2>🪟 2. Sliding Window Protocol</h2>
+
+    <p>
+        A <strong>Sliding Window Protocol</strong> allows the sender
+        to transmit multiple frames before receiving acknowledgments
+        for every frame.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Example:</strong>
+
+        <br><br>
+
+        Window Size = 4
+
+        <br><br>
+
+        Sender can transmit:
+
+        <strong>Frame 0, Frame 1, Frame 2, Frame 3</strong>
+
+        before needing to stop and wait for all four ACKs.
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SLIDING WINDOW VISUAL
+========================================================= -->
+
+<section class="section">
+
+    <h2>🪟 Sliding Window Visualization</h2>
+
+    <div class="window-area">
+
+        <div class="window-title">
+            Sender Window — Size = 4
+        </div>
+
+        <div class="packet-row">
+
+            <div class="packet window">
+                <span class="packet-number">0</span>
+                <span class="packet-status">Send</span>
+            </div>
+
+            <div class="packet window">
+                <span class="packet-number">1</span>
+                <span class="packet-status">Send</span>
+            </div>
+
+            <div class="packet window">
+                <span class="packet-number">2</span>
+                <span class="packet-status">Send</span>
+            </div>
+
+            <div class="packet window">
+                <span class="packet-number">3</span>
+                <span class="packet-status">Send</span>
+            </div>
+
+            <div class="packet waiting">
+                <span class="packet-number">4</span>
+                <span class="packet-status">Waiting</span>
+            </div>
+
+            <div class="packet waiting">
+                <span class="packet-number">5</span>
+                <span class="packet-status">Waiting</span>
+            </div>
+
+            <div class="packet waiting">
+                <span class="packet-number">6</span>
+                <span class="packet-status">Waiting</span>
+            </div>
+
+            <div class="packet waiting">
+                <span class="packet-number">7</span>
+                <span class="packet-status">Waiting</span>
+            </div>
+
+        </div>
+
+        <div class="window-highlight">
+
+            Current Window:
+            <strong>0 – 3</strong>
+
+            <br>
+
+            After ACK 0:
+            Window moves to
+            <strong>1 – 4</strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SLIDING WINDOW PROCESS
+========================================================= -->
+
+<section class="section">
+
+    <h2>🔄 How Sliding Window Works</h2>
+
+    <div class="step">
+
+        <div class="step-number">
+            1
+        </div>
+
+        <div>
+
+            Sender chooses a window size.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            2
+        </div>
+
+        <div>
+
+            Sender can transmit several frames within
+            the current window.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            3
+        </div>
+
+        <div>
+
+            Receiver sends acknowledgments.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            4
+        </div>
+
+        <div>
+
+            As ACKs arrive, the sender's window moves forward.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            5
+        </div>
+
+        <div>
+
+            New frames can now enter the available window.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SLIDING WINDOW SIMULATOR
+========================================================= -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive Sliding Window Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Watch the sender window move forward as acknowledgments
+        arrive.
+
+    </p>
+
+    <div class="button-row">
+
+        <button onclick="startSlidingWindow()">
+            ▶ Start Sliding Window
+        </button>
+
+        <button class="secondary" onclick="resetSlidingWindow()">
+            ↺ Reset
+        </button>
+
+    </div>
+
+    <div id="slidingStatus"
+         class="result">
+
+        Waiting for sliding-window simulation...
+
+    </div>
+
+    <div class="window-area">
+
+        <div class="window-title">
+            Sender Window
+        </div>
+
+        <div id="slidingPackets"
+             class="packet-row">
+        </div>
+
+        <div id="windowPosition"
+             class="window-highlight">
+
+            Current Window: 0 – 3
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STOP WAIT VS SLIDING WINDOW
+========================================================= -->
+
+<section class="section">
+
+    <h2>⚖️ Stop-and-Wait vs Sliding Window</h2>
+
+    <table>
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                Stop-and-Wait
+            </th>
+
+            <th>
+                Sliding Window
+            </th>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Frames in Transit
+            </td>
+
+            <td>
+                Usually one
+            </td>
+
+            <td>
+                Multiple
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                ACK Handling
+            </td>
+
+            <td>
+                Wait after each frame
+            </td>
+
+            <td>
+                Multiple frames can be outstanding
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Efficiency
+            </td>
+
+            <td>
+                Lower on high-delay links
+            </td>
+
+            <td>
+                Higher when configured appropriately
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Implementation
+            </td>
+
+            <td>
+                Simple
+            </td>
+
+            <td>
+                More complex
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Window Size
+            </td>
+
+            <td>
+                Effectively 1
+            </td>
+
+            <td>
+                Greater than 1
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Throughput
+            </td>
+
+            <td>
+                Limited by RTT
+            </td>
+
+            <td>
+                Better utilization of the link
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =========================================================
+     TYPES OF SLIDING WINDOW
+========================================================= -->
+
+<section class="section">
+
+    <h2>📚 Important Sliding Window Protocols</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">1</span>
+
+                Go-Back-N
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    If a frame is lost or damaged, the sender
+                    retransmits that frame and subsequent
+                    unacknowledged frames.
+                </p>
+
+                <div class="info-box">
+
+                    Error at Frame 2
+
+                    →
+
+                    Resend 2, 3, 4...
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">2</span>
+
+                Selective Repeat
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Only the missing or damaged frame is
+                    retransmitted.
+                </p>
+
+                <div class="info-box">
+
+                    Error at Frame 2
+
+                    →
+
+                    Resend only 2
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">3</span>
+
+                Flow Control
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    The receiver's available capacity can influence
+                    how much data the sender is allowed to have
+                    outstanding.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     WHY SLIDING WINDOW
+========================================================= -->
+
+<section class="section">
+
+    <h2>🚀 Why Use Sliding Window?</h2>
+
+    <div class="info-box">
+
+        Stop-and-Wait:
+
+        <br>
+
+        Send → Wait → ACK → Send → Wait → ACK
+
+        <br><br>
+
+        Sliding Window:
+
+        <br>
+
+        Send → Send → Send → Send → ACKs arrive
+
+    </div>
+
+    <p>
+        Sliding-window protocols can keep the communication link
+        busy instead of leaving it idle while waiting for each
+        acknowledgment.
+    </p>
+
+</section>
+
+
+<!-- =========================================================
+     CLASSROOM EXAMPLE
+========================================================= -->
+
+<section class="section">
+
+    <h2>🧠 Simple Classroom Example</h2>
+
+    <div class="step">
+
+        <div class="step-number">
+            A
+        </div>
+
+        <div>
+
+            <strong>Stop-and-Wait:</strong>
+
+            Send Frame 1 → Wait for ACK 1 →
+            Send Frame 2 → Wait for ACK 2.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            B
+        </div>
+
+        <div>
+
+            <strong>Sliding Window:</strong>
+
+            Send Frame 1, 2, 3 and 4 →
+            receive ACKs while transmission continues.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     KEY POINT
+========================================================= -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+    <ul>
+
+        <li>
+
+            <strong>Stop-and-Wait:</strong>
+
+            One frame → Wait → ACK → Next frame.
+
+        </li>
+
+        <li>
+
+            <strong>Sliding Window:</strong>
+
+            Multiple frames → ACKs → Window moves.
+
+        </li>
+
+        <li>
+
+            <strong>Window Size:</strong>
+
+            Determines how many frames can be outstanding.
+
+        </li>
+
+        <li>
+
+            <strong>Go-Back-N:</strong>
+
+            Retransmit the lost frame and subsequent
+            unacknowledged frames.
+
+        </li>
+
+        <li>
+
+            <strong>Selective Repeat:</strong>
+
+            Retransmit only the lost/damaged frame.
+
+        </li>
+
+    </ul>
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        Stop-and-Wait =
+        <strong>One at a Time</strong>
+
+        <br>
+
+        Sliding Window =
+        <strong>Many at a Time</strong>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Data Link Layer |
+    Stop-and-Wait | Sliding Window
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   CARD INTERACTION
+========================================================= */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* =========================================================
+   STOP-AND-WAIT SIMULATION
+========================================================= */
+
+function startStopWait() {
+
+    const frame =
+        document.getElementById("swFrame");
+
+    const status =
+        document.getElementById("stopWaitStatus");
+
+    frame.style.display = "block";
+    frame.style.left = "22%";
+    frame.style.top = "45%";
+
+    frame.innerHTML = "Frame 0";
+
+    status.innerHTML =
+        "📦 Sender is transmitting Frame 0...";
+
+    setTimeout(function() {
+
+        frame.style.left = "68%";
+
+        status.innerHTML =
+            "📡 Frame 0 is traveling to the receiver.";
+
+    }, 1000);
+
+
+    setTimeout(function() {
+
+        frame.style.display = "none";
+
+        status.innerHTML =
+            "✅ Receiver received Frame 0 and sends ACK 0.";
+
+    }, 2200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📨 ACK 0 reached the sender.";
+
+    }, 3400);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "📦 Sender can now transmit Frame 1.";
+
+    }, 4600);
+
+}
+
+
+/* =========================================================
+   RESET STOP-AND-WAIT
+========================================================= */
+
+function resetStopWait() {
+
+    const frame =
+        document.getElementById("swFrame");
+
+    frame.style.display = "none";
+
+    document.getElementById("stopWaitStatus")
+        .innerHTML =
+        "Waiting for simulation...";
+
+}
+
+
+/* =========================================================
+   CREATE SLIDING WINDOW PACKETS
+========================================================= */
+
+function createSlidingPackets() {
+
+    const container =
+        document.getElementById("slidingPackets");
+
+    container.innerHTML = "";
+
+    for (let i = 0; i < 10; i++) {
+
+        const packet =
+            document.createElement("div");
+
+        packet.className = "packet waiting";
+
+        packet.id = "slide-" + i;
+
+        packet.innerHTML = `
+            <span class="packet-number">${i}</span>
+            <span class="packet-status">Waiting</span>
+        `;
+
+        container.appendChild(packet);
+    }
+
+}
+
+
+/* =========================================================
+   SLIDING WINDOW SIMULATION
+========================================================= */
+
+function startSlidingWindow() {
+
+    resetSlidingWindow();
+
+    const status =
+        document.getElementById("slidingStatus");
+
+    const windowPosition =
+        document.getElementById("windowPosition");
+
+
+    status.innerHTML =
+        "🪟 Window size = 4. Sender can transmit Frames 0–3.";
+
+    highlightWindow(0);
+
+
+    setTimeout(function() {
+
+        markPacket(0, "sent", "Sent");
+        markPacket(1, "sent", "Sent");
+        markPacket(2, "sent", "Sent");
+        markPacket(3, "sent", "Sent");
+
+        status.innerHTML =
+            "📦 Frames 0, 1, 2 and 3 are transmitted.";
+
+    }, 1000);
+
+
+    setTimeout(function() {
+
+        markPacket(0, "ack", "ACK");
+        highlightWindow(1);
+
+        windowPosition.innerHTML =
+            "ACK 0 received → Current Window: 1 – 4";
+
+        status.innerHTML =
+            "✅ ACK 0 received. The window slides forward.";
+
+    }, 2500);
+
+
+    setTimeout(function() {
+
+        markPacket(1, "ack", "ACK");
+        highlightWindow(2);
+
+        windowPosition.innerHTML =
+            "ACK 1 received → Current Window: 2 – 5";
+
+        status.innerHTML =
+            "✅ ACK 1 received. Frame 4 can now enter the window.";
+
+        markPacket(4, "sent", "New");
+
+    }, 4000);
+
+
+    setTimeout(function() {
+
+        markPacket(2, "ack", "ACK");
+        highlightWindow(3);
+
+        windowPosition.innerHTML =
+            "ACK 2 received → Current Window: 3 – 6";
+
+        status.innerHTML =
+            "✅ ACK 2 received. Frame 5 can now enter the window.";
+
+        markPacket(5, "sent", "New");
+
+    }, 5500);
+
+
+    setTimeout(function() {
+
+        markPacket(3, "ack", "ACK");
+        highlightWindow(4);
+
+        windowPosition.innerHTML =
+            "ACK 3 received → Current Window: 4 – 7";
+
+        status.innerHTML =
+            "🎯 Window has moved from 0–3 to 4–7.";
+
+        markPacket(6, "sent", "New");
+        markPacket(7, "sent", "New");
+
+    }, 7000);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "🚀 Sliding Window allows multiple frames to remain in transit.";
+
+    }, 8500);
+
+}
+
+
+/* =========================================================
+   MARK PACKET
+========================================================= */
+
+function markPacket(number, className, text) {
+
+    const packet =
+        document.getElementById("slide-" + number);
+
+    if (!packet) return;
+
+    packet.className =
+        "packet " + className;
+
+    packet.querySelector(".packet-status")
+        .textContent = text;
+
+}
+
+
+/* =========================================================
+   HIGHLIGHT WINDOW
+========================================================= */
+
+function highlightWindow(start) {
+
+    for (let i = 0; i < 10; i++) {
+
+        const packet =
+            document.getElementById("slide-" + i);
+
+        if (!packet) continue;
+
+        if (i >= start && i < start + 4) {
+
+            if (
+                !packet.classList.contains("ack") &&
+                !packet.classList.contains("sent")
+            ) {
+                packet.classList.add("window");
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET SLIDING WINDOW
+========================================================= */
+
+function resetSlidingWindow() {
+
+    createSlidingPackets();
+
+    document.getElementById("slidingStatus")
+        .innerHTML =
+        "Waiting for sliding-window simulation...";
+
+    document.getElementById("windowPosition")
+        .innerHTML =
+        "Current Window: 0 – 3";
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+createSlidingPackets();
+
+</script>
+
+</body>
+</html>

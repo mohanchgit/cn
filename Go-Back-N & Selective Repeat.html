@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Go-Back-N and Selective Repeat Protocols</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header {
+    background: #1d4ed8;
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 29px;
+}
+
+.section h3 {
+    color: #1e40af;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   INFO BOX
+===================================================== */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+
+/* =====================================================
+   PROCESS FLOW
+===================================================== */
+
+.flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.flow-step {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.flow-step span {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+
+/* =====================================================
+   WINDOW
+===================================================== */
+
+.window-area {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.window-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1d4ed8;
+    margin-bottom: 15px;
+}
+
+.packets {
+    display: flex;
+    gap: 10px;
+    min-width: 850px;
+}
+
+.packet-box {
+    width: 90px;
+    height: 90px;
+    border: 3px solid #2563eb;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 15px;
+    font-weight: bold;
+    position: relative;
+}
+
+.packet-box .packet-number {
+    font-size: 25px;
+    color: #1d4ed8;
+}
+
+.packet-box.sent {
+    background: #dbeafe;
+}
+
+.packet-box.ack {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.packet-box.lost {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+.packet-box.retransmit {
+    background: #fef3c7;
+    border-color: #d97706;
+}
+
+.packet-box.pending {
+    background: #f1f5f9;
+    border-color: #64748b;
+}
+
+.packet-box .status {
+    font-size: 13px;
+    display: block;
+    margin-top: 5px;
+}
+
+
+/* =====================================================
+   ARROW
+===================================================== */
+
+.arrow-flow {
+    text-align: center;
+    font-size: 35px;
+    color: #2563eb;
+    padding: 10px;
+}
+
+
+/* =====================================================
+   SIMULATOR
+===================================================== */
+
+.simulator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.simulator h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.button-row {
+    text-align: center;
+    margin: 20px 0;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button.secondary {
+    background: #475569;
+}
+
+button.secondary:hover {
+    background: #334155;
+}
+
+.result {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 65px;
+    text-align: center;
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   TIMELINE
+===================================================== */
+
+.timeline {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.timeline-row {
+    display: flex;
+    align-items: center;
+    min-width: 850px;
+    margin: 15px 0;
+}
+
+.timeline-label {
+    width: 130px;
+    font-weight: bold;
+    color: #1d4ed8;
+}
+
+.timeline-line {
+    display: flex;
+    gap: 8px;
+}
+
+.timeline-item {
+    min-width: 75px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 7px;
+    border: 2px solid #94a3b8;
+    background: white;
+    font-size: 14px;
+}
+
+.timeline-item.success {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.timeline-item.error {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+.timeline-item.retransmit {
+    background: #fef3c7;
+    border-color: #d97706;
+}
+
+
+/* =====================================================
+   COMPARISON TABLE
+===================================================== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: center;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+
+/* =====================================================
+   STEP
+===================================================== */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   KEY POINT
+===================================================== */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width: 850px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .flow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 600px) {
+
+    .flow {
+        grid-template-columns: 1fr;
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>Go-Back-N & Selective Repeat</h1>
+
+    <p>
+        Data Link Layer | ARQ | Sliding Window Protocols
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     INTRODUCTION
+===================================================== -->
+
+<section class="section">
+
+    <h2>📡 What is ARQ?</h2>
+
+    <p>
+        <strong>ARQ (Automatic Repeat reQuest)</strong> is a reliability
+        technique used in data communication to detect lost or damaged
+        frames and request their retransmission.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Basic Idea:</strong>
+
+        <br><br>
+
+        Send Frame → Receive ACK → If Error/Loss → Retransmit
+
+    </div>
+
+    <p>
+        Two important sliding-window ARQ protocols are:
+    </p>
+
+    <ul>
+        <li><strong>Go-Back-N ARQ</strong></li>
+        <li><strong>Selective Repeat ARQ</strong></li>
+    </ul>
+
+</section>
+
+
+<!-- =====================================================
+     SLIDING WINDOW
+===================================================== -->
+
+<section class="section">
+
+    <h2>🪟 Sliding Window Concept</h2>
+
+    <p>
+        A sliding-window protocol allows a sender to transmit multiple
+        frames before waiting for individual acknowledgments.
+    </p>
+
+    <div class="window-area">
+
+        <div class="window-label">
+            Example: Window Size = 4
+        </div>
+
+        <div class="packets">
+
+            <div class="packet-box sent">
+                <span class="packet-number">0</span>
+                <span class="status">Sent</span>
+            </div>
+
+            <div class="packet-box sent">
+                <span class="packet-number">1</span>
+                <span class="status">Sent</span>
+            </div>
+
+            <div class="packet-box sent">
+                <span class="packet-number">2</span>
+                <span class="status">Sent</span>
+            </div>
+
+            <div class="packet-box sent">
+                <span class="packet-number">3</span>
+                <span class="status">Sent</span>
+            </div>
+
+            <div class="packet-box pending">
+                <span class="packet-number">4</span>
+                <span class="status">Waiting</span>
+            </div>
+
+            <div class="packet-box pending">
+                <span class="packet-number">5</span>
+                <span class="status">Waiting</span>
+            </div>
+
+            <div class="packet-box pending">
+                <span class="packet-number">6</span>
+                <span class="status">Waiting</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="info-box">
+
+        <strong>Window:</strong>
+        A group of sequence numbers that the sender is currently
+        allowed to transmit.
+
+        <br><br>
+
+        As acknowledgments arrive, the window moves forward —
+        therefore it is called a <strong>sliding window</strong>.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GO BACK N
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔵 1. Go-Back-N ARQ</h2>
+
+    <p>
+        In <strong>Go-Back-N</strong>, the sender can transmit multiple
+        frames without waiting for an acknowledgment for every frame.
+    </p>
+
+    <p>
+        If one frame is lost or damaged, the sender retransmits that
+        frame <strong>and all subsequent unacknowledged frames</strong>.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Easy Idea:</strong>
+
+        <br><br>
+
+        Frame 0 → Frame 1 → ❌ Frame 2 → Frame 3
+
+        <br><br>
+
+        Error at Frame 2
+
+        <br><br>
+
+        Retransmit:
+
+        <strong>Frame 2 + Frame 3</strong>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GBN PROCESS
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔄 Go-Back-N Working</h2>
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>📦</span>
+
+            Send Frames
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>📨</span>
+
+            ACKs
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>❌</span>
+
+            Frame Lost
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>⏪</span>
+
+            Go Back
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retransmit
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GBN TIMELINE
+===================================================== -->
+
+<section class="section">
+
+    <h2>📊 Go-Back-N Example</h2>
+
+    <div class="timeline">
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Sender
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item success">
+                    Frame 0
+                </div>
+
+                <div class="timeline-item success">
+                    Frame 1
+                </div>
+
+                <div class="timeline-item error">
+                    Frame 2 ❌
+                </div>
+
+                <div class="timeline-item success">
+                    Frame 3
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Receiver
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item success">
+                    ACK 0
+                </div>
+
+                <div class="timeline-item success">
+                    ACK 1
+                </div>
+
+                <div class="timeline-item error">
+                    Missing 2
+                </div>
+
+                <div class="timeline-item error">
+                    Discard 3
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Retransmit
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item retransmit">
+                    Frame 2
+                </div>
+
+                <div class="timeline-item retransmit">
+                    Frame 3
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GBN SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive Go-Back-N Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Frame 2 will be intentionally lost to demonstrate
+        the Go-Back-N retransmission process.
+
+    </p>
+
+    <div class="button-row">
+
+        <button onclick="startGBN()">
+            ▶ Start Go-Back-N
+        </button>
+
+        <button class="secondary" onclick="resetGBN()">
+            ↺ Reset
+        </button>
+
+    </div>
+
+    <div id="gbnStatus" class="result">
+
+        Waiting for Go-Back-N simulation...
+
+    </div>
+
+
+    <div class="window-area">
+
+        <div class="window-label">
+            Sender Window
+        </div>
+
+        <div id="gbnPackets" class="packets">
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SELECTIVE REPEAT
+===================================================== -->
+
+<section class="section">
+
+    <h2>🟢 2. Selective Repeat ARQ</h2>
+
+    <p>
+        In <strong>Selective Repeat</strong>, only the specific frame
+        that is lost or damaged is retransmitted.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Easy Idea:</strong>
+
+        <br><br>
+
+        Frame 0 → Frame 1 → ❌ Frame 2 → Frame 3
+
+        <br><br>
+
+        Error at Frame 2
+
+        <br><br>
+
+        Retransmit only:
+
+        <strong>Frame 2</strong>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SR PROCESS
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔄 Selective Repeat Working</h2>
+
+    <div class="flow">
+
+        <div class="flow-step">
+
+            <span>📦</span>
+
+            Send Frames
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>📨</span>
+
+            Individual ACKs
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>❌</span>
+
+            Frame Lost
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>💾</span>
+
+            Buffer Out-of-Order
+
+        </div>
+
+        <div class="flow-step">
+
+            <span>🔄</span>
+
+            Retransmit Lost Frame
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SR TIMELINE
+===================================================== -->
+
+<section class="section">
+
+    <h2>📊 Selective Repeat Example</h2>
+
+    <div class="timeline">
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Sender
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item success">
+                    Frame 0
+                </div>
+
+                <div class="timeline-item success">
+                    Frame 1
+                </div>
+
+                <div class="timeline-item error">
+                    Frame 2 ❌
+                </div>
+
+                <div class="timeline-item success">
+                    Frame 3
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Receiver
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item success">
+                    ACK 0
+                </div>
+
+                <div class="timeline-item success">
+                    ACK 1
+                </div>
+
+                <div class="timeline-item error">
+                    Missing 2
+                </div>
+
+                <div class="timeline-item success">
+                    Buffer 3
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline-row">
+
+            <div class="timeline-label">
+                Retransmit
+            </div>
+
+            <div class="timeline-line">
+
+                <div class="timeline-item retransmit">
+                    Frame 2
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SR SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive Selective Repeat Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Frame 2 will be lost. Notice that only Frame 2
+        is retransmitted.
+
+    </p>
+
+    <div class="button-row">
+
+        <button onclick="startSR()">
+            ▶ Start Selective Repeat
+        </button>
+
+        <button class="secondary" onclick="resetSR()">
+            ↺ Reset
+        </button>
+
+    </div>
+
+    <div id="srStatus" class="result">
+
+        Waiting for Selective Repeat simulation...
+
+    </div>
+
+
+    <div class="window-area">
+
+        <div class="window-label">
+            Receiver Buffer
+        </div>
+
+        <div id="srPackets" class="packets">
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GBN VS SR
+===================================================== -->
+
+<section class="section">
+
+    <h2>⚖️ Go-Back-N vs Selective Repeat</h2>
+
+    <table>
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                Go-Back-N
+            </th>
+
+            <th>
+                Selective Repeat
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Window
+            </td>
+
+            <td>
+                Sliding window
+            </td>
+
+            <td>
+                Sliding window
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Error Handling
+            </td>
+
+            <td>
+                Retransmits lost frame and subsequent
+                unacknowledged frames
+            </td>
+
+            <td>
+                Retransmits only lost/damaged frames
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Receiver Buffer
+            </td>
+
+            <td>
+                Limited / generally does not accept
+                out-of-order frames
+            </td>
+
+            <td>
+                Buffers correctly received out-of-order frames
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Efficiency
+            </td>
+
+            <td>
+                Lower when errors are frequent
+            </td>
+
+            <td>
+                Higher when errors are frequent
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Complexity
+            </td>
+
+            <td>
+                Simpler
+            </td>
+
+            <td>
+                More complex
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Retransmission
+            </td>
+
+            <td>
+                Multiple frames
+            </td>
+
+            <td>
+                Individual frame
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Receiver Storage
+            </td>
+
+            <td>
+                Lower
+            </td>
+
+            <td>
+                Higher
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     CONCEPT CARDS
+===================================================== -->
+
+<section class="section">
+
+    <h2>📚 Important Concepts</h2>
+
+    <div class="cards">
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">1</span>
+
+                ACK
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    ACK means acknowledgment. It tells the sender
+                    that a frame has been received successfully.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">2</span>
+
+                NAK
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    NAK means negative acknowledgment. It can be
+                    used to indicate that a frame was not received
+                    correctly.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">3</span>
+
+                Timeout
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    If an expected acknowledgment does not arrive
+                    within a specified time, the sender can assume
+                    that retransmission may be necessary.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">4</span>
+
+                Sequence Number
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Sequence numbers identify frames and help the
+                    receiver detect missing, duplicate, or
+                    out-of-order frames.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+
+                <span class="number">5</span>
+
+                Sliding Window
+
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    The sender's transmission window moves forward
+                    as acknowledgments are successfully received.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     EXAMPLE
+===================================================== -->
+
+<section class="section">
+
+    <h2>🧠 Simple Classroom Example</h2>
+
+    <div class="info-box">
+
+        Suppose the sender transmits:
+
+        <strong>0, 1, 2, 3</strong>
+
+        <br><br>
+
+        Frame <strong>2</strong> is lost.
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            GBN
+        </div>
+
+        <div>
+
+            Retransmits:
+
+            <strong>2 and 3</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            SR
+        </div>
+
+        <div>
+
+            Retransmits only:
+
+            <strong>2</strong>
+
+            <br>
+
+            Frame 3 can be buffered at the receiver.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     KEY POINT
+===================================================== -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+    <ul>
+
+        <li>
+
+            <strong>Go-Back-N:</strong>
+
+            "Error at Frame 2?
+            Go back and resend Frame 2 onward."
+
+        </li>
+
+
+        <li>
+
+            <strong>Selective Repeat:</strong>
+
+            "Error at Frame 2?
+            Select and resend only Frame 2."
+
+        </li>
+
+
+        <li>
+
+            <strong>GBN:</strong>
+
+            Simpler but may retransmit unnecessary frames.
+
+        </li>
+
+
+        <li>
+
+            <strong>SR:</strong>
+
+            More efficient but requires more receiver buffering
+            and greater protocol complexity.
+
+        </li>
+
+    </ul>
+
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        GBN = <strong>Go Back + Resend Many</strong>
+
+        <br>
+
+        SR = <strong>Select + Resend One</strong>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Data Link Layer |
+    ARQ | Go-Back-N | Selective Repeat
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   CARD INTERACTION
+===================================================== */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* =====================================================
+   CREATE GBN PACKETS
+===================================================== */
+
+function createGBNPackets() {
+
+    const container =
+        document.getElementById("gbnPackets");
+
+    container.innerHTML = "";
+
+    for (let i = 0; i < 8; i++) {
+
+        const box =
+            document.createElement("div");
+
+        box.className =
+            "packet-box pending";
+
+        box.id =
+            "gbn-" + i;
+
+        box.innerHTML = `
+            <span class="packet-number">${i}</span>
+            <span class="status">Waiting</span>
+        `;
+
+        container.appendChild(box);
+    }
+}
+
+
+/* =====================================================
+   CREATE SR PACKETS
+===================================================== */
+
+function createSRPackets() {
+
+    const container =
+        document.getElementById("srPackets");
+
+    container.innerHTML = "";
+
+    for (let i = 0; i < 8; i++) {
+
+        const box =
+            document.createElement("div");
+
+        box.className =
+            "packet-box pending";
+
+        box.id =
+            "sr-" + i;
+
+        box.innerHTML = `
+            <span class="packet-number">${i}</span>
+            <span class="status">Waiting</span>
+        `;
+
+        container.appendChild(box);
+    }
+}
+
+
+/* =====================================================
+   GBN SIMULATION
+===================================================== */
+
+function startGBN() {
+
+    resetGBN();
+
+    const status =
+        document.getElementById("gbnStatus");
+
+    status.innerHTML =
+        "📦 Sender is transmitting Frames 0, 1, 2 and 3.";
+
+    activatePacket("gbn-0", "sent", "Sent");
+    activatePacket("gbn-1", "sent", "Sent");
+
+    setTimeout(function() {
+
+        activatePacket(
+            "gbn-2",
+            "lost",
+            "LOST ❌"
+        );
+
+        status.innerHTML =
+            "❌ Frame 2 is lost during transmission.";
+
+    }, 1200);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "gbn-3",
+            "sent",
+            "Sent"
+        );
+
+        status.innerHTML =
+            "📦 Frame 3 arrives, but receiver is waiting for Frame 2.";
+
+    }, 2200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "⏰ Timeout for Frame 2. Go-Back-N begins retransmission.";
+
+    }, 3400);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "gbn-2",
+            "retransmit",
+            "Retransmit"
+        );
+
+        activatePacket(
+            "gbn-3",
+            "retransmit",
+            "Retransmit"
+        );
+
+        status.innerHTML =
+            "🔄 Go-Back-N retransmits Frame 2 AND Frame 3.";
+
+    }, 4500);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "gbn-2",
+            "ack",
+            "ACK"
+        );
+
+        activatePacket(
+            "gbn-3",
+            "ack",
+            "ACK"
+        );
+
+        status.innerHTML =
+            "✅ Frames 2 and 3 successfully acknowledged.";
+
+    }, 6000);
+
+}
+
+
+/* =====================================================
+   SR SIMULATION
+===================================================== */
+
+function startSR() {
+
+    resetSR();
+
+    const status =
+        document.getElementById("srStatus");
+
+
+    activatePacket(
+        "sr-0",
+        "sent",
+        "Received"
+    );
+
+    activatePacket(
+        "sr-1",
+        "sent",
+        "Received"
+    );
+
+
+    status.innerHTML =
+        "📦 Sender transmits Frames 0, 1, 2 and 3.";
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "sr-2",
+            "lost",
+            "LOST ❌"
+        );
+
+        status.innerHTML =
+            "❌ Frame 2 is lost.";
+
+    }, 1200);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "sr-3",
+            "ack",
+            "Buffered"
+        );
+
+        status.innerHTML =
+            "💾 Frame 3 arrives and is buffered because Frame 2 is missing.";
+
+    }, 2200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "⏰ Timeout / retransmission request for Frame 2.";
+
+    }, 3400);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "sr-2",
+            "retransmit",
+            "Retransmit"
+        );
+
+        status.innerHTML =
+            "🔄 Selective Repeat retransmits ONLY Frame 2.";
+
+    }, 4500);
+
+
+    setTimeout(function() {
+
+        activatePacket(
+            "sr-2",
+            "ack",
+            "Received"
+        );
+
+        activatePacket(
+            "sr-3",
+            "ack",
+            "Delivered"
+        );
+
+        status.innerHTML =
+            "✅ Frame 2 received. Buffered Frame 3 can now be delivered in order.";
+
+    }, 6000);
+
+}
+
+
+/* =====================================================
+   PACKET ACTIVATION
+===================================================== */
+
+function activatePacket(id, className, text) {
+
+    const packet =
+        document.getElementById(id);
+
+    if (!packet) return;
+
+    packet.className =
+        "packet-box " + className;
+
+    packet.querySelector(".status")
+        .textContent = text;
+}
+
+
+/* =====================================================
+   RESET GBN
+===================================================== */
+
+function resetGBN() {
+
+    createGBNPackets();
+
+    document.getElementById("gbnStatus")
+        .innerHTML =
+        "Waiting for Go-Back-N simulation...";
+
+}
+
+
+/* =====================================================
+   RESET SR
+===================================================== */
+
+function resetSR() {
+
+    createSRPackets();
+
+    document.getElementById("srStatus")
+        .innerHTML =
+        "Waiting for Selective Repeat simulation...";
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+createGBNPackets();
+createSRPackets();
+
+</script>
+
+</body>
+</html>

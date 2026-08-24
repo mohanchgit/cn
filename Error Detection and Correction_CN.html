@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Error Detection and Correction - Computer Networks</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* ================= HEADER ================= */
+
+header {
+    background: #1d4ed8;
+    color: white;
+    text-align: center;
+    padding: 32px 20px;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+/* ================= CONTAINER ================= */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+/* ================= SECTION ================= */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 29px;
+}
+
+.section h3 {
+    color: #1e40af;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+/* ================= INFO BOX ================= */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* ================= CARDS ================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+/* ================= FLOW ================= */
+
+.flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.flow-step {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.flow-step span {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+/* ================= SIMULATOR ================= */
+
+.simulator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.simulator h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.input-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+input,
+select {
+    padding: 12px;
+    font-size: 18px;
+    border: 2px solid #94a3b8;
+    border-radius: 8px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button.secondary {
+    background: #475569;
+}
+
+.result {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 60px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* ================= BIT DISPLAY ================= */
+
+.bits {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 20px 0;
+}
+
+.bit {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+    border-radius: 7px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.bit.error {
+    background: #fee2e2;
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+.bit.check {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.bit.position {
+    background: #fef3c7;
+    border-color: #d97706;
+}
+
+/* ================= PARITY TABLE ================= */
+
+.parity-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    justify-content: center;
+    gap: 5px;
+    margin: 25px auto;
+}
+
+.grid-cell {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border: 2px solid #64748b;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.grid-cell.parity {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.grid-cell.error {
+    background: #fee2e2;
+    border-color: #dc2626;
+}
+
+/* ================= CRC ================= */
+
+.crc-box {
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.crc-value {
+    font-size: 27px;
+    font-weight: bold;
+    color: #1d4ed8;
+    letter-spacing: 4px;
+}
+
+/* ================= HAMMING ================= */
+
+.hamming-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.hamming-table th,
+.hamming-table td {
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.hamming-table th {
+    background: #1d4ed8;
+    color: white;
+}
+
+.hamming-table td {
+    background: white;
+}
+
+/* ================= COMPARISON TABLE ================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: center;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+/* ================= STEP ================= */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+/* ================= KEYPOINT ================= */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width: 850px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .flow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 600px) {
+
+    .flow {
+        grid-template-columns: 1fr;
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+
+    .parity-grid {
+        grid-template-columns: repeat(5, 45px);
+    }
+
+    .grid-cell {
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>Error Detection and Correction</h1>
+
+    <p>
+        Data Link Layer | Error Control | Reliable Data Communication
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+     INTRODUCTION
+===================================================== -->
+
+<section class="section">
+
+    <h2>📡 What is an Error?</h2>
+
+    <p>
+        During data transmission, bits may change because of
+        <strong>noise, interference, attenuation, or other transmission
+        problems</strong>.
+    </p>
+
+    <p>
+        For example:
+    </p>
+
+    <div class="info-box">
+
+        Sender transmits:
+
+        <strong>10110010</strong>
+
+        <br><br>
+
+        Receiver gets:
+
+        <strong>10100010</strong>
+
+        <br><br>
+
+        One bit has changed.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     DETECTION VS CORRECTION
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔍 Error Detection vs Error Correction</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                Error Detection
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Determines whether an error has occurred
+                    during data transmission.
+                </p>
+
+                <div class="info-box">
+
+                    Example:
+
+                    Parity, Checksum and CRC
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Error Correction
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Determines the presence and location of
+                    certain errors and allows the receiver to
+                    recover the original data.
+                </p>
+
+                <div class="info-box">
+
+                    Example:
+
+                    Hamming Code
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     BASIC PROCESS
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔄 Error Control Process</h2>
+
+    <div class="flow">
+
+        <div class="flow-step">
+            <span>💻</span>
+            Sender
+        </div>
+
+        <div class="flow-step">
+            <span>➕</span>
+            Add Check Bits
+        </div>
+
+        <div class="flow-step">
+            <span>📡</span>
+            Transmit
+        </div>
+
+        <div class="flow-step">
+            <span>🔍</span>
+            Check
+        </div>
+
+        <div class="flow-step">
+            <span>✅</span>
+            Accept / Correct
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PARITY
+===================================================== -->
+
+<section class="section">
+
+    <h2>1️⃣ Parity Check</h2>
+
+    <p>
+        A <strong>parity bit</strong> is an additional bit added to
+        binary data to make the number of 1s either even or odd.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Even Parity:</strong>
+
+        Total number of 1s must be even.
+
+        <br><br>
+
+        <strong>Odd Parity:</strong>
+
+        Total number of 1s must be odd.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PARITY EXAMPLE
+===================================================== -->
+
+<section class="section">
+
+    <h2>🧮 Even Parity Example</h2>
+
+    <p>
+        Suppose the data is:
+    </p>
+
+    <div class="bits">
+
+        <div class="bit">1</div>
+        <div class="bit">0</div>
+        <div class="bit">1</div>
+        <div class="bit">1</div>
+        <div class="bit">0</div>
+        <div class="bit">0</div>
+        <div class="bit">1</div>
+
+    </div>
+
+    <div class="info-box">
+
+        Number of 1s = <strong>4</strong>
+
+        <br><br>
+
+        Since 4 is already even,
+
+        <strong>Parity Bit = 0</strong>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PARITY SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive Parity Checker</h2>
+
+    <div class="input-row">
+
+        <input
+            type="text"
+            id="parityInput"
+            value="1011001"
+            maxlength="16"
+            placeholder="Enter binary data">
+
+        <select id="parityType">
+
+            <option value="even">
+                Even Parity
+            </option>
+
+            <option value="odd">
+                Odd Parity
+            </option>
+
+        </select>
+
+        <button onclick="calculateParity()">
+            Calculate
+        </button>
+
+    </div>
+
+    <div id="parityResult"
+         class="result">
+
+        Enter binary data and click Calculate.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TWO DIMENSIONAL PARITY
+===================================================== -->
+
+<section class="section">
+
+    <h2>2️⃣ Two-Dimensional Parity</h2>
+
+    <p>
+        Two-dimensional parity applies parity checks to both
+        <strong>rows and columns</strong>.
+    </p>
+
+    <p>
+        This provides stronger error detection than a single
+        parity bit and can help identify the location of certain
+        single-bit errors.
+    </p>
+
+    <div class="parity-grid">
+
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell parity">1</div>
+
+        <div class="grid-cell">0</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell parity">1</div>
+
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell parity">1</div>
+
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell">1</div>
+        <div class="grid-cell">0</div>
+        <div class="grid-cell parity">0</div>
+
+        <div class="grid-cell parity">1</div>
+        <div class="grid-cell parity">0</div>
+        <div class="grid-cell parity">0</div>
+        <div class="grid-cell parity">0</div>
+        <div class="grid-cell parity">1</div>
+
+    </div>
+
+    <div class="info-box">
+
+        <strong>Rows + Columns = Better Error Detection</strong>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CHECKSUM
+===================================================== -->
+
+<section class="section">
+
+    <h2>3️⃣ Checksum</h2>
+
+    <p>
+        A <strong>checksum</strong> is calculated from blocks of data.
+        The resulting value is transmitted along with the data.
+    </p>
+
+    <p>
+        The receiver performs a similar calculation and compares
+        the result to determine whether the data has been corrupted.
+    </p>
+
+    <div class="flow">
+
+        <div class="flow-step">
+            <span>📦</span>
+            Data Blocks
+        </div>
+
+        <div class="flow-step">
+            <span>➕</span>
+            Add
+        </div>
+
+        <div class="flow-step">
+            <span>🔢</span>
+            Complement
+        </div>
+
+        <div class="flow-step">
+            <span>📡</span>
+            Send
+        </div>
+
+        <div class="flow-step">
+            <span>🔍</span>
+            Verify
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CHECKSUM SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Simple Checksum Demonstration</h2>
+
+    <p style="text-align:center;">
+
+        Enter two 8-bit binary values.
+
+    </p>
+
+    <div class="input-row">
+
+        <input
+            id="checksumA"
+            value="10101010"
+            maxlength="8">
+
+        <input
+            id="checksumB"
+            value="01010101"
+            maxlength="8">
+
+        <button onclick="calculateChecksum()">
+            Calculate Checksum
+        </button>
+
+    </div>
+
+    <div id="checksumResult"
+         class="result">
+
+        Waiting for calculation...
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CRC
+===================================================== -->
+
+<section class="section">
+
+    <h2>4️⃣ CRC – Cyclic Redundancy Check</h2>
+
+    <p>
+        <strong>CRC</strong> is a powerful error-detection technique
+        widely used in computer networks and digital communication.
+    </p>
+
+    <p>
+        CRC treats the data as a binary polynomial and performs
+        division using a generator polynomial.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Basic Idea:</strong>
+
+        <br><br>
+
+        Data + Generator Polynomial
+
+        <br>
+
+        ↓
+
+        <br>
+
+        Binary Division
+
+        <br>
+
+        ↓
+
+        <br>
+
+        Remainder = CRC
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CRC VISUAL
+===================================================== -->
+
+<section class="section">
+
+    <h2>🔢 CRC Example Structure</h2>
+
+    <div class="crc-box">
+
+        <p>
+            Original Data
+        </p>
+
+        <div class="crc-value">
+            1101011011
+        </div>
+
+        <p>
+            Generator
+        </p>
+
+        <div class="crc-value">
+            10011
+        </div>
+
+        <p>
+            Transmitted Frame
+        </p>
+
+        <div class="crc-value">
+            DATA + CRC
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CRC SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 CRC Remainder Demonstration</h2>
+
+    <div class="input-row">
+
+        <input
+            type="text"
+            id="crcData"
+            value="1101011011"
+            maxlength="32"
+            placeholder="Data">
+
+        <input
+            type="text"
+            id="crcGenerator"
+            value="10011"
+            maxlength="16"
+            placeholder="Generator">
+
+        <button onclick="calculateCRC()">
+            Calculate CRC
+        </button>
+
+    </div>
+
+    <div id="crcResult"
+         class="result">
+
+        Enter binary values and calculate the CRC.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HAMMING CODE
+===================================================== -->
+
+<section class="section">
+
+    <h2>5️⃣ Hamming Code</h2>
+
+    <p>
+        <strong>Hamming Code</strong> is an error-correcting technique
+        that adds redundant parity bits at specific positions.
+    </p>
+
+    <p>
+        The receiver uses the parity checks to calculate a
+        <strong>syndrome</strong> that identifies the position of
+        certain errors.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Important:</strong>
+
+        Hamming code can detect and correct a single-bit error
+        under the standard single-error-correction configuration.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HAMMING POSITIONS
+===================================================== -->
+
+<section class="section">
+
+    <h2>📍 Hamming Code Bit Positions</h2>
+
+    <table class="hamming-table">
+
+        <tr>
+
+            <th>
+                Position
+            </th>
+
+            <th>
+                1
+            </th>
+
+            <th>
+                2
+            </th>
+
+            <th>
+                3
+            </th>
+
+            <th>
+                4
+            </th>
+
+            <th>
+                5
+            </th>
+
+            <th>
+                6
+            </th>
+
+            <th>
+                7
+            </th>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Bit Type
+            </td>
+
+            <td>
+                P1
+            </td>
+
+            <td>
+                P2
+            </td>
+
+            <td>
+                D1
+            </td>
+
+            <td>
+                P4
+            </td>
+
+            <td>
+                D2
+            </td>
+
+            <td>
+                D3
+            </td>
+
+            <td>
+                D4
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Binary Position
+            </td>
+
+            <td>
+                001
+            </td>
+
+            <td>
+                010
+            </td>
+
+            <td>
+                011
+            </td>
+
+            <td>
+                100
+            </td>
+
+            <td>
+                101
+            </td>
+
+            <td>
+                110
+            </td>
+
+            <td>
+                111
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     HAMMING SIMULATOR
+===================================================== -->
+
+<section class="simulator">
+
+    <h2>🧪 Hamming Code Error Locator</h2>
+
+    <p style="text-align:center;">
+
+        Enter the parity-check results P4 P2 P1.
+
+        The resulting binary value identifies the
+        error position.
+
+    </p>
+
+    <div class="input-row">
+
+        <input
+            type="number"
+            id="h4"
+            min="0"
+            max="1"
+            value="1"
+            style="width:70px">
+
+        <input
+            type="number"
+            id="h2"
+            min="0"
+            max="1"
+            value="0"
+            style="width:70px">
+
+        <input
+            type="number"
+            id="h1"
+            min="0"
+            max="1"
+            value="1"
+            style="width:70px">
+
+        <button onclick="calculateHamming()">
+            Find Error
+        </button>
+
+    </div>
+
+    <div id="hammingResult"
+         class="result">
+
+        Example: 101₂ = Position 5.
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     DETECTION METHODS
+===================================================== -->
+
+<section class="section">
+
+    <h2>📊 Error Detection & Correction Methods</h2>
+
+    <table>
+
+        <tr>
+
+            <th>
+                Method
+            </th>
+
+            <th>
+                Main Purpose
+            </th>
+
+            <th>
+                Basic Principle
+            </th>
+
+            <th>
+                Typical Use
+            </th>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Parity
+            </td>
+
+            <td>
+                Detection
+            </td>
+
+            <td>
+                Count 1s
+            </td>
+
+            <td>
+                Simple error detection
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Two-Dimensional Parity
+            </td>
+
+            <td>
+                Detection
+            </td>
+
+            <td>
+                Row + Column parity
+            </td>
+
+            <td>
+                Improved detection
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Checksum
+            </td>
+
+            <td>
+                Detection
+            </td>
+
+            <td>
+                Arithmetic sum/complement
+            </td>
+
+            <td>
+                Network protocols
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                CRC
+            </td>
+
+            <td>
+                Detection
+            </td>
+
+            <td>
+                Polynomial division
+            </td>
+
+            <td>
+                Data-link and storage systems
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Hamming Code
+            </td>
+
+            <td>
+                Correction
+            </td>
+
+            <td>
+                Parity positions + syndrome
+            </td>
+
+            <td>
+                Error-correcting systems
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     DETECTION VS CORRECTION
+===================================================== -->
+
+<section class="section">
+
+    <h2>⚖️ Detection vs Correction</h2>
+
+    <table>
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                Error Detection
+            </th>
+
+            <th>
+                Error Correction
+            </th>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Purpose
+            </td>
+
+            <td>
+                Find whether an error exists
+            </td>
+
+            <td>
+                Find and correct certain errors
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Extra Bits
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Retransmission
+            </td>
+
+            <td>
+                Often used with ARQ systems
+            </td>
+
+            <td>
+                May not be required for correctable errors
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+                Examples
+            </td>
+
+            <td>
+                Parity, Checksum, CRC
+            </td>
+
+            <td>
+                Hamming Code
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     CLASSROOM EXAMPLE
+===================================================== -->
+
+<section class="section">
+
+    <h2>🧠 Simple Classroom Example</h2>
+
+    <div class="step">
+
+        <div class="step-number">
+            1
+        </div>
+
+        <div>
+
+            Sender wants to transmit:
+
+            <strong>1011001</strong>
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            2
+        </div>
+
+        <div>
+
+            Error-control information is added.
+
+            <br>
+
+            Example:
+
+            <strong>Parity / CRC / Hamming bits</strong>
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            3
+        </div>
+
+        <div>
+
+            Data travels through the communication channel.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            4
+        </div>
+
+        <div>
+
+            Receiver checks the received data.
+
+        </div>
+
+    </div>
+
+    <div class="step">
+
+        <div class="step-number">
+            5
+        </div>
+
+        <div>
+
+            If an error is detected, the system can either
+            <strong>request retransmission</strong> or
+            <strong>correct the error</strong>, depending on
+            the error-control technique.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     KEY POINT
+===================================================== -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+    <ul>
+
+        <li>
+            <strong>Parity:</strong>
+            Count the number of 1s.
+        </li>
+
+        <li>
+            <strong>Two-Dimensional Parity:</strong>
+            Check rows and columns.
+        </li>
+
+        <li>
+            <strong>Checksum:</strong>
+            Add data blocks and verify the result.
+        </li>
+
+        <li>
+            <strong>CRC:</strong>
+            Use binary polynomial division.
+        </li>
+
+        <li>
+            <strong>Hamming Code:</strong>
+            Use parity positions to locate certain errors.
+        </li>
+
+    </ul>
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        Parity → <strong>Count</strong>
+
+        <br>
+
+        Checksum → <strong>Add</strong>
+
+        <br>
+
+        CRC → <strong>Divide</strong>
+
+        <br>
+
+        Hamming → <strong>Locate & Correct</strong>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Data Link Layer |
+    Error Detection | Error Correction
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   CARD INTERACTION
+===================================================== */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* =====================================================
+   PARITY CALCULATION
+===================================================== */
+
+function calculateParity() {
+
+    const input =
+        document.getElementById("parityInput")
+        .value.trim();
+
+    const type =
+        document.getElementById("parityType")
+        .value;
+
+    const result =
+        document.getElementById("parityResult");
+
+
+    if (!/^[01]+$/.test(input)) {
+
+        result.innerHTML =
+            "❌ Please enter binary data using only 0 and 1.";
+
+        return;
+    }
+
+
+    const ones =
+        (input.match(/1/g) || []).length;
+
+
+    let parityBit;
+
+
+    if (type === "even") {
+
+        parityBit =
+            ones % 2 === 0 ? 0 : 1;
+
+    } else {
+
+        parityBit =
+            ones % 2 === 0 ? 1 : 0;
+
+    }
+
+
+    const transmitted =
+        input + parityBit;
+
+
+    result.innerHTML =
+
+        "<strong>Data:</strong> " + input +
+
+        "<br>" +
+
+        "<strong>Number of 1s:</strong> " + ones +
+
+        "<br>" +
+
+        "<strong>Parity Type:</strong> " +
+        type.toUpperCase() +
+
+        "<br>" +
+
+        "<strong>Parity Bit:</strong> " +
+        parityBit +
+
+        "<br><br>" +
+
+        "📡 <strong>Transmitted Bits:</strong> " +
+        transmitted;
+
+}
+
+
+/* =====================================================
+   CHECKSUM
+===================================================== */
+
+function calculateChecksum() {
+
+    const a =
+        document.getElementById("checksumA")
+        .value.trim();
+
+    const b =
+        document.getElementById("checksumB")
+        .value.trim();
+
+    const result =
+        document.getElementById("checksumResult");
+
+
+    if (!/^[01]{8}$/.test(a) ||
+        !/^[01]{8}$/.test(b)) {
+
+        result.innerHTML =
+            "❌ Enter two valid 8-bit binary values.";
+
+        return;
+    }
+
+
+    const decimalA =
+        parseInt(a, 2);
+
+    const decimalB =
+        parseInt(b, 2);
+
+
+    const sum =
+        decimalA + decimalB;
+
+
+    /*
+       Demonstration uses 8-bit one's-complement style
+       wraparound addition.
+    */
+
+    let wrapped =
+        sum;
+
+    if (wrapped > 255) {
+
+        wrapped =
+            (wrapped & 255) + 1;
+
+    }
+
+
+    const checksum =
+        (~wrapped & 255)
+        .toString(2)
+        .padStart(8, "0");
+
+
+    result.innerHTML =
+
+        "<strong>Value 1:</strong> " + a +
+
+        " = " + decimalA +
+
+        "<br>" +
+
+        "<strong>Value 2:</strong> " + b +
+
+        " = " + decimalB +
+
+        "<br>" +
+
+        "<strong>Sum:</strong> " +
+        wrapped +
+
+        "<br>" +
+
+        "<strong>Checksum:</strong> " +
+        checksum;
+
+}
+
+
+/* =====================================================
+   CRC
+===================================================== */
+
+function crcDivide(data, generator) {
+
+    let remainder =
+        data.split("");
+
+    const generatorArray =
+        generator.split("");
+
+
+    for (
+        let i = 0;
+        i <= remainder.length - generatorArray.length;
+        i++
+    ) {
+
+        if (remainder[i] === "1") {
+
+            for (
+                let j = 0;
+                j < generatorArray.length;
+                j++
+            ) {
+
+                remainder[i + j] =
+                    remainder[i + j] ===
+                    generatorArray[j]
+                    ? "0"
+                    : "1";
+
+            }
+
+        }
+
+    }
+
+
+    return remainder
+        .slice(
+            remainder.length -
+            generatorArray.length + 1
+        )
+        .join("");
+
+}
+
+
+function calculateCRC() {
+
+    const data =
+        document.getElementById("crcData")
+        .value.trim();
+
+    const generator =
+        document.getElementById("crcGenerator")
+        .value.trim();
+
+    const result =
+        document.getElementById("crcResult");
+
+
+    if (!/^[01]+$/.test(data) ||
+        !/^[01]+$/.test(generator)) {
+
+        result.innerHTML =
+            "❌ Use only binary digits.";
+
+        return;
+    }
+
+
+    if (generator.length < 2) {
+
+        result.innerHTML =
+            "❌ Generator must contain at least two bits.";
+
+        return;
+    }
+
+
+    const zeros =
+        "0".repeat(generator.length - 1);
+
+
+    const appended =
+        data + zeros;
+
+
+    const remainder =
+        crcDivide(
+            appended,
+            generator
+        );
+
+
+    const codeword =
+        data + remainder;
+
+
+    result.innerHTML =
+
+        "<strong>Data:</strong> " +
+        data +
+
+        "<br>" +
+
+        "<strong>Generator:</strong> " +
+        generator +
+
+        "<br>" +
+
+        "<strong>Appended Data:</strong> " +
+        appended +
+
+        "<br>" +
+
+        "<strong>CRC Remainder:</strong> " +
+        remainder +
+
+        "<br><br>" +
+
+        "📡 <strong>Transmitted Codeword:</strong> " +
+        codeword;
+
+}
+
+
+/* =====================================================
+   HAMMING ERROR LOCATION
+===================================================== */
+
+function calculateHamming() {
+
+    const p4 =
+        Number(document.getElementById("h4").value);
+
+    const p2 =
+        Number(document.getElementById("h2").value);
+
+    const p1 =
+        Number(document.getElementById("h1").value);
+
+
+    const result =
+        document.getElementById("hammingResult");
+
+
+    if (
+        ![p4, p2, p1].every(
+            value => value === 0 || value === 1
+        )
+    ) {
+
+        result.innerHTML =
+            "❌ Each parity result must be 0 or 1.";
+
+        return;
+    }
+
+
+    const position =
+        (p4 * 4) +
+        (p2 * 2) +
+        p1;
+
+
+    if (position === 0) {
+
+        result.innerHTML =
+            "✅ Syndrome = 000. No single-bit error detected.";
+
+        return;
+    }
+
+
+    const binaryPosition =
+        position
+        .toString(2)
+        .padStart(3, "0");
+
+
+    result.innerHTML =
+
+        "🔍 <strong>Syndrome:</strong> " +
+        binaryPosition +
+
+        "<br>" +
+
+        "📍 <strong>Error Position:</strong> " +
+        position +
+
+        "<br><br>" +
+
+        "The bit at position <strong>" +
+        position +
+        "</strong> should be flipped to correct the error.";
+
+}
+
+
+/* =====================================================
+   INITIAL DEMONSTRATION
+===================================================== */
+
+calculateParity();
+
+</script>
+
+</body>
+</html>

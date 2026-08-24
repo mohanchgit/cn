@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Network Topologies & Connectors</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    background: #ffffff;
+    border-bottom: 3px solid #173b75;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 30px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+
+/* ================= LAYOUT ================= */
+
+.container {
+
+    height: calc(100vh - 76px);
+
+    display: grid;
+
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+
+    background: #f4f7fb;
+
+    border-right: 2px solid #d5deeb;
+
+    padding: 18px;
+}
+
+.menu-title {
+
+    color: #173b75;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    margin-bottom: 12px;
+}
+
+.menu button {
+
+    width: 100%;
+
+    padding: 9px 10px;
+
+    margin: 4px 0;
+
+    border: 1px solid #bcc9da;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #173b75;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+
+    background: #e8f1ff;
+
+    border-color: #173b75;
+}
+
+
+/* ================= MAIN ================= */
+
+.main {
+
+    padding: 20px 30px;
+
+    overflow: hidden;
+}
+
+.slide {
+
+    display: none;
+
+    height: 100%;
+
+    animation: fadeIn .35s ease;
+}
+
+.slide.active {
+
+    display: block;
+}
+
+@keyframes fadeIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+}
+
+.slide-title {
+
+    color: #173b75;
+
+    font-size: 27px;
+
+    margin-bottom: 5px;
+}
+
+.description {
+
+    color: #555;
+
+    font-size: 16px;
+
+    margin-bottom: 15px;
+}
+
+
+/* ================= TOPOLOGY AREA ================= */
+
+.topology-area {
+
+    height: 330px;
+
+    border: 1px solid #ccd6e3;
+
+    border-radius: 12px;
+
+    background: #fbfcfe;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* ================= NODE ================= */
+
+.node {
+
+    position: absolute;
+
+    width: 70px;
+
+    height: 50px;
+
+    border: 2px solid #173b75;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    z-index: 5;
+}
+
+
+/* ================= LINKS ================= */
+
+.link {
+
+    position: absolute;
+
+    height: 3px;
+
+    background: #8fa1b7;
+
+    transform-origin: left center;
+
+    z-index: 1;
+}
+
+
+/* ================= DATA PACKET ================= */
+
+.packet {
+
+    position: absolute;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #2f6fbe;
+
+    box-shadow: 0 0 8px rgba(47,111,190,.4);
+
+    z-index: 10;
+
+    animation: packetMove 3s linear infinite;
+}
+
+@keyframes packetMove {
+
+    0% {
+
+        opacity: 0;
+
+    }
+
+    10% {
+
+        opacity: 1;
+
+    }
+
+    90% {
+
+        opacity: 1;
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+    }
+}
+
+
+/* ================= CARDS ================= */
+
+.card-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 14px;
+}
+
+.card {
+
+    background: #ffffff;
+
+    border: 1px solid #cbd5e1;
+
+    border-left: 5px solid #2f6fbe;
+
+    border-radius: 9px;
+
+    padding: 16px;
+
+    min-height: 115px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.card h3 {
+
+    margin: 0 0 7px;
+
+    color: #173b75;
+
+    font-size: 18px;
+}
+
+.card p {
+
+    margin: 0;
+
+    color: #444;
+
+    line-height: 1.4;
+}
+
+.badge {
+
+    display: inline-block;
+
+    padding: 4px 9px;
+
+    border-radius: 14px;
+
+    background: #edf4ff;
+
+    border: 1px solid #bfd2ec;
+
+    color: #173b75;
+
+    font-size: 12px;
+
+    margin-bottom: 6px;
+}
+
+
+/* ================= CONNECTOR CARDS ================= */
+
+.connector-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 15px;
+}
+
+.connector-card {
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    background: #ffffff;
+
+    text-align: center;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.connector-card h3 {
+
+    color: #173b75;
+
+    margin: 10px 0 5px;
+
+    font-size: 17px;
+}
+
+.connector-card p {
+
+    color: #555;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ================= CONNECTOR DRAWINGS ================= */
+
+.connector {
+
+    height: 90px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* RJ45 */
+
+.rj45 {
+
+    width: 65px;
+
+    height: 45px;
+
+    border: 3px solid #173b75;
+
+    border-radius: 5px;
+
+    background: #f4f7fb;
+
+    position: relative;
+}
+
+.rj45::before {
+
+    content: "";
+
+    position: absolute;
+
+    bottom: -14px;
+
+    left: 8px;
+
+    width: 45px;
+
+    height: 16px;
+
+    background: #dfe5ed;
+
+    border: 2px solid #173b75;
+
+}
+
+.rj45::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 7px;
+
+    left: 8px;
+
+    width: 45px;
+
+    height: 4px;
+
+    background: repeating-linear-gradient(
+        to right,
+        #173b75 0,
+        #173b75 3px,
+        transparent 3px,
+        transparent 8px
+    );
+}
+
+
+/* BNC */
+
+.bnc {
+
+    width: 50px;
+
+    height: 50px;
+
+    border: 7px solid #173b75;
+
+    border-radius: 50%;
+
+    position: relative;
+}
+
+.bnc::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 18px;
+
+    height: 18px;
+
+    border: 3px solid #2f6fbe;
+
+    border-radius: 50%;
+
+    left: 8px;
+
+    top: 8px;
+}
+
+
+/* SC */
+
+.sc {
+
+    width: 55px;
+
+    height: 45px;
+
+    border: 3px solid #173b75;
+
+    background: #edf4ff;
+
+    position: relative;
+
+    border-radius: 5px;
+}
+
+.sc::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 30px;
+
+    height: 8px;
+
+    background: #2f6fbe;
+
+    top: 16px;
+
+    right: -30px;
+
+}
+
+
+/* ST */
+
+.st {
+
+    width: 48px;
+
+    height: 48px;
+
+    border: 5px solid #173b75;
+
+    border-radius: 50%;
+
+    position: relative;
+}
+
+.st::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 10px;
+
+    height: 10px;
+
+    background: #2f6fbe;
+
+    border-radius: 50%;
+
+    left: 14px;
+
+    top: 14px;
+}
+
+
+/* LC */
+
+.lc {
+
+    width: 35px;
+
+    height: 55px;
+
+    border: 3px solid #173b75;
+
+    background: #edf4ff;
+
+    border-radius: 4px;
+
+    position: relative;
+}
+
+.lc::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 8px;
+
+    height: 25px;
+
+    background: #2f6fbe;
+
+    top: 12px;
+
+    right: -8px;
+}
+
+
+/* ================= TABLE ================= */
+
+.compare {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 12px;
+}
+
+.compare th,
+.compare td {
+
+    border: 1px solid #c8d3e0;
+
+    padding: 10px;
+
+    text-align: left;
+}
+
+.compare th {
+
+    background: #edf3fb;
+
+    color: #173b75;
+}
+
+
+/* ================= INFO ================= */
+
+.info {
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    background: #f8fbff;
+
+    border: 2px solid #173b75;
+
+    border-radius: 9px;
+
+    text-align: center;
+
+    font-size: 17px;
+}
+
+.highlight {
+
+    color: #173b75;
+
+    font-weight: 700;
+}
+
+
+/* ================= CONTROLS ================= */
+
+.controls {
+
+    position: fixed;
+
+    right: 22px;
+
+    bottom: 17px;
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.controls button {
+
+    padding: 9px 15px;
+
+    border: 1px solid #173b75;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    color: #173b75;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.controls button:hover {
+
+    background: #edf4ff;
+}
+
+.progress {
+
+    position: fixed;
+
+    bottom: 0;
+
+    left: 0;
+
+    height: 4px;
+
+    background: #2f6fbe;
+
+    transition: width .3s;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:950px) {
+
+    .container {
+
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .connector-grid {
+
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <div class="title">
+        Network Topologies & Connectors
+    </div>
+
+    <div class="subtitle">
+        Computer Networks
+    </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active"
+                onclick="showSlide(0)">
+            1. Topology Overview
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Bus Topology
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Star Topology
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Ring Topology
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Mesh Topology
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Tree Topology
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Hybrid Topology
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. RJ-45 Connector
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. BNC Connector
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. Fiber Connectors
+        </button>
+
+        <button onclick="showSlide(10)">
+            11. Connector Comparison
+        </button>
+
+        <button onclick="showSlide(11)">
+            12. Summary
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+<div class="slide-title">
+    Network Topologies
+</div>
+
+<div class="description">
+    A network topology describes how network devices and communication links
+    are physically or logically arranged.
+</div>
+
+
+<div class="card-grid">
+
+<div class="card">
+
+<span class="badge">
+Physical Topology
+</span>
+
+<h3>
+Physical Arrangement
+</h3>
+
+<p>
+Describes the actual placement of cables, devices and network equipment.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<span class="badge">
+Logical Topology
+</span>
+
+<h3>
+Data Flow
+</h3>
+
+<p>
+Describes how data moves between devices regardless of physical layout.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<span class="badge">
+Common Types
+</span>
+
+<h3>
+Bus • Star • Ring • Mesh
+</h3>
+
+<p>
+Other common forms include Tree and Hybrid topologies.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="info">
+
+<span class="highlight">
+Main Topologies:
+</span>
+
+Bus, Star, Ring, Mesh, Tree and Hybrid
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Bus Topology
+</div>
+
+<div class="description">
+    All devices share a single common communication backbone.
+</div>
+
+
+<div class="topology-area">
+
+<div class="link"
+     style="
+     left:10%;
+     top:165px;
+     width:80%;">
+</div>
+
+
+<div class="node"
+     style="left:12%;top:120px;">
+    N1
+</div>
+
+<div class="node"
+     style="left:29%;top:120px;">
+    N2
+</div>
+
+<div class="node"
+     style="left:46%;top:120px;">
+    N3
+</div>
+
+<div class="node"
+     style="left:63%;top:120px;">
+    N4
+</div>
+
+<div class="node"
+     style="left:80%;top:120px;">
+    N5
+</div>
+
+
+<div class="packet"
+     style="
+     left:15%;
+     top:157px;
+     animation:busPacket 4s linear infinite;">
+</div>
+
+
+<style>
+
+@keyframes busPacket {
+
+0% {
+    left:15%;
+}
+
+100% {
+    left:82%;
+}
+
+}
+
+</style>
+
+</div>
+
+
+<div class="card-grid"
+     style="margin-top:15px;">
+
+<div class="card">
+
+<h3>
+Advantages
+</h3>
+
+<p>
+Simple installation and less cable required.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Disadvantages
+</h3>
+
+<p>
+Failure of the backbone can affect the entire network.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Example
+</h3>
+
+<p>
+Traditional Ethernet networks using coaxial cable.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Star Topology
+</div>
+
+<div class="description">
+    Every device is connected to a central device such as a switch.
+</div>
+
+
+<div class="topology-area">
+
+<div class="node"
+     style="
+     left:45%;
+     top:135px;
+     width:90px;
+     height:60px;">
+    SWITCH
+</div>
+
+
+<div class="node"
+     style="
+     left:10%;
+     top:45px;">
+    PC1
+</div>
+
+
+<div class="node"
+     style="
+     left:10%;
+     top:230px;">
+    PC2
+</div>
+
+
+<div class="node"
+     style="
+     right:10%;
+     top:45px;">
+    PC3
+</div>
+
+
+<div class="node"
+     style="
+     right:10%;
+     top:230px;">
+    PC4
+</div>
+
+
+<div class="link"
+     style="
+     left:18%;
+     top:80px;
+     width:31%;
+     transform:rotate(18deg);">
+</div>
+
+
+<div class="link"
+     style="
+     left:18%;
+     top:245px;
+     width:31%;
+     transform:rotate(-18deg);">
+</div>
+
+
+<div class="link"
+     style="
+     left:53%;
+     top:150px;
+     width:30%;
+     transform:rotate(-18deg);">
+</div>
+
+
+<div class="link"
+     style="
+     left:53%;
+     top:180px;
+     width:30%;
+     transform:rotate(18deg);">
+</div>
+
+
+<div class="packet"
+     style="
+     left:25%;
+     top:78px;
+     animation:starPacket 3s linear infinite;">
+</div>
+
+
+<style>
+
+@keyframes starPacket {
+
+0% {
+    left:20%;
+    top:78px;
+}
+
+50% {
+    left:47%;
+    top:145px;
+}
+
+100% {
+    left:82%;
+    top:82px;
+}
+
+}
+
+</style>
+
+</div>
+
+
+<div class="card-grid"
+     style="margin-top:15px;">
+
+<div class="card">
+
+<h3>
+Advantages
+</h3>
+
+<p>
+Easy to add or remove devices and simple troubleshooting.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Disadvantage
+</h3>
+
+<p>
+Failure of the central switch can affect connected devices.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Common Use
+</h3>
+
+<p>
+Modern Ethernet LANs commonly use a star or extended-star arrangement.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Ring Topology
+</div>
+
+<div class="description">
+    Each device is connected to two neighboring devices, forming a closed loop.
+</div>
+
+
+<div class="topology-area">
+
+<div class="link"
+     style="
+     left:30%;
+     top:70px;
+     width:40%;
+     transform:rotate(0deg);">
+</div>
+
+<div class="link"
+     style="
+     left:20%;
+     top:100px;
+     width:35%;
+     transform:rotate(90deg);">
+</div>
+
+<div class="link"
+     style="
+     left:50%;
+     top:100px;
+     width:35%;
+     transform:rotate(90deg);">
+</div>
+
+<div class="link"
+     style="
+     left:30%;
+     top:255px;
+     width:40%;
+     transform:rotate(0deg);">
+</div>
+
+
+<div class="node"
+     style="left:25%;top:45px;">
+    N1
+</div>
+
+<div class="node"
+     style="left:65%;top:45px;">
+    N2
+</div>
+
+<div class="node"
+     style="left:25%;top:230px;">
+    N4
+</div>
+
+<div class="node"
+     style="left:65%;top:230px;">
+    N3
+</div>
+
+
+<div class="packet"
+     style="
+     left:27%;
+     top:90px;
+     animation:ringPacket 4s linear infinite;">
+</div>
+
+
+<style>
+
+@keyframes ringPacket {
+
+0% {
+    left:27%;
+    top:90px;
+}
+
+25% {
+    left:67%;
+    top:90px;
+}
+
+50% {
+    left:67%;
+    top:245px;
+}
+
+75% {
+    left:27%;
+    top:245px;
+}
+
+100% {
+    left:27%;
+    top:90px;
+}
+
+}
+
+</style>
+
+</div>
+
+
+<div class="card-grid"
+     style="margin-top:15px;">
+
+<div class="card">
+
+<h3>
+Structure
+</h3>
+
+<p>
+Each node has two neighboring connections.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Data Flow
+</h3>
+
+<p>
+Data can travel around the ring according to the network protocol.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Limitation
+</h3>
+
+<p>
+A link or node failure can disrupt communication in a simple ring.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Mesh Topology
+</div>
+
+<div class="description">
+    Devices are connected with multiple paths, providing redundancy.
+</div>
+
+
+<div class="topology-area">
+
+<div class="node"
+     style="left:15%;top:65px;">
+    N1
+</div>
+
+<div class="node"
+     style="left:70%;top:65px;">
+    N2
+</div>
+
+<div class="node"
+     style="left:15%;top:230px;">
+    N3
+</div>
+
+<div class="node"
+     style="left:70%;top:230px;">
+    N4
+</div>
+
+
+<!-- Links -->
+
+<div class="link"
+     style="
+     left:21%;
+     top:90px;
+     width:55%;
+     transform:rotate(0deg);">
+</div>
+
+<div class="link"
+     style="
+     left:21%;
+     top:255px;
+     width:55%;
+     transform:rotate(0deg);">
+</div>
+
+<div class="link"
+     style="
+     left:21%;
+     top:100px;
+     width:58%;
+     transform:rotate(18deg);">
+</div>
+
+<div class="link"
+     style="
+     left:21%;
+     top:250px;
+     width:58%;
+     transform:rotate(-18deg);">
+</div>
+
+<div class="link"
+     style="
+     left:22%;
+     top:105px;
+     width:52%;
+     transform:rotate(90deg);">
+</div>
+
+<div class="link"
+     style="
+     left:72%;
+     top:105px;
+     width:52%;
+     transform:rotate(90deg);">
+</div>
+
+
+<div class="packet"
+     style="
+     left:23%;
+     top:80px;
+     animation:meshPacket 3s linear infinite;">
+</div>
+
+
+<style>
+
+@keyframes meshPacket {
+
+0% {
+    left:22%;
+    top:80px;
+}
+
+50% {
+    left:70%;
+    top:80px;
+}
+
+100% {
+    left:70%;
+    top:245px;
+}
+
+}
+
+</style>
+
+</div>
+
+
+<div class="card-grid"
+     style="margin-top:15px;">
+
+<div class="card">
+
+<h3>
+Full Mesh
+</h3>
+
+<p>
+Every device has a direct link to every other device.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Partial Mesh
+</h3>
+
+<p>
+Only selected devices have multiple direct connections.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Advantage
+</h3>
+
+<p>
+High redundancy and fault tolerance.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Tree Topology
+</div>
+
+<div class="description">
+    A hierarchical topology that combines characteristics of star and bus structures.
+</div>
+
+
+<div class="topology-area">
+
+<div class="node"
+     style="
+     left:46%;
+     top:30px;">
+    CORE
+</div>
+
+
+<div class="node"
+     style="
+     left:25%;
+     top:125px;">
+    SW1
+</div>
+
+<div class="node"
+     style="
+     left:65%;
+     top:125px;">
+    SW2
+</div>
+
+
+<div class="node"
+     style="
+     left:10%;
+     top:235px;">
+    PC1
+</div>
+
+<div class="node"
+     style="
+     left:25%;
+     top:235px;">
+    PC2
+</div>
+
+<div class="node"
+     style="
+     left:60%;
+     top:235px;">
+    PC3
+</div>
+
+<div class="node"
+     style="
+     left:75%;
+     top:235px;">
+    PC4
+</div>
+
+
+<div class="link"
+     style="
+     left:48%;
+     top:75px;
+     width:23%;
+     transform:rotate(150deg);">
+</div>
+
+<div class="link"
+     style="
+     left:51%;
+     top:75px;
+     width:23%;
+     transform:rotate(30deg);">
+</div>
+
+
+<div class="link"
+     style="
+     left:30%;
+     top:170px;
+     width:20%;
+     transform:rotate(145deg);">
+</div>
+
+<div class="link"
+     style="
+     left:32%;
+     top:170px;
+     width:15%;
+     transform:rotate(40deg);">
+</div>
+
+<div class="link"
+     style="
+     left:68%;
+     top:170px;
+     width:18%;
+     transform:rotate(40deg);">
+</div>
+
+<div class="link"
+     style="
+     left:68%;
+     top:170px;
+     width:18%;
+     transform:rotate(140deg);">
+</div>
+
+</div>
+
+
+<div class="card-grid"
+     style="margin-top:15px;">
+
+<div class="card">
+
+<h3>
+Hierarchy
+</h3>
+
+<p>
+Devices are arranged in multiple levels.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Scalability
+</h3>
+
+<p>
+New branches can be added to the hierarchy.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Application
+</h3>
+
+<p>
+Useful for large organizational and campus networks.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Hybrid Topology
+</div>
+
+<div class="description">
+    A hybrid topology combines two or more different topology types.
+</div>
+
+
+<div class="topology-area">
+
+<div class="node"
+     style="
+     left:45%;
+     top:120px;">
+    CORE
+</div>
+
+
+<div class="node"
+     style="
+     left:12%;
+     top:60px;">
+    S1
+</div>
+
+<div class="node"
+     style="
+     left:12%;
+     top:220px;">
+    S2
+</div>
+
+<div class="node"
+     style="
+     right:12%;
+     top:60px;">
+    S3
+</div>
+
+<div class="node"
+     style="
+     right:12%;
+     top:220px;">
+    S4
+</div>
+
+
+<div class="link"
+     style="
+     left:22%;
+     top:88px;
+     width:30%;
+     transform:rotate(12deg);">
+</div>
+
+<div class="link"
+     style="
+     left:22%;
+     top:235px;
+     width:30%;
+     transform:rotate(-12deg);">
+</div>
+
+<div class="link"
+     style="
+     left:50%;
+     top:145px;
+     width:30%;
+     transform:rotate(-12deg);">
+</div>
+
+<div class="link"
+     style="
+     left:50%;
+     top:185px;
+     width:30%;
+     transform:rotate(12deg);">
+</div>
+
+
+<div class="packet"
+     style="
+     left:20%;
+     top:80px;
+     animation:hybridPacket 4s linear infinite;">
+</div>
+
+
+<style>
+
+@keyframes hybridPacket {
+
+0% {
+    left:20%;
+    top:80px;
+}
+
+50% {
+    left:47%;
+    top:135px;
+}
+
+100% {
+    left:78%;
+    top:80px;
+}
+
+}
+
+</style>
+
+</div>
+
+
+<div class="info">
+
+<span class="highlight">
+Example:
+</span>
+
+Star-bus and star-ring network combinations.
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    RJ-45 Connector
+</div>
+
+<div class="description">
+    RJ-45 is commonly associated with Ethernet twisted-pair cabling.
+</div>
+
+
+<div class="connector-grid">
+
+<div class="connector-card">
+
+<div class="connector">
+
+<div class="rj45"></div>
+
+</div>
+
+<h3>
+RJ-45
+</h3>
+
+<p>
+Common connector used with Ethernet twisted-pair cables.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Pins
+</h3>
+
+<p>
+An 8-position modular interface is commonly used for Ethernet
+twisted-pair connections.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Cable
+</h3>
+
+<p>
+Commonly used with Cat5e, Cat6 and related twisted-pair Ethernet cables.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Application
+</h3>
+
+<p>
+PCs, switches, routers, patch panels and Ethernet wall outlets.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="info">
+
+<span class="highlight">
+Remember:
+</span>
+
+Ethernet + Twisted Pair + Modular Connector → RJ-45
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    BNC Connector
+</div>
+
+<div class="description">
+    BNC is a bayonet-style connector commonly associated with coaxial cabling.
+</div>
+
+
+<div class="connector-grid">
+
+<div class="connector-card">
+
+<div class="connector">
+
+<div class="bnc"></div>
+
+</div>
+
+<h3>
+BNC
+</h3>
+
+<p>
+Bayonet-style connector used with coaxial cable.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Cable Type
+</h3>
+
+<p>
+Coaxial cable.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Connection
+</h3>
+
+<p>
+Twist-and-lock bayonet mechanism provides a secure connection.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Applications
+</h3>
+
+<p>
+Legacy Ethernet, video systems, test equipment and RF applications.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="info">
+
+<span class="highlight">
+Key Point:
+</span>
+
+BNC → Coaxial Cable → Bayonet Connection
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Fiber-Optic Connectors
+</div>
+
+<div class="description">
+    Fiber connectors provide precise alignment between optical fibers.
+</div>
+
+
+<div class="connector-grid">
+
+<div class="connector-card">
+
+<div class="connector">
+
+<div class="sc"></div>
+
+</div>
+
+<h3>
+SC
+</h3>
+
+<p>
+Square-shaped push-pull connector commonly used in fiber systems.
+</p>
+
+</div>
+
+
+<div class="connector-card">
+
+<div class="connector">
+
+<div class="st"></div>
+
+</div>
+
+<h3>
+ST
+</h3>
+
+<p>
+Bayonet-style connector historically common in fiber installations.
+</p>
+
+</div>
+
+
+<div class="connector-card">
+
+<div class="connector">
+
+<div class="lc"></div>
+
+</div>
+
+<h3>
+LC
+</h3>
+
+<p>
+Small-form-factor connector commonly used in high-density fiber systems.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+Fiber Transmission
+</h3>
+
+<p>
+Data is transmitted as pulses of light through the optical fiber.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="info">
+
+<span class="highlight">
+Common Fiber Connectors:
+</span>
+
+SC • ST • LC
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 11 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Connector Comparison
+</div>
+
+<div class="description">
+    Common connectors and their associated transmission media.
+</div>
+
+
+<table class="compare">
+
+<tr>
+
+<th>
+Connector
+</th>
+
+<th>
+Medium
+</th>
+
+<th>
+Connection Style
+</th>
+
+<th>
+Common Use
+</th>
+
+</tr>
+
+
+<tr>
+
+<td>
+RJ-45
+</td>
+
+<td>
+Twisted Pair
+</td>
+
+<td>
+Modular / Clip
+</td>
+
+<td>
+Ethernet LAN
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+BNC
+</td>
+
+<td>
+Coaxial
+</td>
+
+<td>
+Bayonet
+</td>
+
+<td>
+Legacy networking / Video / RF
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+SC
+</td>
+
+<td>
+Optical Fiber
+</td>
+
+<td>
+Push-Pull
+</td>
+
+<td>
+Fiber networking
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+ST
+</td>
+
+<td>
+Optical Fiber
+</td>
+
+<td>
+Bayonet
+</td>
+
+<td>
+Fiber installations
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+LC
+</td>
+
+<td>
+Optical Fiber
+</td>
+
+<td>
+Latch / Push-Pull
+</td>
+
+<td>
+High-density fiber
+</td>
+
+</tr>
+
+</table>
+
+
+<div class="info">
+
+<span class="highlight">
+Media Relationship:
+</span>
+
+Twisted Pair → RJ-45
+&nbsp; | &nbsp;
+Coaxial → BNC
+&nbsp; | &nbsp;
+Fiber → SC / ST / LC
+
+</div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 12 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+<div class="slide-title">
+    Network Topologies & Connectors — Summary
+</div>
+
+<div class="description">
+    Topology defines network arrangement, while connectors provide physical interfaces
+    between cables and network equipment.
+</div>
+
+
+<table class="compare">
+
+<tr>
+
+<th>
+Topic
+</th>
+
+<th>
+Key Concept
+</th>
+
+<th>
+Examples
+</th>
+
+</tr>
+
+
+<tr>
+
+<td>
+Bus
+</td>
+
+<td>
+Single shared backbone
+</td>
+
+<td>
+Legacy coaxial Ethernet
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Star
+</td>
+
+<td>
+Central switch/device
+</td>
+
+<td>
+Modern Ethernet LAN
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Ring
+</td>
+
+<td>
+Closed loop
+</td>
+
+<td>
+Ring-based network systems
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Mesh
+</td>
+
+<td>
+Multiple redundant paths
+</td>
+
+<td>
+Backbone / wireless mesh
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Tree
+</td>
+
+<td>
+Hierarchical structure
+</td>
+
+<td>
+Campus networks
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Hybrid
+</td>
+
+<td>
+Combination of topologies
+</td>
+
+<td>
+Large enterprise networks
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+Connectors
+</td>
+
+<td>
+Physical cable interface
+</td>
+
+<td>
+RJ-45, BNC, SC, ST, LC
+</td>
+
+</tr>
+
+</table>
+
+
+<div class="info">
+
+<span class="highlight">
+Remember:
+</span>
+
+Topology = <b>How devices are arranged</b>
+
+&nbsp; | &nbsp;
+
+Connector = <b>How the cable connects to equipment</b>
+
+</div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+<button onclick="previousSlide()">
+◀ Previous
+</button>
+
+<button onclick="nextSlide()">
+Next ▶
+</button>
+
+</div>
+
+
+<div class="progress"
+     id="progress">
+</div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0) {
+
+        index = 0;
+
+    }
+
+
+    if (index >= slides.length) {
+
+        index =
+            slides.length - 1;
+
+    }
+
+
+    currentSlide = index;
+
+
+    slides.forEach(
+        (slide, i) => {
+
+            slide.classList.toggle(
+                "active",
+                i === currentSlide
+            );
+
+        }
+    );
+
+
+    buttons.forEach(
+        (button, i) => {
+
+            button.classList.toggle(
+                "active",
+                i === currentSlide
+            );
+
+        }
+    );
+
+
+    progress.style.width =
+        (
+            (currentSlide + 1) /
+            slides.length *
+            100
+        ) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextSlide() {
+
+    if (
+        currentSlide <
+        slides.length - 1
+    ) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousSlide() {
+
+    if (
+        currentSlide > 0
+    ) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

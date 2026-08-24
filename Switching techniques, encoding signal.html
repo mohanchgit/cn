@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Switching Techniques & Encoding Signals</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* HEADER */
+.header {
+    height: 76px;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: #ffffff;
+}
+
+.title {
+    font-size: 27px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+/* LAYOUT */
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #173b75;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #becbdc;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+.main {
+    padding: 22px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fade .4s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    font-size: 27px;
+    color: #173b75;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+/* CARDS */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 17px;
+    min-height: 130px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
+}
+
+.card h3 {
+    color: #173b75;
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.card p {
+    color: #444;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border: 1px solid #bfd2ec;
+    background: #edf4ff;
+    border-radius: 14px;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+/* NETWORK DIAGRAM */
+.network {
+    position: relative;
+    height: 360px;
+    border: 1px solid #ccd6e3;
+    border-radius: 12px;
+    background: #fbfcfe;
+    overflow: hidden;
+}
+
+.node {
+    position: absolute;
+    width: 120px;
+    height: 65px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 3;
+}
+
+.node small {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.source {
+    left: 5%;
+    top: 145px;
+}
+
+.destination {
+    right: 5%;
+    top: 145px;
+}
+
+/* LINKS */
+.link {
+    position: absolute;
+    height: 3px;
+    background: #9aabc0;
+    transform-origin: left center;
+    z-index: 1;
+}
+
+.l1 {
+    left: 15%;
+    top: 165px;
+    width: 30%;
+}
+
+.l2 {
+    left: 15%;
+    top: 165px;
+    width: 30%;
+    transform: rotate(-35deg);
+}
+
+.l3 {
+    left: 15%;
+    top: 165px;
+    width: 30%;
+    transform: rotate(35deg);
+}
+
+.l4 {
+    left: 45%;
+    top: 165px;
+    width: 40%;
+}
+
+.switch {
+    position: absolute;
+    left: 42%;
+    top: 130px;
+    width: 90px;
+    height: 70px;
+    border: 3px solid #173b75;
+    border-radius: 10px;
+    background: #f4f8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.packet {
+    position: absolute;
+    top: 148px;
+    left: 17%;
+    padding: 8px 12px;
+    border: 2px solid #2f6fbe;
+    background: #e9f3ff;
+    color: #173b75;
+    border-radius: 6px;
+    font-weight: 700;
+    z-index: 4;
+}
+
+/* ANIMATIONS */
+.packet-circuit {
+    animation: circuit 4s linear infinite;
+}
+
+@keyframes circuit {
+    0% {
+        left: 17%;
+        top: 148px;
+    }
+
+    28% {
+        left: 38%;
+        top: 148px;
+    }
+
+    55% {
+        left: 61%;
+        top: 148px;
+    }
+
+    100% {
+        left: 79%;
+        top: 148px;
+    }
+}
+
+/* COMPARISON */
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 12px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* SIGNAL AREA */
+.signal-box {
+    height: 280px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fbfcfe;
+    position: relative;
+    overflow: hidden;
+}
+
+.signal-title {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+canvas {
+    position: absolute;
+    left: 0;
+    top: 40px;
+    width: 100%;
+    height: 220px;
+}
+
+/* BIT DISPLAY */
+.bits {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 22px 0;
+}
+
+.bit {
+    width: 48px;
+    height: 42px;
+    border: 2px solid #173b75;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    background: #ffffff;
+}
+
+.bit.one {
+    background: #e8f1ff;
+}
+
+/* INFO */
+.info {
+    padding: 18px;
+    margin-top: 18px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #f8fbff;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* CONTROLS */
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    border: 1px solid #173b75;
+    background: #ffffff;
+    color: #173b75;
+    border-radius: 6px;
+    padding: 9px 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="title">Switching Techniques & Encoding Signals</div>
+    <div class="subtitle">Computer Networks</div>
+</header>
+
+<div class="container">
+
+<aside class="sidebar">
+
+    <div class="menu-title">Lecture Sections</div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. Switching Overview
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Circuit Switching
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Message Switching
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Packet Switching
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Switching Comparison
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Signal Encoding
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. NRZ Encoding
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Manchester Encoding
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. Encoding Comparison
+        </button>
+
+    </div>
+
+</aside>
+
+<main class="main">
+
+<!-- ===================================================== -->
+<!-- SLIDE 1 -->
+<!-- ===================================================== -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        Switching Techniques
+    </div>
+
+    <div class="description">
+        Switching determines how data moves from a source to a destination
+        through an intermediate network.
+    </div>
+
+    <div class="network">
+
+        <div class="node source">
+            SOURCE
+        </div>
+
+        <div class="node destination">
+            DESTINATION
+        </div>
+
+        <div class="switch">
+            NETWORK
+        </div>
+
+        <div class="link l1"></div>
+        <div class="link l4"></div>
+
+        <div class="packet packet-circuit">
+            DATA
+        </div>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <span class="badge">Technique 1</span>
+            <h3>Circuit Switching</h3>
+            <p>
+                A dedicated communication path is established before
+                data transmission begins.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Technique 2</span>
+            <h3>Message Switching</h3>
+            <p>
+                The complete message is stored and forwarded from one
+                intermediate node to another.
+            </p>
+        </div>
+
+        <div class="card">
+            <span class="badge">Technique 3</span>
+            <h3>Packet Switching</h3>
+            <p>
+                A message is divided into smaller packets that are
+                transmitted through the network.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 2 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Circuit Switching
+    </div>
+
+    <div class="description">
+        A dedicated path is established between sender and receiver.
+    </div>
+
+    <div class="network">
+
+        <div class="node source">
+            SENDER
+        </div>
+
+        <div class="node destination">
+            RECEIVER
+        </div>
+
+        <div class="switch" style="left:42%">
+            SWITCH
+        </div>
+
+        <div class="link l1"></div>
+        <div class="link l4"></div>
+
+        <div style="
+            position:absolute;
+            top:190px;
+            left:17%;
+            width:68%;
+            height:8px;
+            background:#173b75;
+            border-radius:10px;">
+        </div>
+
+        <div style="
+            position:absolute;
+            top:210px;
+            width:100%;
+            text-align:center;
+            color:#173b75;
+            font-weight:bold;">
+            DEDICATED PATH
+        </div>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>1. Setup</h3>
+            <p>
+                A dedicated path is established between the communicating
+                devices.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>2. Data Transfer</h3>
+            <p>
+                Data travels through the reserved path during the session.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>3. Teardown</h3>
+            <p>
+                The circuit is released after communication ends.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="info">
+        <span class="highlight">Examples:</span>
+        Traditional telephone networks and some dedicated communication systems.
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 3 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Message Switching
+    </div>
+
+    <div class="description">
+        The entire message is stored at an intermediate node before being forwarded.
+    </div>
+
+    <div class="network">
+
+        <div class="node source">
+            SOURCE
+        </div>
+
+        <div class="node destination">
+            DESTINATION
+        </div>
+
+        <div class="switch" style="left:42%">
+            STORE<br>FORWARD
+        </div>
+
+        <div class="link l1"></div>
+        <div class="link l4"></div>
+
+        <div id="messagePacket"
+             style="
+             position:absolute;
+             top:145px;
+             left:18%;
+             padding:12px 16px;
+             background:#fff1d9;
+             border:2px solid #8a5a00;
+             border-radius:7px;
+             font-weight:bold;">
+             COMPLETE MESSAGE
+        </div>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>Store</h3>
+            <p>
+                Intermediate nodes store the entire message.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Forward</h3>
+            <p>
+                After storing the message, the node forwards it to
+                the next destination.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Advantage</h3>
+            <p>
+                No dedicated path is required.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="info">
+        <span class="highlight">Limitation:</span>
+        Large messages require significant storage and may introduce
+        considerable delay.
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 4 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Packet Switching
+    </div>
+
+    <div class="description">
+        Data is divided into smaller packets and transmitted independently.
+    </div>
+
+    <div class="bits">
+
+        <div class="bit">P1</div>
+        <div class="bit">P2</div>
+        <div class="bit one">P3</div>
+        <div class="bit">P4</div>
+        <div class="bit one">P5</div>
+
+    </div>
+
+    <div class="network">
+
+        <div class="node source">
+            SOURCE
+        </div>
+
+        <div class="node destination">
+            DESTINATION
+        </div>
+
+        <div class="switch" style="left:42%">
+            ROUTER
+        </div>
+
+        <div class="link l1"></div>
+        <div class="link l4"></div>
+
+        <div class="packet"
+             style="animation:packet1 3s linear infinite;">
+             P1
+        </div>
+
+        <div class="packet"
+             style="top:180px; animation:packet2 3s linear infinite;">
+             P2
+        </div>
+
+    </div>
+
+    <style>
+    @keyframes packet1 {
+        0% { left:18%; }
+        100% { left:78%; }
+    }
+
+    @keyframes packet2 {
+        0% { left:18%; }
+        100% { left:78%; }
+    }
+    </style>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>Datagram</h3>
+            <p>
+                Each packet is treated independently and may follow
+                different paths.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Virtual Circuit</h3>
+            <p>
+                A logical path is established before packets are transmitted.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Efficient Sharing</h3>
+            <p>
+                Network links can be shared by many users dynamically.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 5 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Switching Techniques — Comparison
+    </div>
+
+    <div class="description">
+        Key differences between circuit, message and packet switching.
+    </div>
+
+    <table class="compare">
+
+        <tr>
+            <th>Feature</th>
+            <th>Circuit Switching</th>
+            <th>Message Switching</th>
+            <th>Packet Switching</th>
+        </tr>
+
+        <tr>
+            <td>Path</td>
+            <td>Dedicated</td>
+            <td>No dedicated path</td>
+            <td>Shared</td>
+        </tr>
+
+        <tr>
+            <td>Data Unit</td>
+            <td>Continuous stream</td>
+            <td>Complete message</td>
+            <td>Packet</td>
+        </tr>
+
+        <tr>
+            <td>Store & Forward</td>
+            <td>Generally no</td>
+            <td>Yes</td>
+            <td>Yes</td>
+        </tr>
+
+        <tr>
+            <td>Delay</td>
+            <td>Setup delay</td>
+            <td>High</td>
+            <td>Variable</td>
+        </tr>
+
+        <tr>
+            <td>Resource Usage</td>
+            <td>Reserved</td>
+            <td>Dynamic</td>
+            <td>Dynamic</td>
+        </tr>
+
+        <tr>
+            <td>Example</td>
+            <td>Traditional telephone</td>
+            <td>Historical data networks</td>
+            <td>Internet</td>
+        </tr>
+
+    </table>
+
+    <div class="info">
+        <span class="highlight">Internet:</span>
+        Packet switching enables efficient sharing of network resources.
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 6 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Encoding Signals
+    </div>
+
+    <div class="description">
+        Encoding converts digital data into a signal suitable for transmission
+        over a communication medium.
+    </div>
+
+    <div class="bits">
+
+        <div class="bit one">1</div>
+        <div class="bit">0</div>
+        <div class="bit one">1</div>
+        <div class="bit one">1</div>
+        <div class="bit">0</div>
+        <div class="bit">0</div>
+        <div class="bit one">1</div>
+
+    </div>
+
+    <div class="signal-box">
+
+        <div class="signal-title">
+            Digital Data → Digital Signal
+        </div>
+
+        <canvas id="signalCanvas"></canvas>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>Data</h3>
+            <p>
+                Binary information represented as 0s and 1s.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Encoding</h3>
+            <p>
+                Maps binary values to signal voltage or signal transitions.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Signal</h3>
+            <p>
+                Physical representation transmitted through the medium.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 7 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        NRZ Encoding
+    </div>
+
+    <div class="description">
+        Non-Return-to-Zero encoding represents binary data using signal levels.
+    </div>
+
+    <div class="bits">
+
+        <div class="bit one">1</div>
+        <div class="bit">0</div>
+        <div class="bit one">1</div>
+        <div class="bit">0</div>
+        <div class="bit one">1</div>
+
+    </div>
+
+    <div class="signal-box">
+
+        <div class="signal-title">
+            NRZ-L Example
+        </div>
+
+        <canvas id="nrzCanvas"></canvas>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>NRZ-L</h3>
+            <p>
+                The signal level represents the binary value.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Advantage</h3>
+            <p>
+                Simple implementation and efficient use of bandwidth.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Limitation</h3>
+            <p>
+                Long sequences of identical bits can cause synchronization
+                problems.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 8 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Manchester Encoding
+    </div>
+
+    <div class="description">
+        Manchester encoding uses a transition in the middle of every bit period.
+    </div>
+
+    <div class="bits">
+
+        <div class="bit one">1</div>
+        <div class="bit">0</div>
+        <div class="bit one">1</div>
+        <div class="bit one">1</div>
+
+    </div>
+
+    <div class="signal-box">
+
+        <div class="signal-title">
+            Manchester Signal
+        </div>
+
+        <canvas id="manchesterCanvas"></canvas>
+
+    </div>
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+            <h3>Transition</h3>
+            <p>
+                Every bit contains a transition at the center of the bit period.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Synchronization</h3>
+            <p>
+                Frequent transitions help the receiver maintain clock
+                synchronization.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Trade-off</h3>
+            <p>
+                Requires more bandwidth than simple NRZ encoding.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SLIDE 9 -->
+<!-- ===================================================== -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Encoding Techniques — Comparison
+    </div>
+
+    <div class="description">
+        Comparison of common digital-to-digital encoding techniques.
+    </div>
+
+    <table class="compare">
+
+        <tr>
+            <th>Technique</th>
+            <th>Basic Idea</th>
+            <th>Synchronization</th>
+            <th>Bandwidth</th>
+        </tr>
+
+        <tr>
+            <td>NRZ-L</td>
+            <td>Signal level represents bit</td>
+            <td>Weak for long runs</td>
+            <td>Low</td>
+        </tr>
+
+        <tr>
+            <td>NRZ-I</td>
+            <td>Transition represents a bit</td>
+            <td>Better than NRZ-L</td>
+            <td>Low</td>
+        </tr>
+
+        <tr>
+            <td>Manchester</td>
+            <td>Mid-bit transition</td>
+            <td>Excellent</td>
+            <td>Higher</td>
+        </tr>
+
+        <tr>
+            <td>Differential Manchester</td>
+            <td>Transition pattern represents bit</td>
+            <td>Excellent</td>
+            <td>Higher</td>
+        </tr>
+
+    </table>
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Concept:
+        </span>
+
+        Switching determines
+        <b>how data travels through the network</b>,
+        while encoding determines
+        <b>how bits are represented as signals</b>.
+
+    </div>
+
+</section>
+
+</main>
+</div>
+
+
+<!-- CONTROLS -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+<div class="progress" id="progress"></div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides = document.querySelectorAll(".slide");
+const buttons = document.querySelectorAll(".menu button");
+const progress = document.getElementById("progress");
+
+function showSlide(index) {
+
+    if (index < 0)
+        index = 0;
+
+    if (index >= slides.length)
+        index = slides.length - 1;
+
+    currentSlide = index;
+
+    slides.forEach((slide, i) => {
+        slide.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+    });
+
+    buttons.forEach((button, i) => {
+        button.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+    });
+
+    progress.style.width =
+        ((currentSlide + 1) / slides.length * 100) + "%";
+
+    startSignalAnimation();
+}
+
+function nextSlide() {
+
+    if (currentSlide < slides.length - 1)
+        showSlide(currentSlide + 1);
+
+}
+
+function previousSlide() {
+
+    if (currentSlide > 0)
+        showSlide(currentSlide - 1);
+
+}
+
+
+/* =====================================================
+   KEYBOARD CONTROL
+===================================================== */
+
+document.addEventListener("keydown", function(event) {
+
+    if (
+        event.key === "ArrowRight" ||
+        event.key === "PageDown"
+    ) {
+        nextSlide();
+    }
+
+    if (
+        event.key === "ArrowLeft" ||
+        event.key === "PageUp"
+    ) {
+        previousSlide();
+    }
+
+});
+
+
+/* =====================================================
+   CANVAS HELPERS
+===================================================== */
+
+function setupCanvas(canvas) {
+
+    if (!canvas)
+        return null;
+
+    const rect = canvas.getBoundingClientRect();
+
+    const ratio = window.devicePixelRatio || 1;
+
+    canvas.width = rect.width * ratio;
+    canvas.height = rect.height * ratio;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.scale(ratio, ratio);
+
+    return {
+        ctx: ctx,
+        width: rect.width,
+        height: rect.height
+    };
+}
+
+
+/* =====================================================
+   GENERIC DIGITAL SIGNAL
+===================================================== */
+
+function drawDigitalSignal(canvas) {
+
+    const setup = setupCanvas(canvas);
+
+    if (!setup)
+        return;
+
+    const ctx = setup.ctx;
+    const width = setup.width;
+    const height = setup.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const bits = [1,0,1,1,0,0,1];
+    const bitWidth = width / bits.length;
+
+    const high = 55;
+    const low = 150;
+
+    ctx.beginPath();
+
+    bits.forEach((bit, i) => {
+
+        const x1 = i * bitWidth;
+        const x2 = (i + 1) * bitWidth;
+
+        const y = bit ? high : low;
+
+        if (i === 0) {
+            ctx.moveTo(x1, y);
+        } else {
+            const previous =
+                bits[i - 1] ? high : low;
+
+            ctx.lineTo(x1, previous);
+            ctx.lineTo(x1, y);
+        }
+
+        ctx.lineTo(x2, y);
+
+    });
+
+    ctx.strokeStyle = "#173b75";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    /* Bit labels */
+
+    ctx.font = "bold 14px Segoe UI";
+    ctx.fillStyle = "#555";
+    ctx.textAlign = "center";
+
+    bits.forEach((bit, i) => {
+
+        ctx.fillText(
+            bit,
+            i * bitWidth + bitWidth / 2,
+            190
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   NRZ-L
+===================================================== */
+
+function drawNRZ(canvas) {
+
+    const setup = setupCanvas(canvas);
+
+    if (!setup)
+        return;
+
+    const ctx = setup.ctx;
+    const width = setup.width;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        setup.height
+    );
+
+    const bits = [1,0,1,0,1];
+
+    const bitWidth =
+        width / bits.length;
+
+    const high = 55;
+    const low = 155;
+
+    ctx.beginPath();
+
+    bits.forEach((bit, i) => {
+
+        const x1 =
+            i * bitWidth;
+
+        const x2 =
+            (i + 1) * bitWidth;
+
+        const y =
+            bit === 1 ? high : low;
+
+        if (i === 0) {
+            ctx.moveTo(x1, y);
+        } else {
+
+            const previous =
+                bits[i - 1] === 1
+                ? high
+                : low;
+
+            ctx.lineTo(x1, previous);
+            ctx.lineTo(x1, y);
+
+        }
+
+        ctx.lineTo(x2, y);
+
+    });
+
+    ctx.strokeStyle = "#173b75";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    ctx.font =
+        "bold 14px Segoe UI";
+
+    ctx.fillStyle =
+        "#555";
+
+    ctx.textAlign =
+        "center";
+
+    bits.forEach((bit, i) => {
+
+        ctx.fillText(
+            bit,
+            i * bitWidth +
+            bitWidth / 2,
+            195
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   MANCHESTER
+===================================================== */
+
+function drawManchester(canvas) {
+
+    const setup = setupCanvas(canvas);
+
+    if (!setup)
+        return;
+
+    const ctx = setup.ctx;
+    const width = setup.width;
+    const height = setup.height;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    const bits = [1,0,1,1];
+
+    const bitWidth =
+        width / bits.length;
+
+    const high = 55;
+    const low = 155;
+
+    ctx.beginPath();
+
+    bits.forEach((bit, i) => {
+
+        const start =
+            i * bitWidth;
+
+        const middle =
+            start + bitWidth / 2;
+
+        const end =
+            start + bitWidth;
+
+        /*
+          Convention used:
+          1 = HIGH → LOW
+          0 = LOW → HIGH
+        */
+
+        const first =
+            bit === 1 ? high : low;
+
+        const second =
+            bit === 1 ? low : high;
+
+        if (i === 0) {
+
+            ctx.moveTo(
+                start,
+                first
+            );
+
+        } else {
+
+            const previousBit =
+                bits[i - 1];
+
+            const previousSecond =
+                previousBit === 1
+                ? low
+                : high;
+
+            ctx.lineTo(
+                start,
+                previousSecond
+            );
+
+            ctx.lineTo(
+                start,
+                first
+            );
+
+        }
+
+        ctx.lineTo(
+            middle,
+            first
+        );
+
+        ctx.lineTo(
+            middle,
+            second
+        );
+
+        ctx.lineTo(
+            end,
+            second
+        );
+
+    });
+
+    ctx.strokeStyle =
+        "#173b75";
+
+    ctx.lineWidth = 4;
+
+    ctx.stroke();
+
+    /* Center transition markers */
+
+    ctx.fillStyle =
+        "#2f6fbe";
+
+    bits.forEach((bit, i) => {
+
+        const middle =
+            i * bitWidth +
+            bitWidth / 2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            middle,
+            bit === 1
+                ? (high + low) / 2
+                : (high + low) / 2,
+            5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    });
+
+    ctx.font =
+        "bold 14px Segoe UI";
+
+    ctx.fillStyle =
+        "#555";
+
+    ctx.textAlign =
+        "center";
+
+    bits.forEach((bit, i) => {
+
+        ctx.fillText(
+            bit,
+            i * bitWidth +
+            bitWidth / 2,
+            195
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   SIGNAL ANIMATION
+===================================================== */
+
+function startSignalAnimation() {
+
+    setTimeout(() => {
+
+        if (currentSlide === 5) {
+
+            drawDigitalSignal(
+                document.getElementById(
+                    "signalCanvas"
+                )
+            );
+
+        }
+
+        if (currentSlide === 6) {
+
+            drawNRZ(
+                document.getElementById(
+                    "nrzCanvas"
+                )
+            );
+
+        }
+
+        if (currentSlide === 7) {
+
+            drawManchester(
+                document.getElementById(
+                    "manchesterCanvas"
+                )
+            );
+
+        }
+
+    }, 100);
+
+}
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    startSignalAnimation
+);
+
+
+/* INITIALIZE */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

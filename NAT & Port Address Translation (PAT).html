@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NAT and PAT - Computer Networks</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* ================= HEADER ================= */
+
+header {
+    background: #1d4ed8;
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+/* ================= CONTAINER ================= */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+/* ================= SECTION ================= */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 29px;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+/* ================= INFO BOX ================= */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* ================= CONCEPT CARDS ================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+/* ================= NETWORK DIAGRAM ================= */
+
+.network {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 15px;
+    padding: 30px 15px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    width: 175px;
+    padding: 18px;
+    text-align: center;
+    background: white;
+    border: 2px solid #2563eb;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+}
+
+.device.nat {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.device.internet {
+    border-color: #9333ea;
+    background: #faf5ff;
+}
+
+.device .icon {
+    font-size: 40px;
+}
+
+.device h3 {
+    color: #1d4ed8;
+    margin: 5px 0;
+}
+
+.device.nat h3 {
+    color: #15803d;
+}
+
+.device.internet h3 {
+    color: #7e22ce;
+}
+
+.device small {
+    color: #475569;
+}
+
+.arrow {
+    font-size: 36px;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+/* ================= PACKET ================= */
+
+.packet {
+    position: absolute;
+    display: none;
+    font-size: 32px;
+    z-index: 20;
+    top: 45%;
+}
+
+/* ================= NAT TABLE ================= */
+
+.nat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.nat-table th,
+.nat-table td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.nat-table th {
+    background: #1d4ed8;
+    color: white;
+}
+
+.nat-table td {
+    background: white;
+}
+
+.nat-table tr:hover td {
+    background: #eff6ff;
+}
+
+/* ================= SIMULATOR ================= */
+
+.simulator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 35px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.simulator h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+input,
+select {
+    padding: 13px;
+    font-size: 18px;
+    border: 2px solid #94a3b8;
+    border-radius: 8px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.result {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    min-height: 60px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.result-item {
+    background: white;
+    border: 1px solid #cbd5e1;
+    padding: 14px;
+    border-radius: 8px;
+}
+
+.result-item strong {
+    display: block;
+    color: #1d4ed8;
+}
+
+/* ================= PAT PORT VISUAL ================= */
+
+.port-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.port-box {
+    padding: 18px;
+    min-width: 190px;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.port-box.public {
+    border-color: #16a34a;
+    background: #ecfdf5;
+}
+
+/* ================= COMPARISON ================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+/* ================= STEP ================= */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #2563eb;
+    border-radius: 10px;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+/* ================= KEYPOINT ================= */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width: 700px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .arrow {
+        transform: rotate(90deg);
+    }
+
+    .section p,
+    .section li {
+        font-size: 16px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>NAT & Port Address Translation (PAT)</h1>
+
+    <p>
+        Network Layer | Private Networks | Internet Connectivity
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= INTRODUCTION ================= -->
+
+<section class="section">
+
+    <h2>🌐 What is NAT?</h2>
+
+    <p>
+        <strong>NAT (Network Address Translation)</strong> is a technique
+        used by a router or firewall to translate IP addresses between
+        private and public networks.
+    </p>
+
+    <p>
+        NAT is commonly used to allow devices using
+        <strong>private IPv4 addresses</strong> to communicate with
+        the Internet using a public IPv4 address.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Idea:</strong>
+
+        <br><br>
+
+        Private IP Address
+        → <strong>NAT Router</strong>
+        → Public IP Address
+        → Internet
+
+    </div>
+
+</section>
+
+
+<!-- ================= WHY NAT ================= -->
+
+<section class="section">
+
+    <h2>🎯 Why is NAT Used?</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                IPv4 Address Conservation
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    NAT allows many devices using private addresses
+                    to share one or more public IPv4 addresses.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Private Addressing
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Internal devices can use private address ranges
+                    such as 10.0.0.0/8 and 192.168.0.0/16.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">3</span>
+                Internal Network Management
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Internal addressing can be managed independently
+                    from the public Internet addressing scheme.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">4</span>
+                Address Translation
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    NAT modifies IP addressing information as packets
+                    move between private and public networks.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= NETWORK DIAGRAM ================= -->
+
+<section class="section">
+
+    <h2>📡 Basic NAT Operation</h2>
+
+    <div class="network" id="natNetwork">
+
+        <div class="device">
+
+            <div class="icon">💻</div>
+
+            <h3>PC A</h3>
+
+            <small>
+                Private IP<br>
+                192.168.1.10
+            </small>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="device nat">
+
+            <div class="icon">📡</div>
+
+            <h3>NAT Router</h3>
+
+            <small>
+                Inside: 192.168.1.1<br>
+                Outside: 203.0.113.10
+            </small>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="device internet">
+
+            <div class="icon">🌐</div>
+
+            <h3>Internet</h3>
+
+            <small>
+                Public Network
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div style="text-align:center;">
+
+        <button onclick="startNATAnimation()">
+
+            ▶ Start NAT Translation
+
+        </button>
+
+    </div>
+
+
+    <div id="natStatus"
+         class="result"
+         style="text-align:center;">
+
+        Click the button to see how NAT translates
+        the private IP address.
+
+    </div>
+
+</section>
+
+
+<!-- ================= NAT TYPES ================= -->
+
+<section class="section">
+
+    <h2>🔄 Types of NAT</h2>
+
+    <div class="cards">
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                Static NAT
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Static NAT creates a permanent one-to-one mapping
+                    between a private IP address and a public IP address.
+                </p>
+
+                <div class="info-box">
+
+                    Private:
+                    <strong>192.168.1.10</strong>
+
+                    <br>
+
+                    Public:
+                    <strong>203.0.113.10</strong>
+
+                </div>
+
+                <p>
+                    Useful when an internal server needs a consistent
+                    public address.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Dynamic NAT
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Dynamic NAT maps private addresses to addresses
+                    selected from a pool of public IP addresses.
+                </p>
+
+                <div class="info-box">
+
+                    Private IP
+
+                    →
+
+                    Public IP Pool
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">3</span>
+                PAT
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    PAT allows multiple private devices to share
+                    a single public IP address by using different
+                    TCP/UDP port numbers.
+                </p>
+
+                <div class="info-box">
+
+                    Also commonly called:
+
+                    <strong>NAT Overload</strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= PAT ================= -->
+
+<section class="section">
+
+    <h2>🚀 What is PAT?</h2>
+
+    <p>
+        <strong>Port Address Translation (PAT)</strong> is an extension
+        of NAT that uses port numbers to distinguish different
+        connections.
+    </p>
+
+    <p>
+        Multiple private devices can therefore share
+        <strong>one public IPv4 address</strong>.
+    </p>
+
+
+    <div class="port-flow">
+
+        <div class="port-box">
+
+            PC 1
+
+            <br>
+
+            192.168.1.10:5000
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="port-box public">
+
+            Public IP
+
+            <br>
+
+            203.0.113.10:30001
+
+        </div>
+
+    </div>
+
+
+    <div class="port-flow">
+
+        <div class="port-box">
+
+            PC 2
+
+            <br>
+
+            192.168.1.11:5000
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="port-box public">
+
+            Public IP
+
+            <br>
+
+            203.0.113.10:30002
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>Key Idea:</strong>
+
+        <br><br>
+
+        Same Public IP + Different Port Numbers
+        = Multiple Simultaneous Connections
+
+    </div>
+
+</section>
+
+
+<!-- ================= PAT SIMULATION ================= -->
+
+<section class="simulator">
+
+    <h2>🧪 Interactive PAT Simulation</h2>
+
+    <p style="text-align:center;">
+
+        Select a private computer and simulate how PAT
+        creates a unique public port.
+
+    </p>
+
+
+    <div class="input-group">
+
+        <select id="pcSelect">
+
+            <option value="192.168.1.10:5000">
+                PC 1 — 192.168.1.10:5000
+            </option>
+
+            <option value="192.168.1.11:5001">
+                PC 2 — 192.168.1.11:5001
+            </option>
+
+            <option value="192.168.1.12:5002">
+                PC 3 — 192.168.1.12:5002
+            </option>
+
+            <option value="192.168.1.13:5003">
+                PC 4 — 192.168.1.13:5003
+            </option>
+
+        </select>
+
+
+        <button onclick="simulatePAT()">
+
+            🔀 Translate with PAT
+
+        </button>
+
+    </div>
+
+
+    <div id="patResult" class="result">
+
+        Waiting for PAT translation...
+
+    </div>
+
+</section>
+
+
+<!-- ================= NAT TABLE ================= -->
+
+<section class="section">
+
+    <h2>📋 NAT Translation Table</h2>
+
+    <p>
+        A NAT/PAT device maintains translation information so
+        return traffic can be sent to the correct internal device.
+    </p>
+
+
+    <table class="nat-table">
+
+        <tr>
+
+            <th>
+                Inside Local
+            </th>
+
+            <th>
+                Inside Global
+            </th>
+
+            <th>
+                Destination
+            </th>
+
+            <th>
+                Protocol
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.1.10:5000
+            </td>
+
+            <td>
+                203.0.113.10:30001
+            </td>
+
+            <td>
+                93.184.216.34:443
+            </td>
+
+            <td>
+                TCP
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.1.11:5001
+            </td>
+
+            <td>
+                203.0.113.10:30002
+            </td>
+
+            <td>
+                142.250.183.14:443
+            </td>
+
+            <td>
+                TCP
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.1.12:5002
+            </td>
+
+            <td>
+                203.0.113.10:30003
+            </td>
+
+            <td>
+                198.51.100.20:443
+            </td>
+
+            <td>
+                TCP
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- ================= PAT STEPS ================= -->
+
+<section class="section">
+
+    <h2>📝 How PAT Works</h2>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            1
+        </div>
+
+        <div>
+
+            A private computer sends a packet to an
+            Internet server.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            2
+        </div>
+
+        <div>
+
+            The NAT router receives the packet.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            3
+        </div>
+
+        <div>
+
+            PAT changes the private source IP address
+            to the router's public IP address.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            4
+        </div>
+
+        <div>
+
+            PAT assigns a unique source port number.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            5
+        </div>
+
+        <div>
+
+            The packet is sent to the Internet.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">
+            6
+        </div>
+
+        <div>
+
+            When the response returns, PAT uses the
+            translation table to identify the correct
+            internal device.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= NAT VS PAT ================= -->
+
+<section class="section">
+
+    <h2>⚖️ NAT vs PAT</h2>
+
+
+    <table>
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                NAT
+            </th>
+
+            <th>
+                PAT
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Full Form
+            </td>
+
+            <td>
+                Network Address Translation
+            </td>
+
+            <td>
+                Port Address Translation
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Mapping
+            </td>
+
+            <td>
+                IP address translation
+            </td>
+
+            <td>
+                IP + Port translation
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Public IP Usage
+            </td>
+
+            <td>
+                May require multiple public IPs
+            </td>
+
+            <td>
+                Many devices can share one public IP
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Port Translation
+            </td>
+
+            <td>
+                Not necessarily
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Common Name
+            </td>
+
+            <td>
+                Address Translation
+            </td>
+
+            <td>
+                NAT Overload
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Main Benefit
+            </td>
+
+            <td>
+                Translates private/public addresses
+            </td>
+
+            <td>
+                Conserves public IPv4 addresses
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- ================= PRIVATE IP ================= -->
+
+<section class="section">
+
+    <h2>🔐 Common Private IPv4 Address Ranges</h2>
+
+
+    <table>
+
+        <tr>
+
+            <th>
+                Range
+            </th>
+
+            <th>
+                CIDR
+            </th>
+
+            <th>
+                Common Usage
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                10.0.0.0 – 10.255.255.255
+            </td>
+
+            <td>
+                10.0.0.0/8
+            </td>
+
+            <td>
+                Large private networks
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                172.16.0.0 – 172.31.255.255
+            </td>
+
+            <td>
+                172.16.0.0/12
+            </td>
+
+            <td>
+                Enterprise networks
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                192.168.0.0 – 192.168.255.255
+            </td>
+
+            <td>
+                192.168.0.0/16
+            </td>
+
+            <td>
+                Home and small networks
+            </td>
+
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- ================= KEY POINT ================= -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember</h2>
+
+
+    <ul>
+
+        <li>
+            <strong>NAT:</strong>
+            Changes IP addresses.
+        </li>
+
+        <li>
+            <strong>PAT:</strong>
+            Changes IP addresses + port numbers.
+        </li>
+
+        <li>
+            <strong>Static NAT:</strong>
+            One private IP ↔ One public IP.
+        </li>
+
+        <li>
+            <strong>Dynamic NAT:</strong>
+            Private IP ↔ Public IP from a pool.
+        </li>
+
+        <li>
+            <strong>PAT:</strong>
+            Many private devices → One public IP using different ports.
+        </li>
+
+    </ul>
+
+
+    <div class="info-box">
+
+        <strong>Memory Trick:</strong>
+
+        <br><br>
+
+        NAT = <strong>IP Translation</strong>
+
+        <br>
+
+        PAT = <strong>IP + Port Translation</strong>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Network Layer | NAT & PAT
+
+</footer>
+
+
+<script>
+
+/* ================= CARD INTERACTION ================= */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* ================= NAT ANIMATION ================= */
+
+function startNATAnimation() {
+
+    const network =
+        document.getElementById("natNetwork");
+
+    const status =
+        document.getElementById("natStatus");
+
+
+    const packet =
+        document.createElement("div");
+
+
+    packet.className = "packet";
+
+    packet.innerHTML = "📦";
+
+    network.appendChild(packet);
+
+    packet.style.display = "block";
+
+    let position = 5;
+
+
+    status.innerHTML =
+        "📦 PC sends packet using private IP: 192.168.1.10";
+
+
+    const animation =
+        setInterval(function() {
+
+            position += 1.5;
+
+            packet.style.left =
+                position + "%";
+
+
+            if (position >= 48) {
+
+                clearInterval(animation);
+
+                packet.innerHTML = "🔄";
+
+
+                status.innerHTML =
+                    "🔄 NAT Router translates 192.168.1.10 → 203.0.113.10";
+
+
+                setTimeout(function() {
+
+                    packet.innerHTML = "🌐";
+
+                    packet.style.left = "75%";
+
+
+                    status.innerHTML =
+                        "🌐 Packet is forwarded to the Internet.";
+
+
+                    setTimeout(function() {
+
+                        packet.remove();
+
+                        status.innerHTML =
+                            "✅ NAT translation completed successfully.";
+
+                    }, 1500);
+
+
+                }, 1200);
+
+            }
+
+        }, 40);
+
+}
+
+
+/* ================= PAT SIMULATION ================= */
+
+function simulatePAT() {
+
+    const selected =
+        document.getElementById("pcSelect").value;
+
+
+    const result =
+        document.getElementById("patResult");
+
+
+    const parts =
+        selected.split(":");
+
+
+    const privateIP =
+        parts[0];
+
+
+    const privatePort =
+        parts[1];
+
+
+    const publicIP =
+        "203.0.113.10";
+
+
+    const publicPort =
+        30000 +
+        Math.floor(
+            Math.random() * 1000
+        );
+
+
+    result.innerHTML = `
+
+        <h3 style="color:#1d4ed8;">
+            PAT Translation Created
+        </h3>
+
+
+        <div class="result-grid">
+
+
+            <div class="result-item">
+
+                <strong>
+                    Inside Local
+                </strong>
+
+                ${privateIP}:${privatePort}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>
+                    Inside Global
+                </strong>
+
+                ${publicIP}:${publicPort}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>
+                    Translation
+                </strong>
+
+                ${privateIP}:${privatePort}
+                →
+                ${publicIP}:${publicPort}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>
+                    Purpose
+                </strong>
+
+                Identifies this connection
+                using a unique port.
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <strong>
+            ✅ PAT allows multiple internal devices
+            to share the public IP ${publicIP}.
+        </strong>
+
+    `;
+
+}
+
+</script>
+
+</body>
+</html>

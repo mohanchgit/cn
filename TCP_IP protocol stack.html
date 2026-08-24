@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCP/IP Protocol Stack</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    background: #ffffff;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    color: #173b75;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #bcc9da;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    padding: 22px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .4s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    color: #173b75;
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+/* ================= STACK ================= */
+
+.stack-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    margin-top: 15px;
+}
+
+.stack {
+    width: 470px;
+}
+
+.layer {
+    min-height: 82px;
+    margin: 8px 0;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    background: #ffffff;
+    display: grid;
+    grid-template-columns: 65px 1fr 115px;
+    align-items: center;
+    padding: 10px 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    transition: .3s;
+}
+
+.layer:hover {
+    transform: translateX(5px);
+    background: #f8fbff;
+}
+
+.layer-number {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #173b75;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.layer-name {
+    color: #173b75;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.protocols {
+    font-size: 12px;
+    color: #555;
+    text-align: right;
+}
+
+.application {
+    border-left: 6px solid #2f6fbe;
+}
+
+.transport {
+    border-left: 6px solid #2f6fbe;
+}
+
+.internet {
+    border-left: 6px solid #2f6fbe;
+}
+
+.network-access {
+    border-left: 6px solid #2f6fbe;
+}
+
+/* ================= CARDS ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 17px;
+    min-height: 125px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.45;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 14px;
+    background: #edf4ff;
+    border: 1px solid #bfd2ec;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+/* ================= DATA FLOW ================= */
+
+.flow-area {
+    height: 300px;
+    border: 1px solid #ccd6e3;
+    border-radius: 12px;
+    background: #fbfcfe;
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    position: absolute;
+    width: 125px;
+    height: 70px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.sender {
+    left: 5%;
+    top: 115px;
+}
+
+.receiver {
+    right: 5%;
+    top: 115px;
+}
+
+.connection {
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    top: 148px;
+    height: 4px;
+    background: #aab7c8;
+}
+
+.data-packet {
+    position: absolute;
+    top: 127px;
+    left: 17%;
+    padding: 10px 15px;
+    border: 2px solid #2f6fbe;
+    border-radius: 7px;
+    background: #e9f3ff;
+    color: #173b75;
+    font-weight: 700;
+    animation: packetMove 4s linear infinite;
+}
+
+@keyframes packetMove {
+    0% {
+        left: 17%;
+    }
+
+    100% {
+        left: 78%;
+    }
+}
+
+/* ================= ENCAPSULATION ================= */
+
+.encapsulation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.data-box {
+    padding: 20px;
+    border: 2px solid #173b75;
+    background: #f8fbff;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.arrow {
+    font-size: 30px;
+    color: #2f6fbe;
+}
+
+.frame {
+    display: flex;
+    border: 2px solid #173b75;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.frame span {
+    padding: 18px 13px;
+    border-right: 1px solid #ffffff;
+    font-weight: 700;
+    text-align: center;
+}
+
+.frame span:last-child {
+    border-right: none;
+}
+
+.h {
+    background: #e8f1ff;
+}
+
+.d {
+    background: #f4f4f4;
+}
+
+.t {
+    background: #fff1dc;
+}
+
+/* ================= TABLE ================= */
+
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 12px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* ================= INFO ================= */
+
+.info {
+    margin-top: 18px;
+    padding: 16px;
+    background: #f8fbff;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    padding: 9px 15px;
+    border: 1px solid #173b75;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:950px) {
+
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .stack-area {
+        gap: 20px;
+    }
+
+    .stack {
+        width: 420px;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="title">
+        TCP/IP Protocol Stack
+    </div>
+
+    <div class="subtitle">
+        Computer Networks
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. TCP/IP Overview
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Four-Layer Model
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Application Layer
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Transport Layer
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Internet Layer
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Network Access Layer
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Encapsulation
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Decapsulation
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. TCP/IP Data Units
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. TCP/IP Summary
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        TCP/IP Protocol Stack
+    </div>
+
+    <div class="description">
+        TCP/IP is the protocol suite used to enable communication across interconnected networks,
+        including the Internet.
+    </div>
+
+
+    <div class="stack-area">
+
+        <div class="stack">
+
+            <div class="layer application">
+                <div class="layer-number">4</div>
+
+                <div>
+                    <div class="layer-name">
+                        Application
+                    </div>
+
+                    <small>
+                        User network services
+                    </small>
+                </div>
+
+                <div class="protocols">
+                    HTTP · DNS · SMTP · FTP
+                </div>
+            </div>
+
+
+            <div class="layer transport">
+                <div class="layer-number">3</div>
+
+                <div>
+                    <div class="layer-name">
+                        Transport
+                    </div>
+
+                    <small>
+                        End-to-end communication
+                    </small>
+                </div>
+
+                <div class="protocols">
+                    TCP · UDP
+                </div>
+            </div>
+
+
+            <div class="layer internet">
+                <div class="layer-number">2</div>
+
+                <div>
+                    <div class="layer-name">
+                        Internet
+                    </div>
+
+                    <small>
+                        Logical addressing & routing
+                    </small>
+                </div>
+
+                <div class="protocols">
+                    IP · ICMP
+                </div>
+            </div>
+
+
+            <div class="layer network-access">
+                <div class="layer-number">1</div>
+
+                <div>
+                    <div class="layer-name">
+                        Network Access
+                    </div>
+
+                    <small>
+                        Local network delivery
+                    </small>
+                </div>
+
+                <div class="protocols">
+                    Ethernet · Wi-Fi
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Idea:
+        </span>
+
+        Each layer performs a specific set of networking functions
+        and works with the layers above and below it.
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Four-Layer TCP/IP Model
+    </div>
+
+    <div class="description">
+        The TCP/IP model is commonly represented using four conceptual layers.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                Layer 4
+            </span>
+
+            <h3>
+                Application Layer
+            </h3>
+
+            <p>
+                Provides network services directly to applications.
+                Examples include HTTP, DNS, FTP and SMTP.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Layer 3
+            </span>
+
+            <h3>
+                Transport Layer
+            </h3>
+
+            <p>
+                Provides process-to-process communication using
+                protocols such as TCP and UDP.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Layer 2
+            </span>
+
+            <h3>
+                Internet Layer
+            </h3>
+
+            <p>
+                Provides logical addressing and routing using IP.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Layer 1
+            </span>
+
+            <h3>
+                Network Access Layer
+            </h3>
+
+            <p>
+                Handles local network delivery over technologies
+                such as Ethernet and Wi-Fi.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Layer Interaction
+            </h3>
+
+            <p>
+                Data moves down the stack at the sender and up the
+                stack at the receiver.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Protocol Suite
+            </h3>
+
+            <p>
+                TCP/IP is a collection of protocols rather than a
+                single protocol.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Application Layer
+    </div>
+
+    <div class="description">
+        The Application Layer provides protocols and services used by network applications.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                HTTP / HTTPS
+            </h3>
+
+            <p>
+                Used for communication between web browsers and web servers.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                DNS
+            </h3>
+
+            <p>
+                Translates domain names such as example.com into
+                IP addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                FTP
+            </h3>
+
+            <p>
+                Provides file transfer functionality between network hosts.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                SMTP
+            </h3>
+
+            <p>
+                Used for transferring email messages between mail systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                SSH
+            </h3>
+
+            <p>
+                Provides secure remote access to network systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                DHCP
+            </h3>
+
+            <p>
+                Automatically provides network configuration information
+                to hosts.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Data Unit:
+        </span>
+
+        Message / Data
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Transport Layer
+    </div>
+
+    <div class="description">
+        Provides end-to-end communication between applications running on network devices.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                Connection-Oriented
+            </span>
+
+            <h3>
+                TCP
+            </h3>
+
+            <p>
+                Provides reliable, ordered and connection-oriented
+                transport using acknowledgements, sequence numbers
+                and retransmission mechanisms.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Connectionless
+            </span>
+
+            <h3>
+                UDP
+            </h3>
+
+            <p>
+                Provides a lightweight connectionless transport
+                service with lower protocol overhead.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Port Numbers
+            </h3>
+
+            <p>
+                Identify the source and destination application processes.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="flow-area" style="margin-top:20px">
+
+        <div class="device sender">
+            APPLICATION A
+        </div>
+
+        <div class="device receiver">
+            APPLICATION B
+        </div>
+
+        <div class="connection"></div>
+
+        <div class="data-packet">
+            TCP / UDP
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Data Unit:
+        </span>
+
+        TCP Segment / UDP Datagram
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Internet Layer
+    </div>
+
+    <div class="description">
+        The Internet Layer provides logical addressing and routing across interconnected networks.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                IP
+            </h3>
+
+            <p>
+                Provides logical addressing and packet delivery
+                between network nodes.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                IPv4
+            </h3>
+
+            <p>
+                Uses 32-bit IP addresses such as
+                192.168.1.10.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                IPv6
+            </h3>
+
+            <p>
+                Uses 128-bit addresses and provides a vastly larger
+                address space.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                ICMP
+            </h3>
+
+            <p>
+                Used for network control, diagnostic and error-reporting
+                messages.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Routing
+            </h3>
+
+            <p>
+                Routers examine IP information to forward packets
+                toward their destinations.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Data Unit
+            </h3>
+
+            <p>
+                The Internet Layer commonly handles IP packets
+                or datagrams.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Access Layer
+    </div>
+
+    <div class="description">
+        Handles communication over the local network and physical transmission medium.
+    </div>
+
+
+    <div class="flow-area">
+
+        <div class="device sender">
+            HOST A
+        </div>
+
+        <div class="device receiver">
+            HOST B
+        </div>
+
+        <div class="connection"></div>
+
+        <div class="data-packet">
+            FRAME
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Ethernet
+            </h3>
+
+            <p>
+                Widely used wired LAN technology.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Wi-Fi
+            </h3>
+
+            <p>
+                Provides wireless local-area networking.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                MAC Address
+            </h3>
+
+            <p>
+                Used for local network addressing and frame delivery.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Data Unit:
+        </span>
+
+        Frame / Bits
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Encapsulation
+    </div>
+
+    <div class="description">
+        At the sender, each TCP/IP layer adds its own control information as data moves down the stack.
+    </div>
+
+
+    <div class="encapsulation">
+
+        <div class="data-box">
+            Application<br>
+            DATA
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="frame">
+
+            <span class="h">
+                TCP<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                DATA
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="frame">
+
+            <span class="h">
+                IP<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                TCP<br>
+                SEGMENT
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="frame">
+
+            <span class="h">
+                FRAME<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                IP PACKET
+            </span>
+
+            <span class="t">
+                TRAILER
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Encapsulation:
+        </span>
+
+        Data → Segment → Packet → Frame
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Decapsulation
+    </div>
+
+    <div class="description">
+        At the receiver, headers and trailers are processed and removed as data moves up the stack.
+    </div>
+
+
+    <div class="encapsulation">
+
+        <div class="frame">
+
+            <span class="h">
+                FRAME<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                IP PACKET
+            </span>
+
+            <span class="t">
+                TRAILER
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="frame">
+
+            <span class="h">
+                IP<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                TCP<br>
+                SEGMENT
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="frame">
+
+            <span class="h">
+                TCP<br>
+                HEADER
+            </span>
+
+            <span class="d">
+                DATA
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="data-box">
+            APPLICATION<br>
+            DATA
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Decapsulation:
+        </span>
+
+        Frame → Packet → Segment → Data
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        TCP/IP Data Units
+    </div>
+
+    <div class="description">
+        Each layer uses a different logical name for the data it processes.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+            <th>TCP/IP Layer</th>
+            <th>Protocol Example</th>
+            <th>Data Unit</th>
+            <th>Main Address</th>
+        </tr>
+
+        <tr>
+            <td>Application</td>
+            <td>HTTP, DNS, SMTP</td>
+            <td>Data / Message</td>
+            <td>Application information</td>
+        </tr>
+
+        <tr>
+            <td>Transport</td>
+            <td>TCP, UDP</td>
+            <td>Segment / Datagram</td>
+            <td>Port Number</td>
+        </tr>
+
+        <tr>
+            <td>Internet</td>
+            <td>IP, ICMP</td>
+            <td>Packet / Datagram</td>
+            <td>IP Address</td>
+        </tr>
+
+        <tr>
+            <td>Network Access</td>
+            <td>Ethernet, Wi-Fi</td>
+            <td>Frame / Bits</td>
+            <td>MAC Address</td>
+        </tr>
+
+    </table>
+
+
+    <div class="card-grid" style="margin-top:20px">
+
+        <div class="card">
+
+            <h3>
+                Port
+            </h3>
+
+            <p>
+                Identifies an application process.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                IP Address
+            </h3>
+
+            <p>
+                Identifies a logical network interface.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                MAC Address
+            </h3>
+
+            <p>
+                Identifies a network interface on the local link.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        TCP/IP Protocol Stack — Summary
+    </div>
+
+    <div class="description">
+        The TCP/IP architecture divides networking responsibilities into cooperating layers.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+            <th>Layer</th>
+            <th>Key Responsibility</th>
+            <th>Important Protocols</th>
+        </tr>
+
+        <tr>
+            <td>Application</td>
+            <td>Network services for applications</td>
+            <td>HTTP, HTTPS, DNS, FTP, SMTP, SSH</td>
+        </tr>
+
+        <tr>
+            <td>Transport</td>
+            <td>End-to-end process communication</td>
+            <td>TCP, UDP</td>
+        </tr>
+
+        <tr>
+            <td>Internet</td>
+            <td>Logical addressing and routing</td>
+            <td>IP, ICMP</td>
+        </tr>
+
+        <tr>
+            <td>Network Access</td>
+            <td>Local delivery and physical transmission</td>
+            <td>Ethernet, Wi-Fi</td>
+        </tr>
+
+    </table>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Remember:
+        </span>
+
+        <br><br>
+
+        Application →
+        Transport →
+        Internet →
+        Network Access
+
+        <br><br>
+
+        <b>
+            Data → Segment → Packet → Frame
+        </b>
+
+    </div>
+
+</section>
+
+
+</main>
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+<div class="progress" id="progress"></div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0) {
+        index = 0;
+    }
+
+    if (index >= slides.length) {
+        index = slides.length - 1;
+    }
+
+    currentSlide = index;
+
+
+    slides.forEach((slide, i) => {
+
+        slide.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    buttons.forEach((button, i) => {
+
+        button.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    progress.style.width =
+        ((currentSlide + 1) /
+        slides.length * 100) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT SLIDE
+===================================================== */
+
+function nextSlide() {
+
+    if (currentSlide <
+        slides.length - 1) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS SLIDE
+===================================================== */
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

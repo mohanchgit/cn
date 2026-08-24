@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Hardware & Network Software</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    background: #ffffff;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    color: #173b75;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 9px 10px;
+    margin: 4px 0;
+    border: 1px solid #bcc9da;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    padding: 20px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .35s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    color: #173b75;
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* ================= CARDS ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 16px;
+    min-height: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.card h3 {
+    margin: 0 0 7px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.4;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 14px;
+    background: #edf4ff;
+    border: 1px solid #bfd2ec;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+/* ================= NETWORK DIAGRAM ================= */
+
+.network-area {
+    height: 300px;
+    border: 1px solid #ccd6e3;
+    border-radius: 12px;
+    background: #fbfcfe;
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    position: absolute;
+    width: 110px;
+    height: 65px;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.device small {
+    display: block;
+    font-size: 10px;
+    color: #666;
+}
+
+.line {
+    position: absolute;
+    height: 3px;
+    background: #9baabd;
+    transform-origin: left center;
+}
+
+.packet {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #2f6fbe;
+    box-shadow: 0 0 8px rgba(47,111,190,.4);
+    z-index: 10;
+}
+
+/* ================= SWITCH ================= */
+
+.switch-box {
+    position: absolute;
+    left: 44%;
+    top: 110px;
+    width: 120px;
+    height: 75px;
+    border: 3px solid #173b75;
+    border-radius: 10px;
+    background: #f4f8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ================= ROUTER ================= */
+
+.router-box {
+    position: absolute;
+    left: 43%;
+    top: 100px;
+    width: 140px;
+    height: 90px;
+    border: 3px solid #173b75;
+    border-radius: 12px;
+    background: #f4f8ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ================= HUB ================= */
+
+.hub-port {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #2f6fbe;
+}
+
+/* ================= ACCESS POINT ================= */
+
+.ap {
+    position: absolute;
+    left: 45%;
+    top: 105px;
+    width: 120px;
+    height: 75px;
+    border: 3px solid #173b75;
+    border-radius: 10px;
+    background: #f8fbff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ================= WIRELESS WAVES ================= */
+
+.wifi-wave {
+    position: absolute;
+    left: 50%;
+    top: 105px;
+    width: 25px;
+    height: 25px;
+    border: 3px solid #2f6fbe;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+}
+
+.wifi-wave.one {
+    animation: wifiWave 2.4s infinite;
+}
+
+.wifi-wave.two {
+    animation: wifiWave 2.4s infinite .7s;
+}
+
+.wifi-wave.three {
+    animation: wifiWave 2.4s infinite 1.4s;
+}
+
+@keyframes wifiWave {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: .9;
+    }
+
+    100% {
+        width: 280px;
+        height: 280px;
+        opacity: 0;
+    }
+}
+
+/* ================= SOFTWARE FLOW ================= */
+
+.software-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin: 30px 0;
+}
+
+.software-box {
+    min-width: 150px;
+    padding: 20px;
+    text-align: center;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    background: #f8fbff;
+    font-weight: 700;
+}
+
+.arrow {
+    font-size: 32px;
+    color: #2f6fbe;
+}
+
+/* ================= TABLE ================= */
+
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 10px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* ================= INFO ================= */
+
+.info {
+    margin-top: 15px;
+    padding: 14px;
+    background: #f8fbff;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    padding: 9px 15px;
+    border: 1px solid #173b75;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:950px) {
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="title">
+        Network Hardware & Network Software
+    </div>
+
+    <div class="subtitle">
+        Computer Networks
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. Network Components
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Network Interface Card
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Hub
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Switch
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Router
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Bridge & Repeater
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Modem
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Wireless Access Point
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. Firewall
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. Network Software
+        </button>
+
+        <button onclick="showSlide(10)">
+            11. Hardware vs Software
+        </button>
+
+        <button onclick="showSlide(11)">
+            12. Summary
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        Network Components
+    </div>
+
+    <div class="description">
+        A computer network uses hardware devices and software components
+        to provide communication, connectivity, management and security.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                Hardware
+            </span>
+
+            <h3>
+                Physical Devices
+            </h3>
+
+            <p>
+                Examples include NICs, switches, routers, access points,
+                modems and firewalls.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Software
+            </span>
+
+            <h3>
+                Network Programs
+            </h3>
+
+            <p>
+                Network operating systems, protocols, drivers, services
+                and management applications.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Communication
+            </span>
+
+            <h3>
+                Data Exchange
+            </h3>
+
+            <p>
+                Hardware and software work together to move data between
+                networked systems.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="network-area" style="margin-top:20px">
+
+        <div class="device"
+             style="left:8%;top:110px;">
+            PC
+        </div>
+
+        <div class="switch-box">
+            SWITCH
+        </div>
+
+        <div class="device"
+             style="right:8%;top:110px;">
+            SERVER
+        </div>
+
+        <div class="line"
+             style="
+             left:18%;
+             top:143px;
+             width:27%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:55%;
+             top:143px;
+             width:27%;">
+        </div>
+
+        <div class="packet"
+             style="
+             left:20%;
+             top:135px;
+             animation:hardwarePacket 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes hardwarePacket {
+
+        0% {
+            left:20%;
+        }
+
+        100% {
+            left:76%;
+        }
+
+    }
+
+    </style>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Interface Card — NIC
+    </div>
+
+    <div class="description">
+        A Network Interface Card provides a network interface between
+        a computer and the communication medium.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:12%;top:110px;">
+            COMPUTER
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:42%;
+            top:90px;
+            width:160px;
+            height:110px;
+            border:3px solid #173b75;
+            border-radius:10px;
+            background:#f4f8ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;">
+            NIC
+        </div>
+
+
+        <div class="device"
+             style="right:12%;top:110px;">
+            NETWORK
+        </div>
+
+
+        <div class="line"
+             style="
+             left:24%;
+             top:143px;
+             width:18%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:58%;
+             top:143px;
+             width:18%;">
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                MAC Address
+            </h3>
+
+            <p>
+                A network interface normally has a unique MAC address
+                used for local network communication.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Driver
+            </h3>
+
+            <p>
+                The operating system uses a device driver to communicate
+                with the NIC.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Interface
+            </h3>
+
+            <p>
+                NICs may provide wired Ethernet or wireless connectivity.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Hub
+    </div>
+
+    <div class="description">
+        A traditional Ethernet hub repeats an incoming signal out through
+        its other ports.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="switch-box"
+             style="left:43%;top:110px;">
+            HUB
+        </div>
+
+
+        <div class="device"
+             style="left:8%;top:45px;">
+            PC1
+        </div>
+
+        <div class="device"
+             style="left:8%;top:220px;">
+            PC2
+        </div>
+
+        <div class="device"
+             style="right:8%;top:45px;">
+            PC3
+        </div>
+
+        <div class="device"
+             style="right:8%;top:220px;">
+            PC4
+        </div>
+
+
+        <div class="line"
+             style="
+             left:18%;
+             top:78px;
+             width:27%;
+             transform:rotate(18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:18%;
+             top:250px;
+             width:27%;
+             transform:rotate(-18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:54%;
+             top:140px;
+             width:27%;
+             transform:rotate(-18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:54%;
+             top:180px;
+             width:27%;
+             transform:rotate(18deg);">
+        </div>
+
+
+        <div class="packet"
+             style="
+             left:20%;
+             top:70px;
+             animation:hubPacket 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes hubPacket {
+
+        0% {
+            left:20%;
+            top:70px;
+        }
+
+        50% {
+            left:45%;
+            top:135px;
+        }
+
+        100% {
+            left:80%;
+            top:70px;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                Broadcast
+            </h3>
+
+            <p>
+                The incoming signal is repeated to multiple ports.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Shared Bandwidth
+            </h3>
+
+            <p>
+                Devices connected to a hub share the available medium.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Modern Networks
+            </h3>
+
+            <p>
+                Hubs have largely been replaced by Ethernet switches.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Switch
+    </div>
+
+    <div class="description">
+        A switch forwards Ethernet frames based on learned MAC addresses.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="switch-box">
+            SWITCH
+        </div>
+
+
+        <div class="device"
+             style="left:8%;top:45px;">
+            PC1
+        </div>
+
+        <div class="device"
+             style="left:8%;top:220px;">
+            PC2
+        </div>
+
+        <div class="device"
+             style="right:8%;top:45px;">
+            PC3
+        </div>
+
+        <div class="device"
+             style="right:8%;top:220px;">
+            PC4
+        </div>
+
+
+        <div class="line"
+             style="
+             left:18%;
+             top:78px;
+             width:27%;
+             transform:rotate(18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:18%;
+             top:250px;
+             width:27%;
+             transform:rotate(-18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:54%;
+             top:140px;
+             width:27%;
+             transform:rotate(-18deg);">
+        </div>
+
+        <div class="line"
+             style="
+             left:54%;
+             top:180px;
+             width:27%;
+             transform:rotate(18deg);">
+        </div>
+
+
+        <div class="packet"
+             style="
+             animation:switchPacket 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes switchPacket {
+
+        0% {
+            left:20%;
+            top:70px;
+        }
+
+        45% {
+            left:45%;
+            top:135px;
+        }
+
+        100% {
+            left:78%;
+            top:70px;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                MAC Table
+            </h3>
+
+            <p>
+                The switch learns source MAC addresses and associates
+                them with ports.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Frame Forwarding
+            </h3>
+
+            <p>
+                The switch forwards a frame toward the appropriate
+                destination port when possible.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                LAN Device
+            </h3>
+
+            <p>
+                Switches are fundamental devices in modern Ethernet LANs.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Router
+    </div>
+
+    <div class="description">
+        A router connects different IP networks and forwards packets between them.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:7%;top:110px;">
+            LAN A
+        </div>
+
+
+        <div class="router-box">
+            ROUTER
+        </div>
+
+
+        <div class="device"
+             style="right:7%;top:110px;">
+            LAN B
+        </div>
+
+
+        <div class="line"
+             style="
+             left:17%;
+             top:143px;
+             width:27%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:56%;
+             top:143px;
+             width:27%;">
+        </div>
+
+
+        <div class="packet"
+             style="
+             left:20%;
+             top:135px;
+             animation:routerPacket 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes routerPacket {
+
+        0% {
+            left:20%;
+        }
+
+        48% {
+            left:46%;
+        }
+
+        100% {
+            left:77%;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                IP Address
+            </h3>
+
+            <p>
+                Routers use network-layer addressing to make forwarding
+                decisions.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Routing Table
+            </h3>
+
+            <p>
+                Contains routes used to determine where packets should
+                be forwarded.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Inter-Networking
+            </h3>
+
+            <p>
+                Connects different IP networks and network segments.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Bridge & Repeater
+    </div>
+
+    <div class="description">
+        Bridges connect network segments, while repeaters regenerate or repeat signals.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                Bridge
+            </span>
+
+            <h3>
+                Network Bridge
+            </h3>
+
+            <p>
+                Connects LAN segments and can make forwarding decisions
+                based on MAC addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Repeater
+            </span>
+
+            <h3>
+                Signal Regeneration
+            </h3>
+
+            <p>
+                Regenerates or repeats a signal to extend the reach of
+                a communication link.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Difference
+            </span>
+
+            <h3>
+                Intelligence
+            </h3>
+
+            <p>
+                A bridge can make forwarding decisions; a basic repeater
+                primarily deals with signal regeneration.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="network-area" style="margin-top:20px">
+
+        <div class="device"
+             style="left:8%;top:110px;">
+            LAN A
+        </div>
+
+        <div class="switch-box">
+            BRIDGE
+        </div>
+
+        <div class="device"
+             style="right:8%;top:110px;">
+            LAN B
+        </div>
+
+        <div class="line"
+             style="
+             left:18%;
+             top:143px;
+             width:26%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:55%;
+             top:143px;
+             width:27%;">
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Modem
+    </div>
+
+    <div class="description">
+        A modem provides modulation and demodulation functions for communication
+        over certain access technologies.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:8%;top:110px;">
+            HOME
+            <br>
+            NETWORK
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:42%;
+            top:100px;
+            width:150px;
+            height:90px;
+            border:3px solid #173b75;
+            border-radius:10px;
+            background:#f4f8ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;">
+            MODEM
+        </div>
+
+
+        <div class="device"
+             style="right:8%;top:110px;">
+            ISP
+        </div>
+
+
+        <div class="line"
+             style="
+             left:18%;
+             top:143px;
+             width:25%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:57%;
+             top:143px;
+             width:25%;">
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                Modulation
+            </h3>
+
+            <p>
+                Converts digital information into a suitable signal
+                for a communication medium.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Demodulation
+            </h3>
+
+            <p>
+                Recovers digital information from a received modulated signal.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Access Network
+            </h3>
+
+            <p>
+                Commonly used as part of broadband access connections.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Wireless Access Point
+    </div>
+
+    <div class="description">
+        A Wireless Access Point provides wireless connectivity to a wired network.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:8%;top:110px;">
+            SWITCH
+        </div>
+
+
+        <div class="ap">
+            ACCESS<br>
+            POINT
+        </div>
+
+
+        <div class="device"
+             style="right:8%;top:70px;">
+            LAPTOP
+        </div>
+
+        <div class="device"
+             style="right:8%;top:190px;">
+            PHONE
+        </div>
+
+
+        <div class="line"
+             style="
+             left:18%;
+             top:143px;
+             width:27%;">
+        </div>
+
+
+        <div class="wifi-wave one"></div>
+        <div class="wifi-wave two"></div>
+        <div class="wifi-wave three"></div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                Wireless Connectivity
+            </h3>
+
+            <p>
+                Allows Wi-Fi clients to connect to the network.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                SSID
+            </h3>
+
+            <p>
+                Wireless networks are commonly identified using a Service
+                Set Identifier.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Deployment
+            </h3>
+
+            <p>
+                Access points can be deployed in homes, offices, campuses
+                and public spaces.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Firewall
+    </div>
+
+    <div class="description">
+        A firewall controls network traffic according to configured security policies.
+    </div>
+
+
+    <div class="network-area">
+
+        <div class="device"
+             style="left:7%;top:110px;">
+            INTERNET
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:43%;
+            top:100px;
+            width:150px;
+            height:90px;
+            border:3px solid #173b75;
+            border-radius:10px;
+            background:#f4f8ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;">
+            FIREWALL
+        </div>
+
+
+        <div class="device"
+             style="right:7%;top:110px;">
+            LAN
+        </div>
+
+
+        <div class="line"
+             style="
+             left:18%;
+             top:143px;
+             width:25%;">
+        </div>
+
+        <div class="line"
+             style="
+             left:57%;
+             top:143px;
+             width:25%;">
+        </div>
+
+
+        <div class="packet"
+             style="
+             left:20%;
+             top:135px;
+             animation:firewallPacket 3s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes firewallPacket {
+
+        0% {
+            left:20%;
+        }
+
+        40% {
+            left:42%;
+        }
+
+        55% {
+            left:42%;
+            opacity:0;
+        }
+
+        100% {
+            left:78%;
+            opacity:1;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="card-grid" style="margin-top:15px">
+
+        <div class="card">
+
+            <h3>
+                Traffic Filtering
+            </h3>
+
+            <p>
+                Examines traffic according to configured rules and policies.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Access Control
+            </h3>
+
+            <p>
+                Can permit or deny network connections based on security rules.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Network Security
+            </h3>
+
+            <p>
+                Helps reduce unauthorized network access and exposure.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Software
+    </div>
+
+    <div class="description">
+        Network software provides the protocols, services, drivers and applications
+        required for network communication and management.
+    </div>
+
+
+    <div class="software-flow">
+
+        <div class="software-box">
+            Application
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="software-box">
+            Network Services
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="software-box">
+            Protocols
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="software-box">
+            NIC Driver
+        </div>
+
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Network Protocols
+            </h3>
+
+            <p>
+                TCP/IP, HTTP, DNS, DHCP, SSH and other protocols define
+                how network communication occurs.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Device Drivers
+            </h3>
+
+            <p>
+                Allow the operating system to communicate with network
+                interface hardware.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Network Services
+            </h3>
+
+            <p>
+                DNS, DHCP, directory services and file-sharing services
+                support network operation.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Network Management
+            </h3>
+
+            <p>
+                Tools monitor devices, traffic, performance and configuration.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Security Software
+            </h3>
+
+            <p>
+                Firewalls, endpoint security and authentication software
+                help protect networked systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Diagnostic Tools
+            </h3>
+
+            <p>
+                Tools such as ping, traceroute and packet analyzers help
+                troubleshoot networks.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 11 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Hardware vs Network Software
+    </div>
+
+    <div class="description">
+        Hardware provides the physical infrastructure, while software provides
+        the logic and services needed to operate the network.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+
+            <th>
+                Feature
+            </th>
+
+            <th>
+                Network Hardware
+            </th>
+
+            <th>
+                Network Software
+            </th>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Definition
+            </td>
+
+            <td>
+                Physical networking equipment
+            </td>
+
+            <td>
+                Programs, protocols and services
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Examples
+            </td>
+
+            <td>
+                NIC, switch, router, AP, modem, firewall
+            </td>
+
+            <td>
+                TCP/IP, drivers, DNS, DHCP, management tools
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Function
+            </td>
+
+            <td>
+                Transmits, forwards and connects data
+            </td>
+
+            <td>
+                Controls, manages and interprets communication
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Physical?
+            </td>
+
+            <td>
+                Yes
+            </td>
+
+            <td>
+                No
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                Dependency
+            </td>
+
+            <td>
+                Requires software for configuration and control
+            </td>
+
+            <td>
+                Requires suitable hardware for actual transmission
+            </td>
+
+        </tr>
+
+    </table>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Idea:
+        </span>
+
+        Hardware carries the communication;
+        software defines and controls how communication occurs.
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 12 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Network Hardware & Software — Summary
+    </div>
+
+    <div class="description">
+        A functioning computer network requires both physical devices and software components.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                NIC
+            </h3>
+
+            <p>
+                Connects a host to the network.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Switch
+            </h3>
+
+            <p>
+                Connects devices within an Ethernet LAN and forwards frames.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Router
+            </h3>
+
+            <p>
+                Connects different IP networks and forwards packets.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Access Point
+            </h3>
+
+            <p>
+                Provides wireless network connectivity.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Firewall
+            </h3>
+
+            <p>
+                Enforces network security policies on traffic.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Network Software
+            </h3>
+
+            <p>
+                Provides protocols, drivers, services and management tools.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Remember:
+        </span>
+
+        <br><br>
+
+        <b>
+            Network Hardware = Physical Infrastructure
+        </b>
+
+        <br><br>
+
+        <b>
+            Network Software = Communication Logic + Services + Management
+        </b>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+
+<div class="progress"
+     id="progress">
+</div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0) {
+
+        index = 0;
+
+    }
+
+
+    if (index >= slides.length) {
+
+        index =
+            slides.length - 1;
+
+    }
+
+
+    currentSlide = index;
+
+
+    slides.forEach(
+        (slide, i) => {
+
+            slide.classList.toggle(
+                "active",
+                i === currentSlide
+            );
+
+        }
+    );
+
+
+    buttons.forEach(
+        (button, i) => {
+
+            button.classList.toggle(
+                "active",
+                i === currentSlide
+            );
+
+        }
+    );
+
+
+    progress.style.width =
+        (
+            (currentSlide + 1) /
+            slides.length *
+            100
+        ) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT SLIDE
+===================================================== */
+
+function nextSlide() {
+
+    if (
+        currentSlide <
+        slides.length - 1
+    ) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS SLIDE
+===================================================== */
+
+function previousSlide() {
+
+    if (
+        currentSlide > 0
+    ) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

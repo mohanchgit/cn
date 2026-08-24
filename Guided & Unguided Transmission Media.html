@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guided & Unguided Media</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    background: #ffffff;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    color: #555;
+    font-size: 15px;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    color: #173b75;
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #bcc9da;
+    background: #ffffff;
+    border-radius: 7px;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    padding: 22px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .4s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    color: #173b75;
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+/* ================= CARDS ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 17px;
+    min-height: 125px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    line-height: 1.45;
+    color: #444;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 14px;
+    background: #edf4ff;
+    border: 1px solid #bfd2ec;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+/* ================= MEDIA DIAGRAM ================= */
+
+.media-diagram {
+    position: relative;
+    height: 310px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #fbfcfe;
+    overflow: hidden;
+}
+
+.device {
+    position: absolute;
+    width: 125px;
+    height: 70px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.sender {
+    left: 5%;
+    top: 120px;
+}
+
+.receiver {
+    right: 5%;
+    top: 120px;
+}
+
+/* ================= GUIDED CABLE ================= */
+
+.cable {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: 151px;
+    height: 10px;
+    border-radius: 10px;
+    background: #d3d8df;
+    border: 2px solid #173b75;
+}
+
+.signal {
+    position: absolute;
+    top: 137px;
+    left: 17%;
+    padding: 7px 12px;
+    background: #e8f1ff;
+    border: 2px solid #2f6fbe;
+    color: #173b75;
+    border-radius: 6px;
+    font-weight: 700;
+    z-index: 4;
+}
+
+.signal.animate {
+    animation: signalMove 3.5s linear infinite;
+}
+
+@keyframes signalMove {
+    from {
+        left: 17%;
+    }
+
+    to {
+        left: 77%;
+    }
+}
+
+/* ================= WIRELESS WAVES ================= */
+
+.wave {
+    position: absolute;
+    left: 50%;
+    top: 155px;
+    width: 30px;
+    height: 30px;
+    border: 3px solid #2f6fbe;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+}
+
+.wave.w1 {
+    animation: wave 2.5s infinite;
+}
+
+.wave.w2 {
+    animation: wave 2.5s infinite .6s;
+}
+
+.wave.w3 {
+    animation: wave 2.5s infinite 1.2s;
+}
+
+@keyframes wave {
+    0% {
+        width: 20px;
+        height: 20px;
+        opacity: .9;
+    }
+
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+/* ================= FIBER ================= */
+
+.fiber {
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    top: 150px;
+    height: 12px;
+    background: #edf0f4;
+    border: 3px solid #173b75;
+    border-radius: 20px;
+}
+
+.light {
+    position: absolute;
+    top: 146px;
+    left: 17%;
+    width: 15px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 12px 5px #2f6fbe;
+    animation: lightMove 2s linear infinite;
+}
+
+@keyframes lightMove {
+    from {
+        left: 17%;
+    }
+
+    to {
+        left: 82%;
+    }
+}
+
+/* ================= RADIO ================= */
+
+.radio-tower {
+    position: absolute;
+    left: 48%;
+    top: 95px;
+    width: 8px;
+    height: 120px;
+    background: #173b75;
+}
+
+.radio-tower::before,
+.radio-tower::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 70px;
+    height: 3px;
+    background: #173b75;
+}
+
+.radio-tower::before {
+    left: -31px;
+    transform: rotate(25deg);
+}
+
+.radio-tower::after {
+    left: -31px;
+    transform: rotate(-25deg);
+}
+
+/* ================= MICROWAVE ================= */
+
+.tower {
+    position: absolute;
+    bottom: 60px;
+    width: 12px;
+    height: 120px;
+    background: #173b75;
+}
+
+.tower.left {
+    left: 20%;
+}
+
+.tower.right {
+    right: 20%;
+}
+
+.dish {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    border: 5px solid #2f6fbe;
+    border-radius: 50%;
+}
+
+.dish.left {
+    left: 21%;
+    top: 110px;
+}
+
+.dish.right {
+    right: 21%;
+    top: 110px;
+}
+
+.microwave-beam {
+    position: absolute;
+    left: 26%;
+    right: 26%;
+    top: 130px;
+    height: 4px;
+    background: #2f6fbe;
+    transform: rotate(-3deg);
+}
+
+.microwave-dot {
+    position: absolute;
+    top: 125px;
+    left: 27%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #173b75;
+    animation: microwaveMove 2.5s linear infinite;
+}
+
+@keyframes microwaveMove {
+    from {
+        left: 27%;
+    }
+
+    to {
+        left: 72%;
+    }
+}
+
+/* ================= TABLE ================= */
+
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 12px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* ================= INFO ================= */
+
+.info {
+    margin-top: 18px;
+    padding: 16px;
+    background: #f8fbff;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    padding: 9px 15px;
+    border: 1px solid #173b75;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px) {
+
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="title">
+        Guided & Unguided Transmission Media
+    </div>
+
+    <div class="subtitle">
+        Computer Networks
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. Transmission Media
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Guided Media
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Twisted Pair
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Coaxial Cable
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Optical Fiber
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Unguided Media
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Radio Waves
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Microwaves
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. Infrared
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. Comparison
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        Transmission Media
+    </div>
+
+    <div class="description">
+        Transmission media provides the physical path through which data signals travel
+        from sender to receiver.
+    </div>
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <span class="badge">
+                Category 1
+            </span>
+
+            <h3>
+                Guided Media
+            </h3>
+
+            <p>
+                Signals travel through a physical medium such as
+                copper cable or optical fiber.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Category 2
+            </span>
+
+            <h3>
+                Unguided Media
+            </h3>
+
+            <p>
+                Signals propagate through air or free space using
+                electromagnetic waves.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <span class="badge">
+                Main Goal
+            </span>
+
+            <h3>
+                Communication
+            </h3>
+
+            <p>
+                Carry information from a transmitting device to
+                a receiving device.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="media-diagram" style="margin-top:25px">
+
+        <div class="device sender">
+            SENDER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+        <div class="cable"></div>
+
+        <div class="signal animate">
+            DATA
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Guided Media
+    </div>
+
+    <div class="description">
+        Guided media uses a physical cable to guide the signal between devices.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            SENDER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+        <div class="cable"></div>
+
+        <div class="signal animate">
+            SIGNAL
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Twisted Pair
+            </h3>
+
+            <p>
+                Two insulated copper wires are twisted together to
+                reduce electromagnetic interference.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Coaxial Cable
+            </h3>
+
+            <p>
+                Uses a central conductor surrounded by insulation,
+                shielding and an outer jacket.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Optical Fiber
+            </h3>
+
+            <p>
+                Transmits information as pulses of light through
+                glass or plastic fiber.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Idea:
+        </span>
+
+        The physical cable controls the path of the signal.
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Twisted Pair Cable
+    </div>
+
+    <div class="description">
+        A common copper-based guided transmission medium.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            SENDER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+
+        <!-- Twisted wires -->
+
+        <svg
+            style="
+            position:absolute;
+            left:17%;
+            right:17%;
+            top:80px;
+            width:66%;
+            height:150px;">
+
+            <path
+                d="M0 60
+                   C30 20,60 100,90 60
+                   S150 20,180 60
+                   S240 100,270 60
+                   S330 20,360 60
+                   S420 100,450 60
+                   S510 20,540 60"
+                fill="none"
+                stroke="#173b75"
+                stroke-width="6"/>
+
+            <path
+                d="M0 100
+                   C30 140,60 60,90 100
+                   S150 140,180 100
+                   S240 60,270 100
+                   S330 140,360 100
+                   S420 60,450 100
+                   S510 140,540 100"
+                fill="none"
+                stroke="#2f6fbe"
+                stroke-width="6"/>
+
+        </svg>
+
+
+        <div class="signal animate">
+            DATA
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                UTP
+            </h3>
+
+            <p>
+                Unshielded Twisted Pair is widely used in Ethernet
+                networks.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                STP
+            </h3>
+
+            <p>
+                Shielded Twisted Pair provides additional protection
+                against interference.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Advantages
+            </h3>
+
+            <p>
+                Low cost, easy installation and widely available.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Coaxial Cable
+    </div>
+
+    <div class="description">
+        Coaxial cable contains a central conductor and surrounding shielding.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            SENDER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:20%;
+            right:20%;
+            top:135px;
+            height:42px;
+            border:7px solid #173b75;
+            border-radius:30px;
+            background:#eef2f7;">
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:21%;
+            right:21%;
+            top:150px;
+            height:12px;
+            background:#2f6fbe;
+            border-radius:10px;">
+        </div>
+
+
+        <div class="signal animate">
+            SIGNAL
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Core
+            </h3>
+
+            <p>
+                Central conductor carries the electrical signal.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Shield
+            </h3>
+
+            <p>
+                Metallic shielding reduces electromagnetic interference.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Applications
+            </h3>
+
+            <p>
+                Cable television, broadband systems and some
+                communication networks.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Optical Fiber
+    </div>
+
+    <div class="description">
+        Optical fiber transmits data using pulses of light.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            LASER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+
+        <div class="fiber"></div>
+
+        <div class="light"></div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Core
+            </h3>
+
+            <p>
+                The central region through which light travels.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Cladding
+            </h3>
+
+            <p>
+                Surrounds the core and helps keep light inside
+                through internal reflection.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Advantages
+            </h3>
+
+            <p>
+                Very high bandwidth, long-distance transmission and
+                immunity to electromagnetic interference.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Signal:
+        </span>
+
+        Electrical data → Light pulses → Optical fiber → Receiver
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Unguided Media
+    </div>
+
+    <div class="description">
+        Unguided media transmits electromagnetic signals through air or free space.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            TRANSMITTER
+        </div>
+
+        <div class="device receiver">
+            RECEIVER
+        </div>
+
+
+        <div class="wave w1"></div>
+        <div class="wave w2"></div>
+        <div class="wave w3"></div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Radio Waves
+            </h3>
+
+            <p>
+                Useful for mobile communication, broadcasting and
+                wireless networking.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Microwaves
+            </h3>
+
+            <p>
+                Used in point-to-point communication, cellular networks
+                and satellite systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Infrared
+            </h3>
+
+            <p>
+                Short-range communication commonly used in remote
+                controls and some device-to-device applications.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Radio Waves
+    </div>
+
+    <div class="description">
+        Radio waves can propagate through the atmosphere and are suitable
+        for wireless communication.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            RADIO
+            <br>
+            TRANSMITTER
+        </div>
+
+        <div class="radio-tower"></div>
+
+        <div class="device receiver">
+            RADIO
+            <br>
+            RECEIVER
+        </div>
+
+
+        <div class="wave w1"></div>
+        <div class="wave w2"></div>
+        <div class="wave w3"></div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Broadcasting
+            </h3>
+
+            <p>
+                Radio and television broadcasting use radio-frequency
+                electromagnetic waves.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Wireless Networks
+            </h3>
+
+            <p>
+                Wireless LANs and mobile communication use radio
+                frequency bands.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Property
+            </h3>
+
+            <p>
+                Radio waves can cover large areas depending on frequency,
+                power and propagation conditions.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Microwaves
+    </div>
+
+    <div class="description">
+        Microwaves are high-frequency electromagnetic waves often used
+        for directional communication.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="tower left"></div>
+        <div class="tower right"></div>
+
+        <div class="dish left"></div>
+        <div class="dish right"></div>
+
+        <div class="microwave-beam"></div>
+
+        <div class="microwave-dot"></div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Terrestrial Microwave
+            </h3>
+
+            <p>
+                Uses directional antennas to establish point-to-point
+                communication.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Satellite Communication
+            </h3>
+
+            <p>
+                Microwave frequencies are widely used for communication
+                with satellites.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Line of Sight
+            </h3>
+
+            <p>
+                Many microwave links require a relatively clear path
+                between antennas.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Infrared
+    </div>
+
+    <div class="description">
+        Infrared communication is generally used for short-range wireless transmission.
+    </div>
+
+
+    <div class="media-diagram">
+
+        <div class="device sender">
+            IR
+            <br>
+            TRANSMITTER
+        </div>
+
+        <div class="device receiver">
+            IR
+            <br>
+            RECEIVER
+        </div>
+
+
+        <div style="
+            position:absolute;
+            left:25%;
+            right:25%;
+            top:150px;
+            height:5px;
+            background:#2f6fbe;">
+        </div>
+
+
+        <div id="irBeam"
+             style="
+             position:absolute;
+             top:143px;
+             left:27%;
+             width:18px;
+             height:18px;
+             border-radius:50%;
+             background:#173b75;
+             animation:irMove 2s linear infinite;">
+        </div>
+
+    </div>
+
+
+    <style>
+
+    @keyframes irMove {
+
+        from {
+            left:27%;
+        }
+
+        to {
+            left:72%;
+        }
+
+    }
+
+    </style>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Short Range
+            </h3>
+
+            <p>
+                Suitable for communication over relatively short distances.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Applications
+            </h3>
+
+            <p>
+                Remote controls, sensors and some short-range
+                communication systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Limitation
+            </h3>
+
+            <p>
+                It generally does not penetrate opaque objects and
+                is affected by obstacles.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Guided vs Unguided Media
+    </div>
+
+    <div class="description">
+        Comparison of wired and wireless transmission media.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+            <th>Feature</th>
+            <th>Guided Media</th>
+            <th>Unguided Media</th>
+        </tr>
+
+        <tr>
+            <td>Physical Path</td>
+            <td>Uses a physical cable</td>
+            <td>Uses air/free space</td>
+        </tr>
+
+        <tr>
+            <td>Examples</td>
+            <td>Twisted pair, coaxial, fiber</td>
+            <td>Radio, microwave, infrared</td>
+        </tr>
+
+        <tr>
+            <td>Mobility</td>
+            <td>Limited</td>
+            <td>High</td>
+        </tr>
+
+        <tr>
+            <td>Installation</td>
+            <td>Requires cable deployment</td>
+            <td>Does not require physical cable</td>
+        </tr>
+
+        <tr>
+            <td>Interference</td>
+            <td>Depends on cable type</td>
+            <td>More susceptible to environmental interference</td>
+        </tr>
+
+        <tr>
+            <td>Security</td>
+            <td>Physical access is generally required</td>
+            <td>Signals may be intercepted over the transmission area</td>
+        </tr>
+
+        <tr>
+            <td>Mobility Applications</td>
+            <td>Less suitable</td>
+            <td>Highly suitable</td>
+        </tr>
+
+    </table>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Concept:
+        </span>
+
+        <b>Guided = Signal follows a physical path</b>
+        &nbsp; | &nbsp;
+        <b>Unguided = Signal travels through free space</b>
+
+    </div>
+
+</section>
+
+</main>
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+<div class="progress" id="progress"></div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0)
+        index = 0;
+
+    if (index >= slides.length)
+        index = slides.length - 1;
+
+    currentSlide = index;
+
+
+    slides.forEach((slide, i) => {
+
+        slide.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    buttons.forEach((button, i) => {
+
+        button.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    progress.style.width =
+        ((currentSlide + 1) /
+        slides.length * 100) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT / PREVIOUS
+===================================================== */
+
+function nextSlide() {
+
+    if (currentSlide <
+        slides.length - 1) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

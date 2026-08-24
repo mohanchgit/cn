@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSI Reference Model</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ffffff;
+    color: #172033;
+    overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    height: 76px;
+    background: #ffffff;
+    border-bottom: 3px solid #173b75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #173b75;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #555;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    height: calc(100vh - 76px);
+    display: grid;
+    grid-template-columns: 255px 1fr;
+}
+
+.sidebar {
+    background: #f4f7fb;
+    border-right: 2px solid #d5deeb;
+    padding: 18px;
+}
+
+.menu-title {
+    color: #173b75;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 9px 10px;
+    margin: 4px 0;
+    border: 1px solid #bcc9da;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #e8f1ff;
+    border-color: #173b75;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    padding: 20px 30px;
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    height: 100%;
+    animation: fadeIn .35s ease;
+}
+
+.slide.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-title {
+    color: #173b75;
+    font-size: 27px;
+    margin-bottom: 5px;
+}
+
+.description {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+/* ================= OSI STACK ================= */
+
+.stack-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 45px;
+}
+
+.stack {
+    width: 520px;
+}
+
+.layer {
+    min-height: 65px;
+    margin: 5px 0;
+    border: 2px solid #173b75;
+    border-radius: 8px;
+    background: #ffffff;
+    display: grid;
+    grid-template-columns: 55px 190px 1fr;
+    align-items: center;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    transition: .3s;
+}
+
+.layer:hover {
+    transform: translateX(5px);
+    background: #f8fbff;
+}
+
+.layer-number {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #173b75;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.layer-name {
+    color: #173b75;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.layer-function {
+    font-size: 12px;
+    color: #555;
+}
+
+.application {
+    border-left: 6px solid #2f6fbe;
+}
+
+.presentation {
+    border-left: 6px solid #2f6fbe;
+}
+
+.session {
+    border-left: 6px solid #2f6fbe;
+}
+
+.transport {
+    border-left: 6px solid #2f6fbe;
+}
+
+.network {
+    border-left: 6px solid #2f6fbe;
+}
+
+.data-link {
+    border-left: 6px solid #2f6fbe;
+}
+
+.physical {
+    border-left: 6px solid #2f6fbe;
+}
+
+/* ================= CARDS ================= */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 5px solid #2f6fbe;
+    border-radius: 9px;
+    padding: 16px;
+    min-height: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.card h3 {
+    margin: 0 0 7px;
+    color: #173b75;
+    font-size: 18px;
+}
+
+.card p {
+    margin: 0;
+    color: #444;
+    line-height: 1.4;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 14px;
+    background: #edf4ff;
+    border: 1px solid #bfd2ec;
+    color: #173b75;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+/* ================= FLOW ================= */
+
+.flow-area {
+    height: 260px;
+    border: 1px solid #ccd6e3;
+    border-radius: 12px;
+    background: #fbfcfe;
+    position: relative;
+    overflow: hidden;
+}
+
+.device {
+    position: absolute;
+    width: 125px;
+    height: 70px;
+    border: 2px solid #173b75;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.sender {
+    left: 5%;
+    top: 95px;
+}
+
+.receiver {
+    right: 5%;
+    top: 95px;
+}
+
+.connection {
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    top: 128px;
+    height: 4px;
+    background: #aab7c8;
+}
+
+.packet {
+    position: absolute;
+    top: 107px;
+    left: 17%;
+    padding: 9px 14px;
+    border: 2px solid #2f6fbe;
+    border-radius: 7px;
+    background: #e9f3ff;
+    color: #173b75;
+    font-weight: 700;
+    animation: packetMove 4s linear infinite;
+}
+
+@keyframes packetMove {
+    0% {
+        left: 17%;
+    }
+
+    100% {
+        left: 78%;
+    }
+}
+
+/* ================= ENCAPSULATION ================= */
+
+.encapsulation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.box {
+    padding: 18px;
+    border: 2px solid #173b75;
+    border-radius: 7px;
+    background: #f8fbff;
+    font-weight: 700;
+    text-align: center;
+}
+
+.arrow {
+    font-size: 28px;
+    color: #2f6fbe;
+}
+
+.data-frame {
+    display: flex;
+    border: 2px solid #173b75;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.data-frame span {
+    padding: 15px 12px;
+    border-right: 1px solid white;
+    font-weight: 700;
+    text-align: center;
+}
+
+.data-frame span:last-child {
+    border-right: none;
+}
+
+.header-box {
+    background: #e8f1ff;
+}
+
+.data-box {
+    background: #f4f4f4;
+}
+
+.trailer-box {
+    background: #fff1dc;
+}
+
+/* ================= TABLE ================= */
+
+.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.compare th,
+.compare td {
+    border: 1px solid #c8d3e0;
+    padding: 10px;
+    text-align: left;
+}
+
+.compare th {
+    background: #edf3fb;
+    color: #173b75;
+}
+
+/* ================= INFO ================= */
+
+.info {
+    margin-top: 16px;
+    padding: 14px;
+    background: #f8fbff;
+    border: 2px solid #173b75;
+    border-radius: 9px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.highlight {
+    color: #173b75;
+    font-weight: 700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls {
+    position: fixed;
+    right: 22px;
+    bottom: 17px;
+    display: flex;
+    gap: 8px;
+}
+
+.controls button {
+    padding: 9px 15px;
+    border: 1px solid #173b75;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #173b75;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #edf4ff;
+}
+
+.progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #2f6fbe;
+    transition: width .3s;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:950px) {
+
+    .container {
+        grid-template-columns: 190px 1fr;
+    }
+
+    .stack-area {
+        gap: 20px;
+    }
+
+    .stack {
+        width: 450px;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="title">
+        OSI Reference Model
+    </div>
+
+    <div class="subtitle">
+        Open Systems Interconnection
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="menu-title">
+        Lecture Sections
+    </div>
+
+    <div class="menu">
+
+        <button class="active" onclick="showSlide(0)">
+            1. OSI Overview
+        </button>
+
+        <button onclick="showSlide(1)">
+            2. Seven Layers
+        </button>
+
+        <button onclick="showSlide(2)">
+            3. Application Layer
+        </button>
+
+        <button onclick="showSlide(3)">
+            4. Presentation Layer
+        </button>
+
+        <button onclick="showSlide(4)">
+            5. Session Layer
+        </button>
+
+        <button onclick="showSlide(5)">
+            6. Transport Layer
+        </button>
+
+        <button onclick="showSlide(6)">
+            7. Network Layer
+        </button>
+
+        <button onclick="showSlide(7)">
+            8. Data Link Layer
+        </button>
+
+        <button onclick="showSlide(8)">
+            9. Physical Layer
+        </button>
+
+        <button onclick="showSlide(9)">
+            10. Encapsulation
+        </button>
+
+        <button onclick="showSlide(10)">
+            11. PDU Summary
+        </button>
+
+        <button onclick="showSlide(11)">
+            12. OSI Summary
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- ================================================= -->
+<!-- SLIDE 1 -->
+<!-- ================================================= -->
+
+<section class="slide active">
+
+    <div class="slide-title">
+        OSI Reference Model
+    </div>
+
+    <div class="description">
+        The OSI model is a seven-layer conceptual framework used to understand
+        how network communication functions.
+    </div>
+
+
+    <div class="stack-area">
+
+        <div class="stack">
+
+            <div class="layer application">
+                <div class="layer-number">7</div>
+
+                <div class="layer-name">
+                    Application
+                </div>
+
+                <div class="layer-function">
+                    Network services for applications
+                </div>
+            </div>
+
+
+            <div class="layer presentation">
+                <div class="layer-number">6</div>
+
+                <div class="layer-name">
+                    Presentation
+                </div>
+
+                <div class="layer-function">
+                    Translation, encryption, compression
+                </div>
+            </div>
+
+
+            <div class="layer session">
+                <div class="layer-number">5</div>
+
+                <div class="layer-name">
+                    Session
+                </div>
+
+                <div class="layer-function">
+                    Session establishment and management
+                </div>
+            </div>
+
+
+            <div class="layer transport">
+                <div class="layer-number">4</div>
+
+                <div class="layer-name">
+                    Transport
+                </div>
+
+                <div class="layer-function">
+                    End-to-end delivery
+                </div>
+            </div>
+
+
+            <div class="layer network">
+                <div class="layer-number">3</div>
+
+                <div class="layer-name">
+                    Network
+                </div>
+
+                <div class="layer-function">
+                    Logical addressing and routing
+                </div>
+            </div>
+
+
+            <div class="layer data-link">
+                <div class="layer-number">2</div>
+
+                <div class="layer-name">
+                    Data Link
+                </div>
+
+                <div class="layer-function">
+                    Framing and MAC addressing
+                </div>
+            </div>
+
+
+            <div class="layer physical">
+                <div class="layer-number">1</div>
+
+                <div class="layer-name">
+                    Physical
+                </div>
+
+                <div class="layer-function">
+                    Transmission of bits
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Key Idea:
+        </span>
+
+        Each OSI layer performs a specific networking function
+        and communicates with the layer directly above or below it.
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 2 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Seven Layers of the OSI Model
+    </div>
+
+    <div class="description">
+        The layers work together to provide complete network communication.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+            <span class="badge">Layer 7</span>
+            <h3>Application</h3>
+            <p>
+                Provides network services directly to end-user applications.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 6</span>
+            <h3>Presentation</h3>
+            <p>
+                Handles data translation, encryption and compression.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 5</span>
+            <h3>Session</h3>
+            <p>
+                Establishes, manages and terminates communication sessions.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 4</span>
+            <h3>Transport</h3>
+            <p>
+                Provides end-to-end delivery and transport reliability.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 3</span>
+            <h3>Network</h3>
+            <p>
+                Provides logical addressing and routing between networks.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 2</span>
+            <h3>Data Link</h3>
+            <p>
+                Provides framing, MAC addressing and link-level error control.
+            </p>
+        </div>
+
+
+        <div class="card">
+            <span class="badge">Layer 1</span>
+            <h3>Physical</h3>
+            <p>
+                Transmits raw bits through the physical medium.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Mnemonic:
+        </span>
+
+        <b>
+            All People Seem To Need Data Processing
+        </b>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 3 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 7 — Application Layer
+    </div>
+
+    <div class="description">
+        Provides services that network applications use to communicate.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                HTTP / HTTPS
+            </h3>
+
+            <p>
+                Used for web communication between clients and servers.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                FTP
+            </h3>
+
+            <p>
+                Supports file transfer between network systems.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                SMTP
+            </h3>
+
+            <p>
+                Supports email message transfer.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                DNS
+            </h3>
+
+            <p>
+                Resolves domain names into network addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Telnet / SSH
+            </h3>
+
+            <p>
+                Provides remote access functionality.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                User Interaction
+            </h3>
+
+            <p>
+                Closest OSI layer to the end-user applications.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            PDU:
+        </span>
+
+        Data / Message
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 4 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 6 — Presentation Layer
+    </div>
+
+    <div class="description">
+        Ensures that data exchanged between systems is represented in a usable format.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Translation
+            </h3>
+
+            <p>
+                Converts data between different representation formats.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Encryption
+            </h3>
+
+            <p>
+                Provides data transformation for confidentiality.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Decryption
+            </h3>
+
+            <p>
+                Converts protected data back into usable information.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Compression
+            </h3>
+
+            <p>
+                Reduces the amount of data that needs to be transmitted.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Data Formats
+            </h3>
+
+            <p>
+                Examples include character encoding and structured
+                representation formats.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Example
+            </h3>
+
+            <p>
+                JPEG, MPEG, ASCII, Unicode and encryption formats are
+                commonly associated conceptually with this layer.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 5 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 5 — Session Layer
+    </div>
+
+    <div class="description">
+        Manages communication sessions between applications.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Session Establishment
+            </h3>
+
+            <p>
+                Initiates communication sessions between applications.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Session Management
+            </h3>
+
+            <p>
+                Coordinates communication during an active session.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Session Termination
+            </h3>
+
+            <p>
+                Properly closes a communication session.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Dialog Control
+            </h3>
+
+            <p>
+                Coordinates which side communicates and when.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Synchronization
+            </h3>
+
+            <p>
+                Provides synchronization points for long communication
+                sessions.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Example
+            </h3>
+
+            <p>
+                Session-oriented communication mechanisms can use
+                concepts associated with this layer.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 6 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 4 — Transport Layer
+    </div>
+
+    <div class="description">
+        Provides end-to-end delivery between processes running on network devices.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Segmentation
+            </h3>
+
+            <p>
+                Divides application data into manageable transport units.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Flow Control
+            </h3>
+
+            <p>
+                Coordinates the rate of data transmission between endpoints.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Error Control
+            </h3>
+
+            <p>
+                Supports reliable delivery through mechanisms such as
+                acknowledgements and retransmission.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Port Addressing
+            </h3>
+
+            <p>
+                Identifies the source and destination application processes.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                TCP
+            </h3>
+
+            <p>
+                Connection-oriented and reliable transport protocol.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                UDP
+            </h3>
+
+            <p>
+                Connectionless transport protocol with low overhead.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            PDU:
+        </span>
+
+        Segment / Datagram
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 7 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 3 — Network Layer
+    </div>
+
+    <div class="description">
+        Responsible for logical addressing and routing packets between networks.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Logical Addressing
+            </h3>
+
+            <p>
+                Uses logical addresses such as IPv4 and IPv6 addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Routing
+            </h3>
+
+            <p>
+                Determines suitable paths for packets across interconnected
+                networks.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Packet Forwarding
+            </h3>
+
+            <p>
+                Routers forward packets toward their destinations.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                IPv4
+            </h3>
+
+            <p>
+                Uses 32-bit logical addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                IPv6
+            </h3>
+
+            <p>
+                Uses 128-bit logical addresses.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Device
+            </h3>
+
+            <p>
+                Routers primarily operate at this layer.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            PDU:
+        </span>
+
+        Packet
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 8 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 2 — Data Link Layer
+    </div>
+
+    <div class="description">
+        Provides node-to-node delivery over a local communication link.
+    </div>
+
+
+    <div class="card-grid">
+
+        <div class="card">
+
+            <h3>
+                Framing
+            </h3>
+
+            <p>
+                Organizes network-layer packets into frames.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                MAC Addressing
+            </h3>
+
+            <p>
+                Uses physical addresses for local network delivery.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Error Detection
+            </h3>
+
+            <p>
+                Detects transmission errors using mechanisms such as CRC.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Flow Control
+            </h3>
+
+            <p>
+                Coordinates data transmission between directly connected nodes.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Ethernet
+            </h3>
+
+            <p>
+                Common Layer 2 LAN technology.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Switch
+            </h3>
+
+            <p>
+                Ethernet switches primarily operate at the Data Link Layer.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            PDU:
+        </span>
+
+        Frame
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 9 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        Layer 1 — Physical Layer
+    </div>
+
+    <div class="description">
+        Transmits raw bits over the physical communication medium.
+    </div>
+
+
+    <div class="flow-area">
+
+        <div class="device sender">
+            DEVICE A
+        </div>
+
+        <div class="device receiver">
+            DEVICE B
+        </div>
+
+        <div class="connection"></div>
+
+        <div class="packet">
+            10110101
+        </div>
+
+    </div>
+
+
+    <div class="card-grid" style="margin-top:18px">
+
+        <div class="card">
+
+            <h3>
+                Bits
+            </h3>
+
+            <p>
+                Represents information as electrical, optical or radio signals.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Transmission Media
+            </h3>
+
+            <p>
+                Copper cable, fiber optic cable and wireless media.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>
+                Physical Characteristics
+            </h3>
+
+            <p>
+                Defines signal levels, connectors, timing and transmission
+                characteristics.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            PDU:
+        </span>
+
+        Bits
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 10 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        OSI Encapsulation
+    </div>
+
+    <div class="description">
+        As data moves downward at the sender, each layer adds its own control information.
+    </div>
+
+
+    <div class="encapsulation">
+
+        <div class="box">
+            Application<br>
+            DATA
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="data-frame">
+
+            <span class="header-box">
+                L4<br>
+                HEADER
+            </span>
+
+            <span class="data-box">
+                DATA
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="data-frame">
+
+            <span class="header-box">
+                L3<br>
+                HEADER
+            </span>
+
+            <span class="data-box">
+                L4 SEGMENT
+            </span>
+
+        </div>
+
+        <div class="arrow">
+            →
+        </div>
+
+        <div class="data-frame">
+
+            <span class="header-box">
+                L2<br>
+                HEADER
+            </span>
+
+            <span class="data-box">
+                L3 PACKET
+            </span>
+
+            <span class="trailer-box">
+                L2<br>
+                TRAILER
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Encapsulation:
+        </span>
+
+        Data → Segment → Packet → Frame → Bits
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 11 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        OSI Protocol Data Units
+    </div>
+
+    <div class="description">
+        Each layer has a commonly used name for the data it processes.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+            <th>Layer</th>
+            <th>Name</th>
+            <th>Common PDU</th>
+            <th>Example Address / Identifier</th>
+        </tr>
+
+        <tr>
+            <td>7 — Application</td>
+            <td>Application</td>
+            <td>Data</td>
+            <td>Application information</td>
+        </tr>
+
+        <tr>
+            <td>6 — Presentation</td>
+            <td>Presentation</td>
+            <td>Data</td>
+            <td>Data format</td>
+        </tr>
+
+        <tr>
+            <td>5 — Session</td>
+            <td>Session</td>
+            <td>Data</td>
+            <td>Session information</td>
+        </tr>
+
+        <tr>
+            <td>4 — Transport</td>
+            <td>Transport</td>
+            <td>Segment / Datagram</td>
+            <td>Port Number</td>
+        </tr>
+
+        <tr>
+            <td>3 — Network</td>
+            <td>Network</td>
+            <td>Packet</td>
+            <td>IP Address</td>
+        </tr>
+
+        <tr>
+            <td>2 — Data Link</td>
+            <td>Data Link</td>
+            <td>Frame</td>
+            <td>MAC Address</td>
+        </tr>
+
+        <tr>
+            <td>1 — Physical</td>
+            <td>Physical</td>
+            <td>Bits</td>
+            <td>Physical signal</td>
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- SLIDE 12 -->
+<!-- ================================================= -->
+
+<section class="slide">
+
+    <div class="slide-title">
+        OSI Reference Model — Summary
+    </div>
+
+    <div class="description">
+        The seven-layer model separates networking functions into manageable responsibilities.
+    </div>
+
+
+    <table class="compare">
+
+        <tr>
+            <th>Layer</th>
+            <th>Primary Function</th>
+            <th>Examples</th>
+        </tr>
+
+        <tr>
+            <td>7. Application</td>
+            <td>Network services for applications</td>
+            <td>HTTP, FTP, DNS, SMTP</td>
+        </tr>
+
+        <tr>
+            <td>6. Presentation</td>
+            <td>Translation, encryption, compression</td>
+            <td>Data formats, encryption</td>
+        </tr>
+
+        <tr>
+            <td>5. Session</td>
+            <td>Session establishment and management</td>
+            <td>Dialog control</td>
+        </tr>
+
+        <tr>
+            <td>4. Transport</td>
+            <td>End-to-end delivery</td>
+            <td>TCP, UDP</td>
+        </tr>
+
+        <tr>
+            <td>3. Network</td>
+            <td>Routing and logical addressing</td>
+            <td>IP, routers</td>
+        </tr>
+
+        <tr>
+            <td>2. Data Link</td>
+            <td>Framing and local delivery</td>
+            <td>Ethernet, switches</td>
+        </tr>
+
+        <tr>
+            <td>1. Physical</td>
+            <td>Bit transmission</td>
+            <td>Cables, fiber, radio</td>
+        </tr>
+
+    </table>
+
+
+    <div class="info">
+
+        <span class="highlight">
+            Remember:
+        </span>
+
+        <br><br>
+
+        <b>
+            Application → Presentation → Session → Transport
+        </b>
+
+        <br>
+
+        <b>
+            → Network → Data Link → Physical
+        </b>
+
+        <br><br>
+
+        <b>
+            Data → Segment → Packet → Frame → Bits
+        </b>
+
+    </div>
+
+</section>
+
+
+</main>
+</div>
+
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="controls">
+
+    <button onclick="previousSlide()">
+        ◀ Previous
+    </button>
+
+    <button onclick="nextSlide()">
+        Next ▶
+    </button>
+
+</div>
+
+<div class="progress" id="progress"></div>
+
+
+<script>
+
+/* =====================================================
+   SLIDE NAVIGATION
+===================================================== */
+
+let currentSlide = 0;
+
+const slides =
+    document.querySelectorAll(".slide");
+
+const buttons =
+    document.querySelectorAll(".menu button");
+
+const progress =
+    document.getElementById("progress");
+
+
+function showSlide(index) {
+
+    if (index < 0) {
+        index = 0;
+    }
+
+    if (index >= slides.length) {
+        index = slides.length - 1;
+    }
+
+    currentSlide = index;
+
+
+    slides.forEach((slide, i) => {
+
+        slide.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    buttons.forEach((button, i) => {
+
+        button.classList.toggle(
+            "active",
+            i === currentSlide
+        );
+
+    });
+
+
+    progress.style.width =
+        ((currentSlide + 1) /
+        slides.length * 100) + "%";
+
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextSlide() {
+
+    if (currentSlide <
+        slides.length - 1) {
+
+        showSlide(
+            currentSlide + 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousSlide() {
+
+    if (currentSlide > 0) {
+
+        showSlide(
+            currentSlide - 1
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "ArrowRight" ||
+            event.key === "PageDown"
+        ) {
+
+            nextSlide();
+
+        }
+
+
+        if (
+            event.key === "ArrowLeft" ||
+            event.key === "PageUp"
+        ) {
+
+            previousSlide();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+showSlide(0);
+
+</script>
+
+</body>
+</html>
+

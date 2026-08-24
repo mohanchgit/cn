@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Subnetting - Computer Networks</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* ================= HEADER ================= */
+
+header {
+    background: #1d4ed8;
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    border-bottom: 5px solid #1e3a8a;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 42px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 20px;
+    color: #e0e7ff;
+}
+
+/* ================= CONTAINER ================= */
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+/* ================= SECTIONS ================= */
+
+.section {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 6px solid #2563eb;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.section h2 {
+    color: #1d4ed8;
+    margin-top: 0;
+    font-size: 29px;
+}
+
+.section p,
+.section li {
+    font-size: 18px;
+}
+
+/* ================= INFO BOX ================= */
+
+.info-box {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+/* ================= CONCEPT CARDS ================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #2563eb;
+}
+
+.card h3 {
+    color: #1e40af;
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.number {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    margin-right: 8px;
+}
+
+.details {
+    display: none;
+    background: #f8fafc;
+    padding: 15px;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.card.active .details {
+    display: block;
+}
+
+/* ================= ADDRESS VISUAL ================= */
+
+.address {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.network-part,
+.host-part {
+    padding: 20px 30px;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.network-part {
+    background: #dbeafe;
+    color: #1e3a8a;
+    border: 3px solid #2563eb;
+    border-radius: 10px 0 0 10px;
+}
+
+.host-part {
+    background: #dcfce7;
+    color: #166534;
+    border: 3px solid #16a34a;
+    border-left: none;
+    border-radius: 0 10px 10px 0;
+}
+
+/* ================= BIT VISUAL ================= */
+
+.bits {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+.bit {
+    width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    border: 1px solid white;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.network-bit {
+    background: #2563eb;
+    color: white;
+}
+
+.host-bit {
+    background: #16a34a;
+    color: white;
+}
+
+.bit-label {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* ================= SUBNET VISUAL ================= */
+
+.subnets {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.subnet {
+    padding: 18px 10px;
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.subnet span {
+    display: block;
+    color: #1d4ed8;
+}
+
+/* ================= CALCULATOR ================= */
+
+.calculator {
+    background: #ffffff;
+    border: 2px solid #2563eb;
+    border-radius: 15px;
+    padding: 28px;
+    margin-top: 35px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.calculator h2 {
+    color: #1d4ed8;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+input,
+select {
+    padding: 13px;
+    font-size: 18px;
+    border: 2px solid #94a3b8;
+    border-radius: 8px;
+}
+
+button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 13px 25px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.result {
+    margin-top: 25px;
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.result-item {
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.result-item strong {
+    display: block;
+    color: #1d4ed8;
+}
+
+/* ================= TABLE ================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #cbd5e1;
+    padding: 13px;
+    font-size: 17px;
+    text-align: center;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+td {
+    background: white;
+}
+
+tr:hover td {
+    background: #eff6ff;
+}
+
+/* ================= STEP BOX ================= */
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border-left: 5px solid #2563eb;
+}
+
+.step-number {
+    min-width: 42px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+/* ================= KEY POINT ================= */
+
+.keypoint {
+    background: #ecfdf5;
+    border-left: 6px solid #16a34a;
+    padding: 22px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.keypoint h2 {
+    color: #15803d;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    margin-top: 45px;
+    padding: 25px;
+    background: #f1f5f9;
+    text-align: center;
+    color: #475569;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width: 800px) {
+
+    header h1 {
+        font-size: 30px;
+    }
+
+    .subnets {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .network-part,
+    .host-part {
+        font-size: 20px;
+    }
+}
+
+@media(max-width: 600px) {
+
+    .subnets {
+        grid-template-columns: 1fr;
+    }
+
+    .network-part,
+    .host-part {
+        border-radius: 10px;
+        border: 3px solid;
+    }
+
+    .host-part {
+        border-color: #16a34a;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>Subnetting</h1>
+
+    <p>
+        Network Layer | IPv4 Addressing | Efficient Network Design
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= INTRODUCTION ================= -->
+
+<section class="section">
+
+    <h2>🌐 What is Subnetting?</h2>
+
+    <p>
+        <strong>Subnetting</strong> is the process of dividing one
+        large IP network into smaller logical networks called
+        <strong>subnets</strong>.
+    </p>
+
+    <p>
+        It allows network administrators to use IP addresses more
+        efficiently and organize networks into smaller segments.
+    </p>
+
+    <div class="info-box">
+
+        <strong>Simple Example:</strong>
+
+        <br><br>
+
+        Instead of using one large network for an entire university,
+        we can create separate subnets for:
+
+        <ul>
+            <li>CSE Department</li>
+            <li>ECE Department</li>
+            <li>Administration</li>
+            <li>Faculty Network</li>
+        </ul>
+
+    </div>
+
+</section>
+
+
+<!-- ================= WHY SUBNETTING ================= -->
+
+<section class="section">
+
+    <h2>🎯 Why Do We Need Subnetting?</h2>
+
+    <div class="cards">
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">1</span>
+                Efficient IP Usage
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Subnetting reduces wastage of IP addresses by
+                    dividing networks according to actual requirements.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">2</span>
+                Smaller Broadcast Domains
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Smaller subnets reduce broadcast traffic and
+                    improve network performance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">3</span>
+                Better Security
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Different departments can be placed into
+                    separate networks and controlled using
+                    routers, ACLs and firewalls.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card" onclick="toggleCard(this)">
+
+            <h3>
+                <span class="number">4</span>
+                Easier Management
+            </h3>
+
+            <div class="details">
+
+                <p>
+                    Networks can be logically organized according
+                    to departments, locations or functions.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= NETWORK/HOST ================= -->
+
+<section class="section">
+
+    <h2>🧩 Network Portion and Host Portion</h2>
+
+    <p>
+        An IPv4 address contains two important portions:
+    </p>
+
+    <ul>
+        <li><strong>Network portion</strong> – identifies the network.</li>
+        <li><strong>Host portion</strong> – identifies a device within the network.</li>
+    </ul>
+
+
+    <div class="address">
+
+        <div class="network-part">
+
+            Network Portion
+
+            <br>
+
+            192.168.1
+
+        </div>
+
+        <div class="host-part">
+
+            Host Portion
+
+            <br>
+
+            .10
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        Example:
+
+        <strong>192.168.1.10/24</strong>
+
+        <br><br>
+
+        /24 means the first 24 bits represent the network portion.
+
+    </div>
+
+</section>
+
+
+<!-- ================= SUBNET MASK ================= -->
+
+<section class="section">
+
+    <h2>📐 Subnet Mask</h2>
+
+    <p>
+        A <strong>subnet mask</strong> determines which bits belong
+        to the network portion and which bits belong to the host portion.
+    </p>
+
+
+    <div class="address">
+
+        <div class="network-part">
+
+            Network
+
+            <br>
+
+            255.255.255
+
+        </div>
+
+        <div class="host-part">
+
+            Host
+
+            <br>
+
+            .0
+
+        </div>
+
+    </div>
+
+
+    <div class="info-box">
+
+        <strong>Example:</strong>
+
+        <br><br>
+
+        IP Address:
+        <strong>192.168.1.10</strong>
+
+        <br>
+
+        Subnet Mask:
+        <strong>255.255.255.0</strong>
+
+        <br>
+
+        CIDR:
+        <strong>/24</strong>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CIDR ================= -->
+
+<section class="section">
+
+    <h2>📊 CIDR Notation</h2>
+
+    <p>
+        CIDR stands for
+        <strong>Classless Inter-Domain Routing</strong>.
+    </p>
+
+    <p>
+        CIDR represents the number of network bits using
+        slash notation.
+    </p>
+
+
+    <div class="info-box"
+         style="text-align:center;font-size:25px;">
+
+        192.168.1.0/<strong>24</strong>
+
+    </div>
+
+
+    <div class="bits">
+
+        <!-- 24 NETWORK BITS -->
+
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+        <div class="bit network-bit">1</div>
+
+        <!-- 8 HOST BITS -->
+
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+        <div class="bit host-bit">0</div>
+
+    </div>
+
+
+    <p style="text-align:center;font-weight:bold;">
+
+        /24 = 24 Network Bits + 8 Host Bits
+
+    </p>
+
+</section>
+
+
+<!-- ================= SUBNETTING FORMULA ================= -->
+
+<section class="section">
+
+    <h2>🧮 Important Subnetting Formulas</h2>
+
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>Number of Subnets</h3>
+
+            <div class="info-box">
+
+                <strong>
+                    2<sup>n</sup>
+                </strong>
+
+                <br><br>
+
+                n = number of borrowed host bits
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Hosts per Subnet</h3>
+
+            <div class="info-box">
+
+                <strong>
+                    2<sup>h</sup> − 2
+                </strong>
+
+                <br><br>
+
+                h = remaining host bits
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Block Size</h3>
+
+            <div class="info-box">
+
+                <strong>
+                    256 − Subnet Mask Value
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= EXAMPLE ================= -->
+
+<section class="section">
+
+    <h2>📝 Subnetting Example</h2>
+
+    <div class="info-box">
+
+        <strong>Question:</strong>
+
+        <br><br>
+
+        Divide
+
+        <strong>192.168.1.0/24</strong>
+
+        into
+
+        <strong>4 subnets</strong>.
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">1</div>
+
+        <div>
+
+            Need 4 subnets.
+
+            <br>
+
+            2<sup>2</sup> = 4
+
+            <br>
+
+            Therefore, borrow <strong>2 host bits</strong>.
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">2</div>
+
+        <div>
+
+            Original prefix:
+
+            <strong>/24</strong>
+
+            <br>
+
+            New prefix:
+
+            <strong>/26</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">3</div>
+
+        <div>
+
+            Remaining host bits:
+
+            <strong>6 bits</strong>
+
+            <br>
+
+            Hosts per subnet:
+
+            2<sup>6</sup> − 2 =
+
+            <strong>62 hosts</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="step">
+
+        <div class="step-number">4</div>
+
+        <div>
+
+            Block size:
+
+            256 − 192 =
+
+            <strong>64</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="subnets">
+
+        <div class="subnet">
+
+            Subnet 1
+
+            <span>192.168.1.0/26</span>
+
+            Hosts: .1 – .62
+
+        </div>
+
+        <div class="subnet">
+
+            Subnet 2
+
+            <span>192.168.1.64/26</span>
+
+            Hosts: .65 – .126
+
+        </div>
+
+        <div class="subnet">
+
+            Subnet 3
+
+            <span>192.168.1.128/26</span>
+
+            Hosts: .129 – .190
+
+        </div>
+
+        <div class="subnet">
+
+            Subnet 4
+
+            <span>192.168.1.192/26</span>
+
+            Hosts: .193 – .254
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= SUBNET TABLE ================= -->
+
+<section class="section">
+
+    <h2>📋 Common IPv4 Subnet Reference</h2>
+
+    <table>
+
+        <tr>
+            <th>CIDR</th>
+            <th>Subnet Mask</th>
+            <th>Host Bits</th>
+            <th>Usable Hosts</th>
+            <th>Block Size</th>
+        </tr>
+
+        <tr>
+            <td>/24</td>
+            <td>255.255.255.0</td>
+            <td>8</td>
+            <td>254</td>
+            <td>256</td>
+        </tr>
+
+        <tr>
+            <td>/25</td>
+            <td>255.255.255.128</td>
+            <td>7</td>
+            <td>126</td>
+            <td>128</td>
+        </tr>
+
+        <tr>
+            <td>/26</td>
+            <td>255.255.255.192</td>
+            <td>6</td>
+            <td>62</td>
+            <td>64</td>
+        </tr>
+
+        <tr>
+            <td>/27</td>
+            <td>255.255.255.224</td>
+            <td>5</td>
+            <td>30</td>
+            <td>32</td>
+        </tr>
+
+        <tr>
+            <td>/28</td>
+            <td>255.255.255.240</td>
+            <td>4</td>
+            <td>14</td>
+            <td>16</td>
+        </tr>
+
+        <tr>
+            <td>/29</td>
+            <td>255.255.255.248</td>
+            <td>3</td>
+            <td>6</td>
+            <td>8</td>
+        </tr>
+
+        <tr>
+            <td>/30</td>
+            <td>255.255.255.252</td>
+            <td>2</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+
+    </table>
+
+</section>
+
+
+<!-- ================= INTERACTIVE CALCULATOR ================= -->
+
+<section class="calculator">
+
+    <h2>🧮 Interactive Subnet Calculator</h2>
+
+    <p style="text-align:center;">
+
+        Enter an IPv4 network and CIDR prefix to calculate
+        the subnet information.
+
+    </p>
+
+
+    <div class="input-group">
+
+        <input
+            id="ipInput"
+            type="text"
+            value="192.168.1.0"
+            placeholder="IPv4 Address"
+        >
+
+        <select id="cidrInput">
+
+            <option value="24">/24</option>
+            <option value="25">/25</option>
+            <option value="26">/26</option>
+            <option value="27">/27</option>
+            <option value="28">/28</option>
+            <option value="29">/29</option>
+            <option value="30">/30</option>
+
+        </select>
+
+        <button onclick="calculateSubnet()">
+
+            Calculate
+
+        </button>
+
+    </div>
+
+
+    <div id="calculatorResult" class="result">
+
+        Enter an IP address and prefix, then click
+        <strong>Calculate</strong>.
+
+    </div>
+
+</section>
+
+
+<!-- ================= MEMORY ================= -->
+
+<section class="keypoint">
+
+    <h2>🎯 Easy Way to Remember Subnetting</h2>
+
+    <ol>
+
+        <li>
+            <strong>Determine required subnets or hosts.</strong>
+        </li>
+
+        <li>
+            <strong>Borrow bits from the host portion.</strong>
+        </li>
+
+        <li>
+            <strong>Find the new CIDR prefix.</strong>
+        </li>
+
+        <li>
+            <strong>Calculate the block size.</strong>
+        </li>
+
+        <li>
+            <strong>Find Network, Host Range and Broadcast Address.</strong>
+        </li>
+
+    </ol>
+
+
+    <div class="info-box">
+
+        <strong>Memory Formula:</strong>
+
+        <br><br>
+
+        Subnets = 2<sup>Borrowed Bits</sup>
+
+        <br>
+
+        Hosts = 2<sup>Remaining Host Bits</sup> − 2
+
+        <br>
+
+        Block Size = 256 − Mask Value
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Computer Networks | Network Layer | Subnetting
+
+</footer>
+
+
+<script>
+
+/* ================= CARD FUNCTION ================= */
+
+function toggleCard(card) {
+
+    card.classList.toggle("active");
+
+}
+
+
+/* ================= IP VALIDATION ================= */
+
+function validateIP(ip) {
+
+    const parts = ip.split(".");
+
+    if (parts.length !== 4) {
+        return false;
+    }
+
+    for (let part of parts) {
+
+        if (part === "" || isNaN(part)) {
+            return false;
+        }
+
+        let value = Number(part);
+
+        if (
+            value < 0 ||
+            value > 255 ||
+            !Number.isInteger(value)
+        ) {
+            return false;
+        }
+
+    }
+
+    return true;
+
+}
+
+
+/* ================= IP TO INTEGER ================= */
+
+function ipToInteger(ip) {
+
+    const parts = ip.split(".").map(Number);
+
+    return (
+        ((parts[0] << 24) >>> 0) +
+        ((parts[1] << 16) >>> 0) +
+        ((parts[2] << 8) >>> 0) +
+        parts[3]
+    ) >>> 0;
+
+}
+
+
+/* ================= INTEGER TO IP ================= */
+
+function integerToIP(num) {
+
+    return [
+        (num >>> 24) & 255,
+        (num >>> 16) & 255,
+        (num >>> 8) & 255,
+        num & 255
+    ].join(".");
+
+}
+
+
+/* ================= SUBNET CALCULATOR ================= */
+
+function calculateSubnet() {
+
+    const ip =
+        document.getElementById("ipInput")
+        .value.trim();
+
+    const cidr =
+        Number(
+            document.getElementById("cidrInput")
+            .value
+        );
+
+    const result =
+        document.getElementById("calculatorResult");
+
+
+    /* VALIDATE IP */
+
+    if (!validateIP(ip)) {
+
+        result.innerHTML =
+            "❌ <strong>Invalid IPv4 address.</strong>";
+
+        return;
+
+    }
+
+
+    /* MASK */
+
+    const mask =
+        (0xFFFFFFFF << (32 - cidr)) >>> 0;
+
+
+    const ipNumber =
+        ipToInteger(ip);
+
+
+    const networkNumber =
+        (ipNumber & mask) >>> 0;
+
+
+    const broadcastNumber =
+        (networkNumber |
+        (~mask >>> 0)) >>> 0;
+
+
+    const firstHost =
+        cidr >= 31
+        ? networkNumber
+        : networkNumber + 1;
+
+
+    const lastHost =
+        cidr >= 31
+        ? broadcastNumber
+        : broadcastNumber - 1;
+
+
+    const totalAddresses =
+        Math.pow(2, 32 - cidr);
+
+
+    const usableHosts =
+        cidr >= 31
+        ? cidr === 31 ? 2 : 1
+        : totalAddresses - 2;
+
+
+    const subnetMask =
+        integerToIP(mask);
+
+
+    const networkAddress =
+        integerToIP(networkNumber);
+
+
+    const broadcastAddress =
+        integerToIP(broadcastNumber);
+
+
+    const firstHostAddress =
+        integerToIP(firstHost);
+
+
+    const lastHostAddress =
+        integerToIP(lastHost);
+
+
+    result.innerHTML = `
+
+        <h3 style="color:#1d4ed8;">
+            Subnet Calculation Result
+        </h3>
+
+        <div class="result-grid">
+
+            <div class="result-item">
+
+                <strong>Network Address</strong>
+
+                ${networkAddress}/${cidr}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>Subnet Mask</strong>
+
+                ${subnetMask}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>First Usable Host</strong>
+
+                ${firstHostAddress}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>Last Usable Host</strong>
+
+                ${lastHostAddress}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>Broadcast Address</strong>
+
+                ${broadcastAddress}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>Total Addresses</strong>
+
+                ${totalAddresses}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>Usable Hosts</strong>
+
+                ${usableHosts}
+
+            </div>
+
+
+            <div class="result-item">
+
+                <strong>CIDR Prefix</strong>
+
+                /${cidr}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ================= ENTER KEY ================= */
+
+document
+.getElementById("ipInput")
+.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+
+        calculateSubnet();
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
