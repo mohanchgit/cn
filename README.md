@@ -1,6 +1,6 @@
 **Computer Networks Today**
 
-An interactive **Computer Networks** learning website. https://github.com/mohanchgit/cn
+An interactive **Computer Networks** learning website. https://mohanchgit.github.io/cn/
 The website provides **classroom-friendly visualizations** and animations for important Computer Networks concepts.
 
 Explore Computer Network fundamentals, uses, classification, hardware, software, topologies, and transmission media.
