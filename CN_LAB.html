@@ -436,8 +436,8 @@ const activities = [
         "Configure basic IP addresses."
     ],
 
-    search:
-    "Cisco Packet Tracer introduction simple topology tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -467,8 +467,8 @@ const activities = [
         "netstat -ano"
     ],
 
-    search:
-    "ipconfig ping tracert telnet netsh nslookup netstat networking commands"
+    youtube:
+    ""
 },
 
 {
@@ -486,8 +486,8 @@ const activities = [
         "Save the running configuration."
     ],
 
-    search:
-    "Cisco Packet Tracer basic switch configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -505,8 +505,8 @@ const activities = [
         "Test communication between hosts."
     ],
 
-    search:
-    "Cisco Packet Tracer VLAN trunking configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -524,8 +524,8 @@ const activities = [
         "Verify inter-VLAN communication."
     ],
 
-    search:
-    "Cisco Packet Tracer encapsulation dot1q router on a stick tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -543,7 +543,7 @@ const activities = [
         "Test connectivity."
     ],
 
-    search:
+    youtube:
     "https://youtu.be/VEUXzpKNiQQ"
 },
 
@@ -562,8 +562,8 @@ const activities = [
         "Verify DHCP and ARP operation."
     ],
 
-    search:
-    "Cisco Packet Tracer ARP DHCP configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -581,8 +581,8 @@ const activities = [
         "Verify connectivity using ping."
     ],
 
-    search:
-    "Cisco Packet Tracer static routing configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -600,8 +600,8 @@ const activities = [
         "Test end-to-end connectivity."
     ],
 
-    search:
-    "Cisco Packet Tracer RIP OSPF configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -619,8 +619,8 @@ const activities = [
         "Verify permitted and denied traffic."
     ],
 
-    search:
-    "Cisco Packet Tracer standard extended ACL configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -638,8 +638,8 @@ const activities = [
         "Verify client-server communication."
     ],
 
-    search:
-    "Cisco Packet Tracer SMTP FTP DNS HTTP server configuration tutorial"
+    youtube:
+    ""
 },
 
 {
@@ -657,8 +657,8 @@ const activities = [
         "Create an IoT-based smart home topology."
     ],
 
-    search:
-    "Cisco Packet Tracer smart home IoT tutorial"
+    youtube:
+    ""
 }
 
 ];
@@ -745,14 +745,56 @@ function loadActivity(index) {
     }
 
 
-    // YOUTUBE SEARCH
+    // YOUTUBE VIDEO - PLAY INSIDE VIDEO LEARNING RESOURCE FRAME
+    const youtubeButton = document.getElementById("youtubeButton");
+    const videoContainer = document.getElementById("videoContainer");
 
-    const youtubeURL =
-        "https://www.youtube.com/results?search_query=" +
-        encodeURIComponent(activity.search);
+    // Reset any previous click handler
+    youtubeButton.onclick = null;
 
-    document.getElementById("youtubeButton").href =
-        youtubeURL;
+    if (activity.youtube && activity.youtube.trim() !== "") {
+        // Convert YouTube watch/youtu.be URL to an embeddable URL
+        let videoId = "";
+
+        if (activity.youtube.includes("youtu.be/")) {
+            videoId = activity.youtube.split("youtu.be/")[1].split(/[?&]/)[0];
+        } else if (activity.youtube.includes("watch?v=")) {
+            videoId = activity.youtube.split("watch?v=")[1].split("&")[0];
+        }
+
+        if (videoId) {
+            videoContainer.innerHTML = `
+                <iframe
+                    src="https://www.youtube.com/embed/${videoId}"
+                    title="${activity.title}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
+
+        youtubeButton.href = activity.youtube;
+        youtubeButton.target = "_blank";
+        youtubeButton.innerText = "▶ Open Video on YouTube";
+        youtubeButton.style.display = "inline-block";
+    } else {
+        videoContainer.innerHTML = `
+            <div class="video-placeholder">
+                <div>
+                    <h3>🎥 Video Resource</h3>
+                    <p>YouTube video link will be added soon.</p>
+                </div>
+            </div>
+        `;
+
+        youtubeButton.removeAttribute("href");
+        youtubeButton.removeAttribute("target");
+        youtubeButton.style.display = "inline-block";
+        youtubeButton.innerText = "🎥 Video Link – Coming Soon";
+        youtubeButton.onclick = function(event) {
+            event.preventDefault();
+        };
+    }
 
 
     // ACTIVE BUTTON
