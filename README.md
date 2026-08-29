@@ -1,6 +1,7 @@
 **Computer Networks Today**
 
-An interactive **Computer Networks** learning website. The website provides **classroom-friendly visualizations** and animations for important Computer Networks concepts.
+An interactive **Computer Networks** learning website. https://github.com/mohanchgit/cn
+The website provides **classroom-friendly visualizations** and animations for important Computer Networks concepts.
 
 Explore Computer Network fundamentals, uses, classification, hardware, software, topologies, and transmission media.
 Understand switching techniques, signal encoding, OSI reference model, and TCP/IP protocol stack.
