@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cisco Packet Tracer Laboratory</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: #f4f6f9;
+        color: #222;
+    }
+
+    header {
+        background: #0b3d91;
+        color: white;
+        padding: 20px 30px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    header p {
+        margin-top: 6px;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .container {
+        display: flex;
+        min-height: calc(100vh - 90px);
+    }
+
+    /* LEFT MENU */
+    .sidebar {
+        width: 330px;
+        background: #17202a;
+        color: white;
+        padding: 18px 10px;
+        position: fixed;
+        top: 90px;
+        bottom: 0;
+        overflow-y: auto;
+    }
+
+    .sidebar h2 {
+        font-size: 18px;
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    .lab-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 12px 14px;
+        margin: 4px 0;
+        border: none;
+        border-radius: 6px;
+        background: transparent;
+        color: #eee;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .lab-btn:hover {
+        background: #34495e;
+    }
+
+    .lab-btn.active {
+        background: #0b72e7;
+        color: white;
+        font-weight: bold;
+    }
+
+    /* MAIN */
+    .main {
+        margin-left: 330px;
+        width: calc(100% - 330px);
+        padding: 25px;
+    }
+
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .stat-card h3 {
+        font-size: 14px;
+        color: #777;
+    }
+
+    .stat-card strong {
+        display: block;
+        font-size: 27px;
+        color: #0b3d91;
+        margin-top: 8px;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .activity-number {
+        color: #0b72e7;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .content-card h2 {
+        margin: 8px 0 15px;
+        color: #17202a;
+        line-height: 1.35;
+    }
+
+    .description {
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 20px;
+    }
+
+    .objectives {
+        background: #eef5ff;
+        border-left: 4px solid #0b72e7;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+    }
+
+    .objectives h3 {
+        margin-bottom: 8px;
+    }
+
+    .objectives ul {
+        padding-left: 20px;
+        line-height: 1.8;
+    }
+
+    /* VIDEO */
+    .video-section {
+        margin-top: 25px;
+    }
+
+    .video-section h3 {
+        margin-bottom: 12px;
+    }
+
+    .video-container {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #111;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .video-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .video-placeholder {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+
+    /* BUTTONS */
+    .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+    }
+
+    .btn {
+        padding: 11px 17px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .youtube {
+        background: #ff0000;
+        color: white;
+    }
+
+    .youtube:hover {
+        background: #cc0000;
+    }
+
+    .resource {
+        background: #0b3d91;
+        color: white;
+    }
+
+    .resource:hover {
+        background: #082d6b;
+    }
+
+    /* COMMAND BOX */
+    .commands {
+        background: #111827;
+        color: #00ff88;
+        padding: 18px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-family: Consolas, monospace;
+        overflow-x: auto;
+        line-height: 1.8;
+    }
+
+    footer {
+        margin-left: 330px;
+        background: #17202a;
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+
+    /* MOBILE */
+    @media(max-width: 900px) {
+
+        .sidebar {
+            width: 100%;
+            position: relative;
+            top: 0;
+            height: auto;
+        }
+
+        .container {
+            display: block;
+        }
+
+        .main {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        footer {
+            margin-left: 0;
+        }
+
+        .dashboard {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media(max-width: 600px) {
+
+        header h1 {
+            font-size: 20px;
+        }
+
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+
+        .main {
+            padding: 15px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌐 Cisco Packet Tracer Laboratory</h1>
+    <p>Networking Laboratory – Activities, Commands, Topologies & Video Resources</p>
+</header>
+
+<div class="container">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+
+        <h2>Laboratory Activities</h2>
+
+        <div id="labMenu"></div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <div class="dashboard">
+
+            <div class="stat-card">
+                <h3>Total Activities</h3>
+                <strong>12</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Networking Topics</h3>
+                <strong>10+</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Packet Tracer</h3>
+                <strong>PT</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Video Resources</h3>
+                <strong>YouTube</strong>
+            </div>
+
+        </div>
+
+
+        <section class="content-card">
+
+            <div class="activity-number" id="activityNumber"></div>
+
+            <h2 id="activityTitle"></h2>
+
+            <p class="description" id="activityDescription"></p>
+
+
+            <div class="objectives">
+
+                <h3>🎯 Learning Objectives</h3>
+
+                <ul id="objectives"></ul>
+
+            </div>
+
+
+            <div id="commandsSection"></div>
+
+
+            <div class="video-section">
+
+                <h3>🎥 Video Learning Resource</h3>
+
+                <div class="video-container" id="videoContainer">
+
+                    <div class="video-placeholder">
+                        <div>
+                            <h3>Video Resource</h3>
+                            <p>
+                                Click "Watch on YouTube" below to search
+                                for tutorials related to this activity.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <a
+                    id="youtubeButton"
+                    class="btn youtube"
+                    target="_blank">
+                    ▶ Watch on YouTube
+                </a>
+
+                <a
+                    id="ciscoButton"
+                    class="btn resource"
+                    href="https://www.netacad.com/"
+                    target="_blank">
+                    Cisco Networking Academy
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<footer>
+    Cisco Packet Tracer Networking Laboratory |
+    Faculty Learning Resource Portal
+</footer>
+
+
+<script>
+
+const activities = [
+
+{
+    number: 1,
+    title: "Introduction to the Laboratory, Cisco Packet Tracer & Simple Topology",
+
+    description:
+    "Introduction to the networking laboratory environment, Cisco Packet Tracer interface, network devices, connections, end devices and construction of a simple network topology.",
+
+    objectives: [
+        "Understand the Cisco Packet Tracer interface.",
+        "Identify routers, switches and end devices.",
+        "Create a simple network topology.",
+        "Connect devices using appropriate cables.",
+        "Configure basic IP addresses."
+    ],
+
+    search:
+    "Cisco Packet Tracer introduction simple topology tutorial"
+},
+
+{
+    number: 2,
+    title: "Networking Commands Using Command Prompt",
+
+    description:
+    "Execute common networking commands using Windows Command Prompt and understand their purpose in troubleshooting and network administration.",
+
+    objectives: [
+        "Use ipconfig to display IP configuration.",
+        "Use ping to test connectivity.",
+        "Use tracert to trace network paths.",
+        "Use telnet for remote connectivity testing.",
+        "Use netsh for network configuration.",
+        "Use nslookup for DNS queries.",
+        "Use netstat to examine network connections."
+    ],
+
+    commands: [
+        "ipconfig",
+        "ping <IP-address>",
+        "tracert <IP-address>",
+        "telnet <IP-address>",
+        "netsh",
+        "nslookup <domain>",
+        "netstat -ano"
+    ],
+
+    search:
+    "ipconfig ping tracert telnet netsh nslookup netstat networking commands"
+},
+
+{
+    number: 3,
+    title: "Basic Switch Configuration Using Cisco Packet Tracer",
+
+    description:
+    "Configure a basic Cisco switch including hostname, passwords, management IP address and basic security settings.",
+
+    objectives: [
+        "Access the switch CLI.",
+        "Configure hostname.",
+        "Configure console and enable passwords.",
+        "Configure management IP address.",
+        "Save the running configuration."
+    ],
+
+    search:
+    "Cisco Packet Tracer basic switch configuration tutorial"
+},
+
+{
+    number: 4,
+    title: "VLAN and Trunking Configuration",
+
+    description:
+    "Create multiple VLANs and configure trunk links between Cisco switches to enable VLAN traffic across switches.",
+
+    objectives: [
+        "Create VLANs.",
+        "Assign switch ports to VLANs.",
+        "Configure trunk ports.",
+        "Verify VLAN configuration.",
+        "Test communication between hosts."
+    ],
+
+    search:
+    "Cisco Packet Tracer VLAN trunking configuration tutorial"
+},
+
+{
+    number: 5,
+    title: "802.1Q VLAN Encapsulation",
+
+    description:
+    "Configure IEEE 802.1Q VLAN encapsulation using router-on-a-stick and verify communication between different VLANs.",
+
+    objectives: [
+        "Understand IEEE 802.1Q.",
+        "Configure router subinterfaces.",
+        "Assign VLAN IDs.",
+        "Configure trunking.",
+        "Verify inter-VLAN communication."
+    ],
+
+    search:
+    "Cisco Packet Tracer encapsulation dot1q router on a stick tutorial"
+},
+
+{
+    number: 6,
+    title: "Network Address Translation (NAT)",
+
+    description:
+    "Configure NAT in Cisco Packet Tracer and verify translation between private and public IP addresses.",
+
+    objectives: [
+        "Understand NAT operation.",
+        "Configure inside and outside interfaces.",
+        "Configure static or dynamic NAT.",
+        "Verify NAT translations.",
+        "Test connectivity."
+    ],
+
+    search:
+    "Cisco Packet Tracer NAT configuration tutorial"
+},
+
+{
+    number: 7,
+    title: "ARP and DHCP Configuration",
+
+    description:
+    "Configure and verify Address Resolution Protocol and Dynamic Host Configuration Protocol using Cisco Packet Tracer.",
+
+    objectives: [
+        "Understand ARP operation.",
+        "View ARP tables.",
+        "Configure DHCP services.",
+        "Assign IP addresses automatically.",
+        "Verify DHCP and ARP operation."
+    ],
+
+    search:
+    "Cisco Packet Tracer ARP DHCP configuration tutorial"
+},
+
+{
+    number: 8,
+    title: "Static Routing Configuration",
+
+    description:
+    "Configure static routes between multiple networks and verify end-to-end connectivity.",
+
+    objectives: [
+        "Understand static routing.",
+        "Configure IP addresses.",
+        "Configure static routes.",
+        "Examine routing tables.",
+        "Verify connectivity using ping."
+    ],
+
+    search:
+    "Cisco Packet Tracer static routing configuration tutorial"
+},
+
+{
+    number: 9,
+    title: "RIP and OSPF Routing Configuration",
+
+    description:
+    "Configure dynamic routing protocols RIP and OSPF and verify network connectivity using Cisco Packet Tracer.",
+
+    objectives: [
+        "Understand dynamic routing.",
+        "Configure RIP.",
+        "Configure OSPF.",
+        "Verify routing tables.",
+        "Test end-to-end connectivity."
+    ],
+
+    search:
+    "Cisco Packet Tracer RIP OSPF configuration tutorial"
+},
+
+{
+    number: 10,
+    title: "Standard and Extended Access Control Lists",
+
+    description:
+    "Configure Standard and Extended ACLs to control traffic between networks and verify the filtering rules.",
+
+    objectives: [
+        "Understand ACL operation.",
+        "Configure Standard ACL.",
+        "Configure Extended ACL.",
+        "Apply ACLs to interfaces.",
+        "Verify permitted and denied traffic."
+    ],
+
+    search:
+    "Cisco Packet Tracer standard extended ACL configuration tutorial"
+},
+
+{
+    number: 11,
+    title: "SMTP, FTP, DNS and HTTP Configuration",
+
+    description:
+    "Configure application-layer network services using Cisco Packet Tracer Server devices and verify client-server connectivity.",
+
+    objectives: [
+        "Configure DNS service.",
+        "Configure HTTP service.",
+        "Configure FTP service.",
+        "Configure SMTP/email service.",
+        "Verify client-server communication."
+    ],
+
+    search:
+    "Cisco Packet Tracer SMTP FTP DNS HTTP server configuration tutorial"
+},
+
+{
+    number: 12,
+    title: "Smart Home Implementation Using Cisco Packet Tracer",
+
+    description:
+    "Design and implement a smart home network using IoT devices, wireless connectivity, sensors, actuators and a home gateway.",
+
+    objectives: [
+        "Understand IoT networking concepts.",
+        "Add smart home devices.",
+        "Configure wireless connectivity.",
+        "Configure sensors and actuators.",
+        "Create an IoT-based smart home topology."
+    ],
+
+    search:
+    "Cisco Packet Tracer smart home IoT tutorial"
+}
+
+];
+
+
+// CREATE LEFT MENU
+
+const menu = document.getElementById("labMenu");
+
+activities.forEach((activity, index) => {
+
+    const button = document.createElement("button");
+
+    button.className = "lab-btn";
+
+    button.innerHTML =
+        "<b>" +
+        activity.number +
+        ".</b> " +
+        activity.title;
+
+    button.onclick = function() {
+
+        loadActivity(index);
+
+    };
+
+    menu.appendChild(button);
+
+});
+
+
+// LOAD ACTIVITY
+
+function loadActivity(index) {
+
+    const activity = activities[index];
+
+    document.getElementById("activityNumber").innerText =
+        "LAB ACTIVITY " + activity.number;
+
+    document.getElementById("activityTitle").innerText =
+        activity.title;
+
+    document.getElementById("activityDescription").innerText =
+        activity.description;
+
+
+    // OBJECTIVES
+
+    const objectiveList =
+        document.getElementById("objectives");
+
+    objectiveList.innerHTML = "";
+
+    activity.objectives.forEach(item => {
+
+        const li = document.createElement("li");
+
+        li.innerText = item;
+
+        objectiveList.appendChild(li);
+
+    });
+
+
+    // COMMANDS
+
+    const commandsSection =
+        document.getElementById("commandsSection");
+
+    commandsSection.innerHTML = "";
+
+    if (activity.commands) {
+
+        commandsSection.innerHTML = `
+            <h3>💻 Commands</h3>
+
+            <div class="commands">
+                ${activity.commands.join("<br>")}
+            </div>
+        `;
+
+    }
+
+
+    // YOUTUBE SEARCH
+
+    const youtubeURL =
+        "https://www.youtube.com/results?search_query=" +
+        encodeURIComponent(activity.search);
+
+    document.getElementById("youtubeButton").href =
+        youtubeURL;
+
+
+    // ACTIVE BUTTON
+
+    const buttons =
+        document.querySelectorAll(".lab-btn");
+
+    buttons.forEach(btn =>
+        btn.classList.remove("active")
+    );
+
+    buttons[index].classList.add("active");
+
+
+    // SCROLL TO TOP
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+// LOAD FIRST ACTIVITY
+
+loadActivity(0);
+
+</script>
+
+</body>
+</html>
