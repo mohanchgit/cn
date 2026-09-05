@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks - Visual Answers 1 to 10</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#64748b;--blue:#2563eb;--green:#059669;--orange:#d97706;--red:#dc2626;--line:#dbe3ef}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.55}
+header{background:linear-gradient(135deg,#172554,#2563eb);color:#fff;padding:28px 5%;position:sticky;top:0;z-index:10;box-shadow:0 5px 18px #0002}
+header h1{margin:0;font-size:clamp(24px,4vw,38px)} header p{margin:5px 0;color:#dbeafe}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:bold;cursor:pointer}
+button.primary{background:#fff;color:#1d4ed8} button.dark{background:#0f172a;color:#fff}
+.container{max-width:1200px;margin:24px auto;padding:0 18px}
+.search{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;margin-bottom:18px}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-bottom:22px}
+.toc button{background:#fff;border:1px solid var(--line);text-align:left}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;margin:20px 0;overflow:hidden;box-shadow:0 5px 18px #0f172a0a}
+.sec-head{padding:18px 22px;background:#eff6ff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sec-head h2{margin:0;font-size:22px}.badge{background:#dbeafe;color:#1e40af;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:bold;white-space:nowrap}
+.content{padding:22px} h3{color:#1d4ed8;margin-top:20px} h4{color:#0f766e}
+.diagram{background:#fbfdff;border:1px solid var(--line);border-radius:12px;padding:12px;margin:15px 0;overflow:auto}.diagram svg{display:block;margin:auto;max-width:100%;height:auto}
+.info,.success,.warn{padding:13px 16px;border-radius:9px;margin:13px 0}.info{background:#eff6ff;border-left:5px solid var(--blue)}.success{background:#ecfdf5;border-left:5px solid var(--green)}.warn{background:#fffbeb;border-left:5px solid var(--orange)}
+.bin{background:#111827;color:#f8fafc;padding:13px;border-radius:9px;font-family:"Courier New",monospace;white-space:pre-wrap;overflow:auto;margin:12px 0}
+.steps{display:grid;gap:9px;counter-reset:s}.step{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.step:before{counter-increment:s;content:"Step " counter(s);font-weight:bold;color:#2563eb;margin-right:8px}
+table{border-collapse:collapse;width:100%;margin:13px 0;background:#fff}th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#eff6ff}
+.chip{display:inline-block;padding:4px 8px;border-radius:7px;background:#f1f5f9;margin:2px;font-family:monospace}
+.hidden{display:none}footer{text-align:center;color:var(--muted);padding:30px}
+@media print{header{position:static;background:#fff;color:#000;border-bottom:2px solid #111}.toolbar,.search,.toc{display:none}.card{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+<h1>Computer Networks — Visual Exam Answers</h1>
+<p>VLAN • ARP • IPv4/IPv6 • Subnetting • CSMA • NAT • DHCP • Tunnelling</p>
+<div class="toolbar">
+<button class="primary" onclick="window.print()">🖨 Print / Save PDF</button>
+<button class="dark" onclick="showAll()">Show All</button>
+<button class="dark" onclick="hideAll()">Hide All</button>
+</div>
+</header>
+
+<div class="container">
+<input id="search" class="search" placeholder="Search: VLAN, ARP, IPv6, subnetting, CSMA, NAT, DHCP, tunnelling..." oninput="filterCards()">
+<div class="toc">
+<button onclick="go('q1')">Q1 VLAN</button><button onclick="go('q2')">Q2 ARP</button>
+<button onclick="go('q3')">Q3 IPv4 vs IPv6</button><button onclick="go('q4')">Q4 /24 Subnetting</button>
+<button onclick="go('q5')">Q5 CSMA</button><button onclick="go('q6')">Q6 NAT</button>
+<button onclick="go('q7')">Q7 NAT Types</button><button onclick="go('q8')">Q8 4 Subnets</button>
+<button onclick="go('q9')">Q9 DHCP</button><button onclick="go('q10')">Q10 Tunnelling</button>
+</div>
+
+<section id="q1" class="card">
+<div class="sec-head"><h2>1. VLAN Network with Two Switches and Four PCs</h2><span class="badge">VLAN 10 & VLAN 20</span></div>
+<div class="content">
+<p>Requirement: two PCs connected to different switches must belong to <b>VLAN 10</b>, and the other two PCs must belong to <b>VLAN 20</b>.</p>
+<div class="diagram"><svg viewBox="0 0 1000 500">
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#2563eb"/></marker></defs>
+<rect x="365" y="40" width="270" height="60" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="500" y="77" text-anchor="middle" font-size="21" font-weight="bold">TRUNK LINK 802.1Q</text>
+<rect x="95" y="180" width="230" height="75" rx="12" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="210" y="225" text-anchor="middle" font-size="22" font-weight="bold">Switch 1</text>
+<rect x="675" y="180" width="230" height="75" rx="12" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="790" y="225" text-anchor="middle" font-size="22" font-weight="bold">Switch 2</text>
+<line x1="325" y1="217" x2="675" y2="217" stroke="#2563eb" stroke-width="5" marker-end="url(#a)"/>
+<g font-size="17">
+<rect x="50" y="350" width="190" height="55" rx="10" fill="#dbeafe"/><text x="145" y="384" text-anchor="middle">PC1 — VLAN 10</text>
+<rect x="265" y="350" width="190" height="55" rx="10" fill="#fef3c7"/><text x="360" y="384" text-anchor="middle">PC2 — VLAN 20</text>
+<rect x="545" y="350" width="190" height="55" rx="10" fill="#dbeafe"/><text x="640" y="384" text-anchor="middle">PC3 — VLAN 10</text>
+<rect x="760" y="350" width="190" height="55" rx="10" fill="#fef3c7"/><text x="855" y="384" text-anchor="middle">PC4 — VLAN 20</text>
+</g>
+<g stroke="#059669" stroke-width="3"><line x1="145" y1="350" x2="175" y2="255"/><line x1="360" y1="350" x2="250" y2="255"/><line x1="640" y1="350" x2="740" y2="255"/><line x1="855" y1="350" x2="830" y2="255"/></g>
+<text x="500" y="145" text-anchor="middle" font-size="18">Same VLAN can span different switches through a trunk</text>
+</svg></div>
+<h3>Configuration concept</h3>
+<div class="bin">Switch 1:
+VLAN 10 → PC1
+VLAN 20 → PC2
+Port connecting Switch 1 ↔ Switch 2 → TRUNK
+
+Switch 2:
+VLAN 10 → PC3
+VLAN 20 → PC4
+
+Result:
+PC1 ↔ PC3 = same VLAN 10
+PC2 ↔ PC4 = same VLAN 20</div>
+<table><tr><th>Device</th><th>Port</th><th>VLAN</th></tr><tr><td>Switch 1</td><td>PC1 port</td><td>10</td></tr><tr><td>Switch 1</td><td>PC2 port</td><td>20</td></tr><tr><td>Switch 2</td><td>PC3 port</td><td>10</td></tr><tr><td>Switch 2</td><td>PC4 port</td><td>20</td></tr><tr><td>Both switches</td><td>Inter-switch link</td><td>Trunk — carries VLAN 10 and VLAN 20</td></tr></table>
+<div class="success"><b>Key point:</b> VLANs logically separate broadcast domains. An 802.1Q trunk carries multiple VLANs between switches.</div>
+</div></section>
+
+<section id="q2" class="card">
+<div class="sec-head"><h2>2. ARP — Finding Physical Address from Logical Address</h2><span class="badge">IP → MAC</span></div>
+<div class="content">
+<p><b>ARP (Address Resolution Protocol)</b> maps an IPv4 logical address (IP address) to the destination's physical address (MAC address) on the local network.</p>
+<div class="diagram"><svg viewBox="0 0 1000 390">
+<rect x="45" y="140" width="210" height="95" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="150" y="175" text-anchor="middle" font-size="19" font-weight="bold">Host A</text><text x="150" y="205" text-anchor="middle">IP: 192.168.1.10</text><text x="150" y="225" text-anchor="middle">MAC: AA-AA-AA</text>
+<rect x="395" y="140" width="210" height="95" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="500" y="175" text-anchor="middle" font-size="19" font-weight="bold">Switch</text><text x="500" y="205" text-anchor="middle">LAN</text>
+<rect x="745" y="140" width="210" height="95" rx="12" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="850" y="175" text-anchor="middle" font-size="19" font-weight="bold">Host B</text><text x="850" y="205" text-anchor="middle">IP: 192.168.1.20</text><text x="850" y="225" text-anchor="middle">MAC: BB-BB-BB</text>
+<line x1="255" y1="165" x2="395" y2="165" stroke="#2563eb" stroke-width="3"/><line x1="605" y1="165" x2="745" y2="165" stroke="#2563eb" stroke-width="3"/>
+<path d="M255 195 Q500 270 745 195" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="8 6"/><text x="500" y="305" text-anchor="middle" font-size="18">ARP Request: “Who has 192.168.1.20?”</text>
+<path d="M745 125 Q500 60 255 125" fill="none" stroke="#059669" stroke-width="3" stroke-dasharray="8 6"/><text x="500" y="55" text-anchor="middle" font-size="18">ARP Reply: “192.168.1.20 is BB-BB-BB”</text>
+</svg></div>
+<div class="steps">
+<div class="step">Host A checks its ARP cache for 192.168.1.20.</div>
+<div class="step">If no entry exists, Host A broadcasts an ARP Request on the LAN.</div>
+<div class="step">Host B recognizes its IP address and sends an ARP Reply containing its MAC address.</div>
+<div class="step">Host A stores the IP-to-MAC mapping in its ARP cache.</div>
+<div class="step">The Ethernet frame is then addressed to Host B's MAC address.</div>
+</div>
+<div class="bin">ARP mapping:
+192.168.1.20 → BB-BB-BB</div>
+<div class="info"><b>Important:</b> ARP is used for IPv4. IPv6 uses Neighbor Discovery Protocol (NDP) instead of ARP.</div>
+</div></section>
+
+<section id="q3" class="card">
+<div class="sec-head"><h2>3. IPv4 vs IPv6</h2><span class="badge">Comparison</span></div>
+<div class="content">
+<table><tr><th>Feature</th><th>IPv4</th><th>IPv6</th></tr>
+<tr><td>Address size</td><td>32-bit</td><td>128-bit</td></tr>
+<tr><td>Address example</td><td>192.168.1.10</td><td>2001:db8::10</td></tr>
+<tr><td>Address structure</td><td>Four decimal octets</td><td>Eight hexadecimal groups</td></tr>
+<tr><td>Header</td><td>Variable length, 20–60 bytes</td><td>Fixed base header, 40 bytes</td></tr>
+<tr><td>Checksum</td><td>Header checksum present</td><td>No IP header checksum</td></tr>
+<tr><td>Broadcast</td><td>Supported</td><td>No broadcast; multicast/anycast are used</td></tr>
+<tr><td>Routing efficiency</td><td>More dependence on NAT and fragmented address space</td><td>Larger address space, hierarchical addressing and simplified base header support efficient routing</td></tr>
+<tr><td>Security</td><td>IPsec available as an extension</td><td>Designed with modern IPsec support, but security is not automatically guaranteed</td></tr>
+<tr><td>Scalability</td><td>Limited address space</td><td>Huge address space, suitable for large-scale IoT and future networks</td></tr>
+</table>
+<div class="diagram"><svg viewBox="0 0 1000 280">
+<rect x="70" y="70" width="350" height="150" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/><text x="245" y="105" text-anchor="middle" font-size="22" font-weight="bold">IPv4</text><text x="245" y="140" text-anchor="middle" font-size="19">32 bits</text><text x="245" y="175" text-anchor="middle" font-size="18">192.168.100.10</text><text x="245" y="205" text-anchor="middle" font-size="16">≈ 4.3 billion addresses</text>
+<rect x="580" y="70" width="350" height="150" rx="15" fill="#ecfdf5" stroke="#059669" stroke-width="3"/><text x="755" y="105" text-anchor="middle" font-size="22" font-weight="bold">IPv6</text><text x="755" y="140" text-anchor="middle" font-size="19">128 bits</text><text x="755" y="175" text-anchor="middle" font-size="18">2001:db8::10</text><text x="755" y="205" text-anchor="middle" font-size="16">≈ 3.4 × 10³⁸ addresses</text>
+</svg></div>
+<div class="success"><b>Exam conclusion:</b> IPv6 provides a vastly larger address space and a streamlined base header, improving long-term scalability and supporting modern network design.</div>
+</div></section>
+
+<section id="q4" class="card">
+<div class="sec-head"><h2>4. Subnetting 192.168.100.0/24 for at Least 30 Hosts</h2><span class="badge">30 Hosts / Subnet</span></div>
+<div class="content">
+<p>Need at least 30 usable host addresses per subnet.</p>
+<div class="bin">2^h − 2 ≥ 30
+2^5 − 2 = 32 − 2 = 30 ✓
+
+Therefore:
+Host bits = 5
+Network bits = 32 − 5 = 27
+New prefix = /27
+Subnet mask = 255.255.255.224</div>
+<p>Block size = 256 − 224 = <b>32</b>.</p>
+<table><tr><th>Subnet</th><th>Network ID</th><th>Valid Host Range</th><th>Broadcast</th></tr>
+<tr><td>1</td><td>192.168.100.0/27</td><td>192.168.100.1 – 192.168.100.30</td><td>192.168.100.31</td></tr>
+<tr><td>2</td><td>192.168.100.32/27</td><td>192.168.100.33 – 192.168.100.62</td><td>192.168.100.63</td></tr>
+<tr><td>3</td><td>192.168.100.64/27</td><td>192.168.100.65 – 192.168.100.94</td><td>192.168.100.95</td></tr>
+<tr><td>4</td><td>192.168.100.96/27</td><td>192.168.100.97 – 192.168.100.126</td><td>192.168.100.127</td></tr>
+<tr><td>5</td><td>192.168.100.128/27</td><td>192.168.100.129 – 192.168.100.158</td><td>192.168.100.159</td></tr>
+<tr><td>6</td><td>192.168.100.160/27</td><td>192.168.100.161 – 192.168.100.190</td><td>192.168.100.191</td></tr>
+<tr><td>7</td><td>192.168.100.192/27</td><td>192.168.100.193 – 192.168.100.222</td><td>192.168.100.223</td></tr>
+<tr><td>8</td><td>192.168.100.224/27</td><td>192.168.100.225 – 192.168.100.254</td><td>192.168.100.255</td></tr>
+</table>
+<div class="success"><b>Answer:</b> Subnet mask = 255.255.255.224 (/27), 8 equal subnets, 30 usable hosts per subnet.</div>
+</div></section>
+
+<section id="q5" class="card">
+<div class="sec-head"><h2>5. 1-Persistent, p-Persistent and Non-Persistent CSMA</h2><span class="badge">Medium Access Control</span></div>
+<div class="content">
+<div class="diagram"><svg viewBox="0 0 1000 520">
+<text x="500" y="30" text-anchor="middle" font-size="22" font-weight="bold">CSMA Decision Flow</text>
+<g font-size="17">
+<rect x="360" y="55" width="280" height="55" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="500" y="89" text-anchor="middle">Sense the channel</text>
+<rect x="80" y="180" width="240" height="70" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="200" y="208" text-anchor="middle" font-weight="bold">1-persistent</text><text x="200" y="232" text-anchor="middle">Busy? Wait continuously</text>
+<rect x="380" y="180" width="240" height="70" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="500" y="208" text-anchor="middle" font-weight="bold">p-persistent</text><text x="500" y="232" text-anchor="middle">Transmit with probability p</text>
+<rect x="680" y="180" width="240" height="70" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/><text x="800" y="208" text-anchor="middle" font-weight="bold">Non-persistent</text><text x="800" y="232" text-anchor="middle">Busy? Random backoff</text>
+<path d="M500 110 L200 180 M500 110 L500 180 M500 110 L800 180" fill="none" stroke="#2563eb" stroke-width="3"/>
+<text x="200" y="310" text-anchor="middle">If idle → transmit</text><text x="500" y="310" text-anchor="middle">Idle slot → p transmit, (1-p) defer</text><text x="800" y="310" text-anchor="middle">If idle → transmit</text>
+<text x="500" y="380" text-anchor="middle" font-size="18">Collision → retransmission/backoff</text>
+<text x="500" y="420" text-anchor="middle" font-size="16">1-persistent: more immediate transmission, but more collisions</text>
+<text x="500" y="450" text-anchor="middle" font-size="16">p-persistent: balances access probability and collision risk</text>
+<text x="500" y="480" text-anchor="middle" font-size="16">Non-persistent: fewer collisions, but potentially more delay</text>
+</g>
+</svg></div>
+<table><tr><th>Protocol</th><th>When channel is idle</th><th>When busy</th><th>Collision tendency</th></tr>
+<tr><td>1-persistent CSMA</td><td>Transmit immediately</td><td>Continuously sense until idle</td><td>Higher when many stations become ready together</td></tr>
+<tr><td>p-persistent CSMA</td><td>Transmit with probability p</td><td>Wait for next slot</td><td>Moderate; p controls aggressiveness</td></tr>
+<tr><td>Non-persistent CSMA</td><td>Transmit</td><td>Wait random time before sensing again</td><td>Lower, but delay can be higher</td></tr></table>
+<div class="info"><b>Collision handling:</b> CSMA reduces the chance of collisions by sensing before transmission; it does not eliminate collisions completely because of propagation delay and simultaneous attempts.</div>
+</div></section>
+
+<section id="q6" class="card">
+<div class="sec-head"><h2>6. NAT — Multiple Private Hosts Using One Public IP</h2><span class="badge">Private → Public</span></div>
+<div class="content">
+<p><b>NAT (Network Address Translation)</b> translates private IP addresses inside a local network into public addressing used on the Internet.</p>
+<div class="diagram"><svg viewBox="0 0 1050 450">
+<rect x="35" y="100" width="250" height="260" rx="15" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/><text x="160" y="135" text-anchor="middle" font-size="21" font-weight="bold">Private LAN</text>
+<text x="160" y="185" text-anchor="middle" font-size="18">PC1 192.168.1.10</text><text x="160" y="235" text-anchor="middle" font-size="18">PC2 192.168.1.11</text><text x="160" y="285" text-anchor="middle" font-size="18">PC3 192.168.1.12</text><text x="160" y="335" text-anchor="middle" font-size="18">PC4 192.168.1.13</text>
+<rect x="420" y="145" width="220" height="170" rx="15" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="530" y="185" text-anchor="middle" font-size="21" font-weight="bold">NAT Router</text><text x="530" y="225" text-anchor="middle">Inside: private IPs</text><text x="530" y="260" text-anchor="middle">Outside: public IP</text><text x="530" y="295" text-anchor="middle" font-weight="bold">203.0.113.10</text>
+<rect x="790" y="145" width="220" height="170" rx="15" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="900" y="185" text-anchor="middle" font-size="21" font-weight="bold">Internet</text><text x="900" y="225" text-anchor="middle">Web Server</text><text x="900" y="260" text-anchor="middle">Public Internet</text>
+<path d="M285 180 L420 180 M285 230 L420 230 M285 280 L420 280 M285 330 L420 300" stroke="#2563eb" stroke-width="3"/>
+<path d="M640 230 L790 230" stroke="#dc2626" stroke-width="5"/>
+<text x="715" y="205" text-anchor="middle" font-size="17">One public IP</text>
+<text x="525" y="385" text-anchor="middle" font-size="18">NAT changes the source private address to the public address</text>
+</svg></div>
+<div class="steps">
+<div class="step">A private host sends a packet to an Internet destination.</div>
+<div class="step">The NAT router replaces the private source address with its public address.</div>
+<div class="step">The Internet sees the public address, not the private source address.</div>
+<div class="step">For return traffic, the router uses its translation state to deliver the response to the correct internal host.</div>
+</div>
+<div class="success"><b>With PAT:</b> many private hosts can share one public IP by using different source port numbers.</div>
+</div></section>
+
+<section id="q7" class="card">
+<div class="sec-head"><h2>7. Static NAT, Dynamic NAT and PAT</h2><span class="badge">NAT Types</span></div>
+<div class="content">
+<table><tr><th>Type</th><th>Mapping</th><th>Advantages</th><th>Limitations</th><th>Suitable application</th></tr>
+<tr><td><b>Static NAT</b></td><td>One private IP ↔ one fixed public IP</td><td>Predictable; useful for inbound access</td><td>Consumes one public IP per host</td><td>Public web/server access</td></tr>
+<tr><td><b>Dynamic NAT</b></td><td>Private IP ↔ temporary public IP from a pool</td><td>Uses a public pool efficiently</td><td>Pool may run out; mappings are not permanent</td><td>Organizations with a pool of public addresses</td></tr>
+<tr><td><b>PAT</b></td><td>Many private IPs ↔ one/more public IPs using port numbers</td><td>Very efficient public IP usage</td><td>Port limitations and translation state required</td><td>Homes, offices and campus Internet access</td></tr></table>
+<div class="diagram"><svg viewBox="0 0 1000 390">
+<text x="500" y="28" text-anchor="middle" font-size="22" font-weight="bold">NAT Comparison</text>
+<rect x="55" y="70" width="270" height="120" rx="12" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/><text x="190" y="105" text-anchor="middle" font-size="20" font-weight="bold">Static NAT</text><text x="190" y="140" text-anchor="middle">192.168.1.10 ↔ 203.0.113.10</text><text x="190" y="170" text-anchor="middle">Permanent 1:1 mapping</text>
+<rect x="365" y="70" width="270" height="120" rx="12" fill="#fffbeb" stroke="#d97706" stroke-width="3"/><text x="500" y="105" text-anchor="middle" font-size="20" font-weight="bold">Dynamic NAT</text><text x="500" y="140" text-anchor="middle">Private IP ↔ Public pool</text><text x="500" y="170" text-anchor="middle">Temporary mapping</text>
+<rect x="675" y="70" width="270" height="120" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="3"/><text x="810" y="105" text-anchor="middle" font-size="20" font-weight="bold">PAT</text><text x="810" y="140" text-anchor="middle">Many IPs + ports ↔ 1 public IP</text><text x="810" y="170" text-anchor="middle">Port-based mapping</text>
+<text x="500" y="250" text-anchor="middle" font-size="18" font-weight="bold">Example PAT table</text>
+<text x="500" y="285" text-anchor="middle" font-family="monospace">192.168.1.10:5000 → 203.0.113.10:40001</text>
+<text x="500" y="315" text-anchor="middle" font-family="monospace">192.168.1.11:5001 → 203.0.113.10:40002</text>
+<text x="500" y="345" text-anchor="middle" font-family="monospace">192.168.1.12:5002 → 203.0.113.10:40003</text>
+</svg></div>
+<div class="info"><b>Easy memory:</b> Static = fixed 1:1, Dynamic = pool-based 1:1, PAT = many-to-one using port numbers.</div>
+</div></section>
+
+<section id="q8" class="card">
+<div class="sec-head"><h2>8. Divide 192.168.20.0/24 into 4 Equal-Sized Subnets</h2><span class="badge">4 Equal Subnets</span></div>
+<div class="content">
+<p>To create 4 equal subnets, borrow 2 host bits because <b>2² = 4</b>.</p>
+<div class="bin">Original prefix: /24
+Borrowed bits: 2
+New prefix: /26
+
+Subnet mask:
+255.255.255.192
+
+Block size:
+256 − 192 = 64</div>
+<table><tr><th>Subnet</th><th>Network Address</th><th>Valid Host Range</th><th>Broadcast</th></tr>
+<tr><td>1</td><td>192.168.20.0/26</td><td>192.168.20.1 – 192.168.20.62</td><td>192.168.20.63</td></tr>
+<tr><td>2</td><td>192.168.20.64/26</td><td>192.168.20.65 – 192.168.20.126</td><td>192.168.20.127</td></tr>
+<tr><td>3</td><td>192.168.20.128/26</td><td>192.168.20.129 – 192.168.20.190</td><td>192.168.20.191</td></tr>
+<tr><td>4</td><td>192.168.20.192/26</td><td>192.168.20.193 – 192.168.20.254</td><td>192.168.20.255</td></tr></table>
+<div class="success"><b>Answer:</b> /26, subnet mask 255.255.255.192, 4 subnets, 62 usable hosts per subnet.</div>
+</div></section>
+
+<section id="q9" class="card">
+<div class="sec-head"><h2>9. DHCP Process — Obtaining an IP Address</h2><span class="badge">DORA</span></div>
+<div class="content">
+<p>DHCP automatically provides a host with an IP address and other network parameters such as subnet mask, default gateway and DNS server.</p>
+<div class="diagram"><svg viewBox="0 0 1000 570">
+<text x="250" y="35" text-anchor="middle" font-size="22" font-weight="bold">New Host</text><text x="750" y="35" text-anchor="middle" font-size="22" font-weight="bold">DHCP Server</text>
+<rect x="120" y="65" width="260" height="65" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="250" y="105" text-anchor="middle" font-size="20">Client: 0.0.0.0</text>
+<rect x="620" y="65" width="260" height="65" rx="12" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="750" y="105" text-anchor="middle" font-size="20">DHCP Server</text>
+<path d="M380 170 L620 170" stroke="#dc2626" stroke-width="4" marker-end="url(#a)"/><text x="500" y="160" text-anchor="middle" font-size="18">1. DHCPDISCOVER</text>
+<path d="M620 270 L380 270" stroke="#2563eb" stroke-width="4"/><text x="500" y="260" text-anchor="middle" font-size="18">2. DHCPOFFER: 192.168.1.20</text>
+<path d="M380 370 L620 370" stroke="#dc2626" stroke-width="4"/><text x="500" y="360" text-anchor="middle" font-size="18">3. DHCPREQUEST</text>
+<path d="M620 470 L380 470" stroke="#059669" stroke-width="4"/><text x="500" y="460" text-anchor="middle" font-size="18">4. DHCPACK: IP + Mask + Gateway + DNS</text>
+<text x="500" y="530" text-anchor="middle" font-size="20" font-weight="bold">DORA = Discover → Offer → Request → Acknowledge</text>
+</svg></div>
+<table><tr><th>Step</th><th>Message</th><th>Purpose</th></tr>
+<tr><td>1</td><td>DHCPDISCOVER</td><td>Client broadcasts to locate DHCP servers.</td></tr>
+<tr><td>2</td><td>DHCPOFFER</td><td>Server offers an IP address and configuration.</td></tr>
+<tr><td>3</td><td>DHCPREQUEST</td><td>Client requests the offered address.</td></tr>
+<tr><td>4</td><td>DHCPACK</td><td>Server confirms the lease and supplies configuration parameters.</td></tr></table>
+<div class="success"><b>Example:</b> Client receives IP 192.168.1.20, subnet mask 255.255.255.0, gateway 192.168.1.1 and a DNS server address.</div>
+</div></section>
+
+<section id="q10" class="card">
+<div class="sec-head"><h2>10. Tunnelling Across Heterogeneous Networks</h2><span class="badge">Encapsulation</span></div>
+<div class="content">
+<p><b>Tunnelling</b> carries packets of one protocol through a network that uses another protocol by encapsulating the original packet inside a new packet.</p>
+<div class="diagram"><svg viewBox="0 0 1100 500">
+<rect x="45" y="135" width="220" height="210" rx="15" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="155" y="175" text-anchor="middle" font-size="21" font-weight="bold">Network A</text><text x="155" y="215" text-anchor="middle">IPv6 Host</text><text x="155" y="255" text-anchor="middle">Original IPv6 packet</text>
+<rect x="420" y="105" width="260" height="270" rx="15" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="550" y="145" text-anchor="middle" font-size="21" font-weight="bold">Heterogeneous Network</text><text x="550" y="190" text-anchor="middle">IPv4-only network</text><rect x="465" y="220" width="170" height="80" rx="10" fill="#fff" stroke="#dc2626" stroke-width="3"/><text x="550" y="252" text-anchor="middle" font-size="17">IPv4 Header</text><text x="550" y="280" text-anchor="middle" font-size="17">+ IPv6 Packet</text>
+<rect x="835" y="135" width="220" height="210" rx="15" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="945" y="175" text-anchor="middle" font-size="21" font-weight="bold">Network B</text><text x="945" y="215" text-anchor="middle">IPv6 Host</text><text x="945" y="255" text-anchor="middle">Original IPv6 packet</text>
+<path d="M265 240 L420 240" stroke="#2563eb" stroke-width="5"/><path d="M680 240 L835 240" stroke="#2563eb" stroke-width="5"/>
+<text x="550" y="420" text-anchor="middle" font-size="19">Entry router: encapsulates → tunnel → exit router: decapsulates</text>
+<text x="550" y="450" text-anchor="middle" font-size="18">Example: IPv6-over-IPv4 tunnelling</text>
+</svg></div>
+<div class="steps">
+<div class="step">A source host creates an original packet, for example an IPv6 packet.</div>
+<div class="step">The tunnel-entry router encapsulates the original IPv6 packet inside an IPv4 packet.</div>
+<div class="step">The IPv4 network forwards the outer packet as normal IPv4 traffic.</div>
+<div class="step">The tunnel-exit router removes the outer IPv4 header (decapsulation).</div>
+<div class="step">The original IPv6 packet is forwarded to the destination IPv6 network.</div>
+</div>
+<div class="bin">Before tunnel:
+[ IPv6 Header | IPv6 Data ]
+
+Inside heterogeneous IPv4 network:
+[ IPv4 Header | IPv6 Header | IPv6 Data ]
+
+After tunnel:
+[ IPv6 Header | IPv6 Data ]</div>
+<div class="info"><b>Applications:</b> IPv6-over-IPv4 transition, VPNs such as IPsec tunnels, and connecting networks that use different addressing or transport environments.</div>
+<div class="success"><b>Key idea:</b> Tunnelling = encapsulate → transport through another network → decapsulate.</div>
+</div></section>
+
+<footer>Computer Networks • Visual Exam Answers • Questions 1–10</footer>
+
+<script>
+function go(id){document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});}
+function filterCards(){
+ const q=document.getElementById("search").value.toLowerCase().trim();
+ document.querySelectorAll(".card").forEach(c=>c.classList.toggle("hidden",q && !c.innerText.toLowerCase().includes(q)));
+}
+function showAll(){document.querySelectorAll(".card").forEach(c=>c.classList.remove("hidden"));document.getElementById("search").value="";}
+function hideAll(){document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"));}
+</script>
+</body>
+</html>

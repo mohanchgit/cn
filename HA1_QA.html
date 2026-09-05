@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks - Questions 2 to 10</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#5f6b7a;
+  --primary:#2563eb;--secondary:#0f766e;--accent:#f59e0b;
+  --line:#dbe3ef;--dark:#111827;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(135deg,#172554,#2563eb);color:white;padding:28px 5%;position:sticky;top:0;z-index:20;box-shadow:0 4px 15px #0002}
+header h1{margin:0 0 5px;font-size:clamp(24px,4vw,38px)}
+header p{margin:0;color:#dbeafe}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+button{border:0;border-radius:9px;padding:10px 15px;cursor:pointer;font-weight:700}
+button.primary{background:white;color:#1d4ed8}
+button.dark{background:#0f172a;color:white}
+button.green{background:#d1fae5;color:#065f46}
+.container{max-width:1200px;margin:25px auto;padding:0 18px}
+.search{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:16px;margin-bottom:20px}
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:25px}
+.toc button{background:white;border:1px solid var(--line);text-align:left}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:20px 0;overflow:hidden;box-shadow:0 5px 18px #0f172a0a}
+.sec-head{padding:18px 22px;background:#eff6ff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:15px;align-items:center}
+.sec-head h2{margin:0;font-size:22px}
+.badge{background:#dbeafe;color:#1e40af;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:bold}
+.content{padding:22px}
+h3{color:#1d4ed8;margin-top:20px}
+h4{color:#0f766e}
+.diagram{background:#fbfdff;border:1px solid var(--line);border-radius:12px;padding:12px;margin:16px 0;overflow:auto}
+.diagram svg{display:block;margin:auto;max-width:100%;height:auto}
+.note{background:#fffbeb;border-left:5px solid var(--accent);padding:13px 16px;border-radius:8px;margin:14px 0}
+.success{background:#ecfdf5;border-left:5px solid #10b981;padding:13px 16px;border-radius:8px}
+.info{background:#eff6ff;border-left:5px solid var(--primary);padding:13px 16px;border-radius:8px}
+code,.bin{font-family:"Courier New",monospace}
+.bin{background:#111827;color:#f9fafb;padding:12px;border-radius:9px;display:block;overflow:auto;margin:10px 0;white-space:pre-wrap}
+table{border-collapse:collapse;width:100%;margin:14px 0;background:white}
+th,td{border:1px solid var(--line);padding:10px;text-align:left}
+th{background:#eff6ff}
+.steps{counter-reset:step;display:grid;gap:10px}
+.step{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.step:before{counter-increment:step;content:"Step " counter(step);font-weight:bold;color:#2563eb;margin-right:8px}
+details{border:1px solid var(--line);border-radius:10px;margin:12px 0;padding:10px 14px;background:#fafcff}
+summary{cursor:pointer;font-weight:700;color:#1e40af}
+footer{text-align:center;color:var(--muted);padding:30px}
+.hidden{display:none}
+@media print{
+ header{position:static;background:white;color:black;border-bottom:2px solid #111}
+ header p{color:#333}.toolbar,.search,.toc{display:none}
+ section.card{break-inside:avoid;box-shadow:none}.content{padding:15px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Computer Networks — Visual Exam Answers</h1>
+  <p>Questions 1–10 • Diagrams • Step-by-step explanations • Calculations</p>
+  <div class="toolbar">
+    <button class="primary" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="green" onclick="expandAll()">＋ Expand All</button>
+    <button class="dark" onclick="collapseAll()">− Collapse All</button>
+  </div>
+</header>
+
+<div class="container">
+<input id="search" class="search" placeholder="Search: optical fibre, OSI, checksum, CRC, Hamming, tree topology..." oninput="filterSections()">
+
+<div class="toc">
+  <button onclick="go('q1')">Q1 Line Coding</button>
+  <button onclick="go('q2')">Q2 Cables</button>
+  <button onclick="go('q3')">Q3 Wireless Waves</button>
+  <button onclick="go('q4')">Q4 OSI Model</button>
+  <button onclick="go('q5')">Q5 Framing</button>
+  <button onclick="go('q6')">Q6 Checksum</button>
+  <button onclick="go('q7')">Q7 CRC</button>
+  <button onclick="go('q8')">Q8 2D Parity</button>
+  <button onclick="go('q9')">Q9 Hamming Code</button>
+  <button onclick="go('q10')">Q10 KL Campus Network</button>
+</div>
+
+
+<section id="q1" class="card">
+<div class="sec-head"><h2>1. Line Coding: Unipolar NRZ, NRZ-L and NRZ-I</h2><span class="badge">Data = 01001110</span></div>
+<div class="content">
+<p><b>Given data:</b> <span class="bin" style="display:inline-block;padding:5px 10px">01001110</span></p>
+
+<h3>A. Unipolar NRZ</h3>
+<p>In Unipolar NRZ, <b>1 = positive voltage</b> and <b>0 = zero voltage</b>. The signal remains at that level for the entire bit period.</p>
+<div class="diagram">
+<svg viewBox="0 0 920 300">
+<text x="460" y="28" text-anchor="middle" font-size="22" font-weight="bold">Unipolar NRZ Signal</text>
+<line x1="80" y1="230" x2="860" y2="230" stroke="#111827" stroke-width="2"/>
+<line x1="80" y1="80" x2="80" y2="245" stroke="#111827" stroke-width="2"/>
+<text x="45" y="86" font-size="16">+V</text><text x="45" y="235" font-size="16">0</text>
+<g stroke="#94a3b8" stroke-dasharray="5 5">
+<line x1="180" y1="80" x2="180" y2="230"/><line x1="280" y1="80" x2="280" y2="230"/>
+<line x1="380" y1="80" x2="380" y2="230"/><line x1="480" y1="80" x2="480" y2="230"/>
+<line x1="580" y1="80" x2="580" y2="230"/><line x1="680" y1="80" x2="680" y2="230"/>
+<line x1="780" y1="80" x2="780" y2="230"/><line x1="860" y1="80" x2="860" y2="230"/>
+</g>
+<path d="M80 230 L180 230 L180 80 L280 80 L280 230 L380 230 L380 80 L480 80 L580 80 L580 230 L680 230 L680 80 L780 80 L780 230 L860 230" fill="none" stroke="#2563eb" stroke-width="5"/>
+<g font-size="18" text-anchor="middle"><text x="130" y="270">0</text><text x="230" y="270">1</text><text x="330" y="270">0</text><text x="430" y="270">0</text><text x="530" y="270">1</text><text x="630" y="270">1</text><text x="730" y="270">1</text><text x="820" y="270">0</text></g>
+</svg>
+</div>
+<div class="success"><b>Unipolar NRZ levels:</b> 0, +V, 0, 0, +V, +V, +V, 0</div>
+
+<h3>B. NRZ-L (Non-Return-to-Zero-Level)</h3>
+<p>For this example, use the common convention <b>0 = +V</b> and <b>1 = −V</b>. The signal level is determined directly by the bit value.</p>
+<div class="diagram">
+<svg viewBox="0 0 920 300">
+<text x="460" y="28" text-anchor="middle" font-size="22" font-weight="bold">NRZ-L Signal</text>
+<line x1="80" y1="80" x2="860" y2="80" stroke="#111827" stroke-width="2"/><line x1="80" y1="230" x2="860" y2="230" stroke="#111827" stroke-width="2"/>
+<text x="40" y="86" font-size="16">+V</text><text x="40" y="236" font-size="16">−V</text>
+<g stroke="#94a3b8" stroke-dasharray="5 5">
+<line x1="180" y1="80" x2="180" y2="230"/><line x1="280" y1="80" x2="280" y2="230"/><line x1="380" y1="80" x2="380" y2="230"/><line x1="480" y1="80" x2="480" y2="230"/><line x1="580" y1="80" x2="580" y2="230"/><line x1="680" y1="80" x2="680" y2="230"/><line x1="780" y1="80" x2="780" y2="230"/><line x1="860" y1="80" x2="860" y2="230"/>
+</g>
+<path d="M80 80 L180 80 L180 230 L280 230 L280 80 L480 80 L480 230 L780 230 L780 80 L860 80" fill="none" stroke="#dc2626" stroke-width="5"/>
+<g font-size="18" text-anchor="middle"><text x="130" y="270">0</text><text x="230" y="270">1</text><text x="330" y="270">0</text><text x="430" y="270">0</text><text x="530" y="270">1</text><text x="630" y="270">1</text><text x="730" y="270">1</text><text x="820" y="270">0</text></g>
+</svg>
+</div>
+<div class="success"><b>NRZ-L levels:</b> +V, −V, +V, +V, −V, −V, −V, +V</div>
+
+<h3>C. NRZ-I (Non-Return-to-Zero Invert)</h3>
+<p>In NRZ-I, a <b>1 causes a transition/inversion</b> at the beginning of the bit interval, while <b>0 causes no transition</b>. Assume the initial signal level is <b>−V</b>.</p>
+<div class="diagram">
+<svg viewBox="0 0 920 300">
+<text x="460" y="28" text-anchor="middle" font-size="22" font-weight="bold">NRZ-I Signal (initial level = −V)</text>
+<line x1="80" y1="80" x2="860" y2="80" stroke="#111827" stroke-width="2"/><line x1="80" y1="230" x2="860" y2="230" stroke="#111827" stroke-width="2"/>
+<text x="40" y="86" font-size="16">+V</text><text x="40" y="236" font-size="16">−V</text>
+<g stroke="#94a3b8" stroke-dasharray="5 5">
+<line x1="180" y1="80" x2="180" y2="230"/><line x1="280" y1="80" x2="280" y2="230"/><line x1="380" y1="80" x2="380" y2="230"/><line x1="480" y1="80" x2="480" y2="230"/><line x1="580" y1="80" x2="580" y2="230"/><line x1="680" y1="80" x2="680" y2="230"/><line x1="780" y1="80" x2="780" y2="230"/><line x1="860" y1="80" x2="860" y2="230"/>
+</g>
+<path d="M80 230 L180 230 L180 80 L280 80 L380 80 L480 80 L480 230 L580 230 L580 80 L680 80 L780 80 L860 80" fill="none" stroke="#059669" stroke-width="5"/>
+<g font-size="18" text-anchor="middle"><text x="130" y="270">0</text><text x="230" y="270">1</text><text x="330" y="270">0</text><text x="430" y="270">0</text><text x="530" y="270">1</text><text x="630" y="270">1</text><text x="730" y="270">1</text><text x="820" y="270">0</text></g>
+</svg>
+</div>
+<div class="bin">Data:       0  1  0  0  1  1  1  0
+Initial:    −V
+Bit 1 = 0  → no transition → −V
+Bit 2 = 1  → transition     → +V
+Bit 3 = 0  → no transition → +V
+Bit 4 = 0  → no transition → +V
+Bit 5 = 1  → transition     → −V
+Bit 6 = 1  → transition     → +V
+Bit 7 = 1  → transition     → −V
+Bit 8 = 0  → no transition → −V</div>
+<div class="success"><b>NRZ-I levels:</b> −V, +V, +V, +V, −V, +V, −V, −V</div>
+
+<h3>Quick Comparison</h3>
+<table><tr><th>Encoding</th><th>Rule</th><th>Signal for 01001110</th></tr>
+<tr><td>Unipolar NRZ</td><td>0 = 0V, 1 = +V</td><td>0, +V, 0, 0, +V, +V, +V, 0</td></tr>
+<tr><td>NRZ-L</td><td>0 = +V, 1 = −V (assumed)</td><td>+V, −V, +V, +V, −V, −V, −V, +V</td></tr>
+<tr><td>NRZ-I</td><td>1 = transition, 0 = no transition</td><td>−V, +V, +V, +V, −V, +V, −V, −V</td></tr></table>
+
+<div class="note"><b>Important exam note:</b> NRZ-L polarity conventions can vary by textbook. If your prescribed textbook defines 0 = −V and 1 = +V, reverse the NRZ-L levels. For NRZ-I, always state the initial signal level because it affects the resulting waveform.</div>
+</div></section>
+
+<section id="q2" class="card">
+<div class="sec-head"><h2>2. Optical Fibre, Twisted Pair and Coaxial Cable</h2><span class="badge">Transmission Media</span></div>
+<div class="content">
+<h3>A. Optical Fibre</h3>
+<div class="diagram">
+<svg viewBox="0 0 900 260">
+<rect x="40" y="45" width="820" height="170" rx="35" fill="#e5e7eb" stroke="#374151" stroke-width="3"/>
+<rect x="100" y="75" width="700" height="110" rx="28" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/>
+<rect x="210" y="100" width="480" height="60" rx="25" fill="#fef3c7" stroke="#f59e0b" stroke-width="3"/>
+<path d="M230 130 C300 90,370 170,440 130 S580 90,670 130" fill="none" stroke="#dc2626" stroke-width="6"/>
+<text x="450" y="32" text-anchor="middle" font-size="22" font-weight="bold">Optical Fibre Structure</text>
+<text x="450" y="135" text-anchor="middle" font-size="20">CORE — carries light</text>
+<text x="450" y="92" text-anchor="middle" font-size="17">CLADDING — keeps light inside by reflection</text>
+<text x="450" y="205" text-anchor="middle" font-size="17">Buffer / Outer Jacket — protection</text>
+</svg>
+</div>
+<ul><li><b>Core:</b> carries light pulses.</li><li><b>Cladding:</b> surrounds the core and enables internal reflection.</li><li><b>Buffer coating:</b> protects the fibre.</li><li><b>Outer jacket:</b> provides mechanical protection.</li></ul>
+
+<h3>B. Twisted Pair Cable</h3>
+<div class="diagram">
+<svg viewBox="0 0 900 240">
+<rect x="70" y="45" width="760" height="150" rx="30" fill="#f3f4f6" stroke="#374151" stroke-width="3"/>
+<path d="M110 105 C150 65,190 145,230 105 S310 65,350 105 S430 145,470 105 S550 65,590 105 S670 145,710 105 S790 65,810 105" fill="none" stroke="#2563eb" stroke-width="9"/>
+<path d="M110 145 C150 105,190 185,230 145 S310 105,350 145 S430 185,470 145 S550 105,590 145 S670 185,710 145 S790 105,810 145" fill="none" stroke="#dc2626" stroke-width="9"/>
+<text x="450" y="30" text-anchor="middle" font-size="22" font-weight="bold">Twisted Pair</text>
+<text x="450" y="220" text-anchor="middle" font-size="17">Two insulated copper wires twisted together reduce interference and crosstalk</text>
+</svg>
+</div>
+<p><b>Types:</b> UTP (Unshielded Twisted Pair) and STP (Shielded Twisted Pair).</p>
+
+<h3>C. Coaxial Cable</h3>
+<div class="diagram">
+<svg viewBox="0 0 900 260">
+<circle cx="450" cy="130" r="95" fill="#d1d5db" stroke="#374151" stroke-width="4"/>
+<circle cx="450" cy="130" r="68" fill="#fef3c7" stroke="#f59e0b" stroke-width="4"/>
+<circle cx="450" cy="130" r="38" fill="#bfdbfe" stroke="#2563eb" stroke-width="4"/>
+<circle cx="450" cy="130" r="16" fill="#374151"/>
+<text x="450" y="28" text-anchor="middle" font-size="22" font-weight="bold">Coaxial Cable Cross-section</text>
+<text x="610" y="75" font-size="17">Outer jacket</text><line x1="540" y1="85" x2="515" y2="95" stroke="#111827" stroke-width="2"/>
+<text x="610" y="115" font-size="17">Metallic shield</text><line x1="540" y1="115" x2="515" y2="120" stroke="#111827" stroke-width="2"/>
+<text x="610" y="155" font-size="17">Dielectric insulator</text><line x1="540" y1="145" x2="505" y2="135" stroke="#111827" stroke-width="2"/>
+<text x="610" y="195" font-size="17">Central conductor</text><line x1="540" y1="180" x2="465" y2="140" stroke="#111827" stroke-width="2"/>
+</svg>
+</div>
+</div></section>
+
+<section id="q3" class="card">
+<div class="sec-head"><h2>3. Radio, Microwave and Infrared Waves</h2><span class="badge">Wireless Communication</span></div>
+<div class="content">
+<h3>A. Radio Waves</h3>
+<div class="diagram"><svg viewBox="0 0 900 250">
+<line x1="130" y1="190" x2="130" y2="70" stroke="#111827" stroke-width="8"/><path d="M95 95 Q130 55 165 95 M80 115 Q130 50 180 115" fill="none" stroke="#2563eb" stroke-width="4"/>
+<line x1="770" y1="190" x2="770" y2="70" stroke="#111827" stroke-width="8"/><path d="M735 95 Q770 55 805 95 M720 115 Q770 50 820 115" fill="none" stroke="#2563eb" stroke-width="4"/>
+<path d="M180 130 Q300 50 450 130 T720 130" fill="none" stroke="#dc2626" stroke-width="5"/>
+<text x="130" y="220" text-anchor="middle" font-size="18">Transmitter</text><text x="770" y="220" text-anchor="middle" font-size="18">Receiver</text><text x="450" y="55" text-anchor="middle" font-size="20" font-weight="bold">Radio waves</text>
+</svg></div>
+<p>Used in broadcasting, mobile communication, Wi-Fi and IoT. Radio waves can cover relatively large areas.</p>
+
+<h3>B. Microwaves</h3>
+<div class="diagram"><svg viewBox="0 0 900 260">
+<line x1="100" y1="210" x2="100" y2="100" stroke="#374151" stroke-width="5"/><line x1="800" y1="210" x2="800" y2="100" stroke="#374151" stroke-width="5"/>
+<path d="M80 100 L145 125 L80 150 Z" fill="#2563eb"/><path d="M820 100 L755 125 L820 150 Z" fill="#2563eb"/>
+<path d="M145 125 L755 125" stroke="#dc2626" stroke-width="5" stroke-dasharray="12 10"/>
+<text x="100" y="235" text-anchor="middle" font-size="18">Tower A</text><text x="800" y="235" text-anchor="middle" font-size="18">Tower B</text><text x="450" y="80" text-anchor="middle" font-size="20" font-weight="bold">Microwave — Line of Sight</text>
+</svg></div>
+<p>Used for point-to-point links, cellular backhaul, satellite communication and radar. Usually requires line-of-sight.</p>
+
+<h3>C. Infrared</h3>
+<div class="diagram"><svg viewBox="0 0 900 230">
+<rect x="100" y="80" width="190" height="90" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><rect x="610" y="80" width="190" height="90" rx="12" fill="#d1fae5" stroke="#059669" stroke-width="3"/>
+<circle cx="290" cy="125" r="12" fill="#dc2626"/><circle cx="610" cy="125" r="12" fill="#059669"/>
+<path d="M305 125 Q450 50 595 125" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 8"/>
+<text x="195" y="135" text-anchor="middle" font-size="19">IR Transmitter</text><text x="705" y="135" text-anchor="middle" font-size="19">IR Receiver</text><text x="450" y="35" text-anchor="middle" font-size="20" font-weight="bold">Infrared signal</text>
+</svg></div>
+<p>Used in remote controls, short-range device communication and sensors. It generally does not pass through walls.</p>
+</div></section>
+
+<section id="q4" class="card">
+<div class="sec-head"><h2>4. OSI 7-Layer Data Transmission</h2><span class="badge">Sender → Receiver</span></div>
+<div class="content">
+<div class="diagram"><svg viewBox="0 0 900 500">
+<text x="220" y="35" text-anchor="middle" font-size="23" font-weight="bold">Sender</text><text x="680" y="35" text-anchor="middle" font-size="23" font-weight="bold">Receiver</text>
+<g font-size="17" text-anchor="middle">
+<rect x="100" y="55" width="240" height="45" fill="#dbeafe"/><rect x="560" y="55" width="240" height="45" fill="#dbeafe"/><text x="220" y="84">7 Application</text><text x="680" y="84">7 Application</text>
+<rect x="100" y="110" width="240" height="45" fill="#e0f2fe"/><rect x="560" y="110" width="240" height="45" fill="#e0f2fe"/><text x="220" y="139">6 Presentation</text><text x="680" y="139">6 Presentation</text>
+<rect x="100" y="165" width="240" height="45" fill="#ccfbf1"/><rect x="560" y="165" width="240" height="45" fill="#ccfbf1"/><text x="220" y="194">5 Session</text><text x="680" y="194">5 Session</text>
+<rect x="100" y="220" width="240" height="45" fill="#d1fae5"/><rect x="560" y="220" width="240" height="45" fill="#d1fae5"/><text x="220" y="249">4 Transport</text><text x="680" y="249">4 Transport</text>
+<rect x="100" y="275" width="240" height="45" fill="#fef3c7"/><rect x="560" y="275" width="240" height="45" fill="#fef3c7"/><text x="220" y="304">3 Network</text><text x="680" y="304">3 Network</text>
+<rect x="100" y="330" width="240" height="45" fill="#ffedd5"/><rect x="560" y="330" width="240" height="45" fill="#ffedd5"/><text x="220" y="359">2 Data Link</text><text x="680" y="359">2 Data Link</text>
+<rect x="100" y="385" width="240" height="45" fill="#fee2e2"/><rect x="560" y="385" width="240" height="45" fill="#fee2e2"/><text x="220" y="414">1 Physical</text><text x="680" y="414">1 Physical</text>
+</g>
+<path d="M340 75 L560 75 M340 130 L560 130 M340 185 L560 185 M340 240 L560 240 M340 295 L560 295 M340 350 L560 350 M340 405 L560 405" stroke="#2563eb" stroke-width="3" stroke-dasharray="8 8"/>
+<text x="450" y="455" text-anchor="middle" font-size="18" font-weight="bold">Physical medium carries bits</text>
+</svg></div>
+<div class="steps">
+<div class="step"><b>Application:</b> User/application creates data such as HELLO.</div>
+<div class="step"><b>Presentation:</b> Translation, encryption/decryption and compression may occur.</div>
+<div class="step"><b>Session:</b> Establishes, manages and terminates the communication session.</div>
+<div class="step"><b>Transport:</b> Segments data and provides end-to-end delivery, reliability and flow control.</div>
+<div class="step"><b>Network:</b> Adds logical addressing and selects a route; creates packets.</div>
+<div class="step"><b>Data Link:</b> Adds MAC addressing and error-detection information; creates frames.</div>
+<div class="step"><b>Physical:</b> Converts frames to bits/signals and sends them through the medium.</div>
+</div>
+<div class="success"><b>Receiver:</b> The reverse process occurs: Bits → Frame → Packet → Segment → Data → Application message.</div>
+</div></section>
+
+<section id="q5" class="card">
+<div class="sec-head"><h2>5. Bit Stuffing, Byte Stuffing and Character Count</h2><span class="badge">Framing</span></div>
+<div class="content">
+<table><tr><th>Character</th><th>Encoding</th></tr>
+<tr><td>A</td><td class="bin">01000111</td></tr><tr><td>B</td><td class="bin">11100011</td></tr>
+<tr><td>FLAG</td><td class="bin">01111110</td></tr><tr><td>ESC</td><td class="bin">11100000</td></tr></table>
+<p><b>Frame:</b> A FLAG B ESC</p>
+
+<h3>A. Bit Stuffing</h3>
+<p>Insert <b>0 after five consecutive 1s</b>.</p>
+<div class="bin">Original:
+A      FLAG       B        ESC
+01000111 01111110 11100011 11100000
+
+FLAG = 01111110
+After five 1s → insert 0
+Stuffed FLAG = 011111010
+
+Transmitted data:
+01000111 011111010 11100011 11100000</div>
+<div class="info"><b>Exam answer:</b> 01000111011111010111000111100000</div>
+
+<h3>B. Byte Stuffing</h3>
+<p>Insert ESC before a FLAG or ESC that occurs inside the data.</p>
+<div class="bin">A       → 01000111
+FLAG    → ESC FLAG
+        → 11100000 01111110
+B       → 11100011
+ESC     → ESC ESC
+        → 11100000 11100000</div>
+<div class="info"><b>Transmitted bytes:</b> 01000111 | 11100000 01111110 | 11100011 | 11100000 11100000</div>
+
+<h3>C. Character Count</h3>
+<p>There are 4 characters. Assuming an 8-bit count field:</p>
+<div class="bin">4 decimal = 00000100 binary
+
+00000100 01000111 01111110 11100011 11100000</div>
+<table><tr><th>Method</th><th>Core idea</th></tr>
+<tr><td>Bit stuffing</td><td>Insert 0 after five consecutive 1s.</td></tr>
+<tr><td>Byte stuffing</td><td>Insert ESC before special FLAG/ESC data bytes.</td></tr>
+<tr><td>Character count</td><td>First field indicates the number of characters.</td></tr></table>
+</div></section>
+
+<section id="q6" class="card">
+<div class="sec-head"><h2>6. Checksum Mechanism</h2><span class="badge">Error Detection</span></div>
+<div class="content">
+<p>Frames: <b>11001100, 10101010, 11110000, 11000011</b></p>
+<p>Use <b>1's complement addition</b>.</p>
+<div class="bin">Step 1:
+  11001100
++ 10101010
+-----------
+1 01110110
+
+End-around carry:
+01110110 + 1 = 01110111
+
+Step 2:
+  01110111
++ 11110000
+-----------
+1 01100111
+
+End-around carry:
+01100111 + 1 = 01101000
+
+Step 3:
+  01101000
++ 11000011
+-----------
+  00101011
+
+1's complement:
+00101011
+↓↓↓↓↓↓↓↓
+11010100</div>
+<div class="success"><b>Checksum = 11010100</b></div>
+<p>At the receiver, all four data frames plus the checksum are added using 1's complement arithmetic. If the result is <b>11111111</b>, no error is detected; otherwise, an error is detected.</p>
+</div></section>
+
+<section id="q7" class="card">
+<div class="sec-head"><h2>7. CRC Mechanism</h2><span class="badge">Cyclic Redundancy Check</span></div>
+<div class="content">
+<p><b>Data = 11101101</b> and <b>Generator = 1001</b>. Generator degree = 3, so append 3 zeros.</p>
+<div class="bin">Data = 11101101
+Append 3 zeros:
+11101101000</div>
+<div class="note"><b>Modulo-2 division:</b> XOR is used instead of normal subtraction.</div>
+<div class="bin">11101101000 ÷ 1001
+
+Remainder = 011</div>
+<div class="success"><b>CRC = 011</b></div>
+<div class="bin">Transmitted codeword
+= Data + CRC
+= 11101101 + 011
+= 11101101011</div>
+<p>Receiver divides the received codeword by <b>1001</b>. Remainder <b>000</b> means no error is detected; a non-zero remainder indicates an error.</p>
+</div></section>
+
+<section id="q8" class="card">
+<div class="sec-head"><h2>8. 2D Parity Check</h2><span class="badge">Error Detection & Correction</span></div>
+<div class="content">
+<div class="note">The supplied values contain 7 bits although the question says each unit is 1 byte. We therefore add one parity bit to each row to make 8 bits, using <b>even parity</b>.</div>
+<div class="bin">Data:
+1100111
+1011101
+0111001
+0101001</div>
+<table><tr><th>Original 7 bits</th><th>Number of 1s</th><th>Parity</th><th>8-bit unit</th></tr>
+<tr><td>1100111</td><td>5 (odd)</td><td>1</td><td><b>11001111</b></td></tr>
+<tr><td>1011101</td><td>5 (odd)</td><td>1</td><td><b>10111011</b></td></tr>
+<tr><td>0111001</td><td>4 (even)</td><td>0</td><td><b>01110010</b></td></tr>
+<tr><td>0101001</td><td>3 (odd)</td><td>1</td><td><b>01010011</b></td></tr></table>
+
+<p>For the resulting 4 × 8 matrix, even column parity is:</p>
+<div class="bin">1 1 0 0 1 1 1 1
+1 0 1 1 1 0 1 1
+0 1 1 1 0 0 1 0
+0 1 0 1 0 0 1 1
+-----------------
+0 1 0 1 0 1 0 1   ← column parity row</div>
+
+<div class="diagram"><svg viewBox="0 0 760 300">
+<text x="380" y="25" text-anchor="middle" font-size="21" font-weight="bold">2D Parity: error location</text>
+<g font-family="Courier New" font-size="20">
+<text x="120" y="80">1 1 0 0 1 1 1 1</text>
+<text x="120" y="125">1 0 1 1 1 0 1 1</text>
+<text x="120" y="170">0 1 1 1 0 0 1 0</text>
+<text x="120" y="215">0 1 0 1 0 0 1 1</text>
+</g>
+<line x1="105" y1="235" x2="650" y2="235" stroke="#111827" stroke-width="2"/>
+<text x="120" y="270">Column parity</text>
+<text x="430" y="270">01010101</text>
+<path d="M250 110 L250 155" stroke="#dc2626" stroke-width="5"/><circle cx="250" cy="145" r="8" fill="#dc2626"/>
+<text x="480" y="70" font-size="17">If one bit changes:</text>
+<text x="480" y="95" font-size="17">row parity fails +</text>
+<text x="480" y="120" font-size="17">column parity fails</text>
+<text x="480" y="145" font-size="17">→ intersection identifies</text>
+<text x="480" y="170" font-size="17">the erroneous bit.</text>
+</svg></div>
+<p>Thus, 2D parity can locate and correct a single-bit error by flipping the bit at the intersection of the failed row and failed column.</p>
+</div></section>
+
+<section id="q9" class="card">
+<div class="sec-head"><h2>9. Hamming Code for 1001101</h2><span class="badge">Error Detection & Correction</span></div>
+<div class="content">
+<p>Data bits <b>m = 7</b>. Find parity bits r:</p>
+<div class="bin">2^r ≥ m + r + 1
+
+For r = 4:
+16 ≥ 7 + 4 + 1
+16 ≥ 12 ✓
+
+Therefore, 4 parity bits are required.</div>
+<p>Total bits = 7 + 4 = <b>11 bits</b>. Parity positions are <b>1, 2, 4, 8</b>.</p>
+<table><tr><th>Position</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th></tr>
+<tr><th>Content</th><td>P1</td><td>P2</td><td>1</td><td>P4</td><td>0</td><td>0</td><td>1</td><td>P8</td><td>1</td><td>1</td><td>0</td></tr></table>
+
+<h3>Parity calculations using even parity</h3>
+<div class="bin">P1 checks positions 1,3,5,7,9,11
+Known 1,0,1,1,0 → 3 ones → P1 = 1
+
+P2 checks positions 2,3,6,7,10,11
+Known 1,0,1,1,0 → 3 ones → P2 = 1
+
+P4 checks positions 4,5,6,7
+Known 0,0,1 → 1 one → P4 = 1
+
+P8 checks positions 8,9,10,11
+Known 1,1,0 → 2 ones → P8 = 0</div>
+<div class="success"><b>Hamming code = 11110010110</b></div>
+
+<h3>Error correction example</h3>
+<div class="bin">Suppose bit position 6 changes.
+
+Original: 11110010110
+Received:  11110110110
+
+Position 6 in binary = 0110
+
+Syndrome = 0110₂ = 6
+
+Therefore, error is at position 6.
+Flip bit 6 to recover the original code.</div>
+</div></section>
+
+<section id="q10" class="card">
+<div class="sec-head"><h2>10. Tree Topology for KL University, Vijayawada Campus</h2><span class="badge">Campus Network Design</span></div>
+<div class="content">
+<div class="diagram">
+<svg viewBox="0 0 1000 650">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/></marker></defs>
+<rect x="420" y="20" width="160" height="55" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="3"/><text x="500" y="54" text-anchor="middle" font-size="20">Internet / ISP</text>
+<rect x="430" y="115" width="140" height="55" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="500" y="149" text-anchor="middle" font-size="20">Router</text>
+<rect x="400" y="210" width="200" height="60" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="3"/><text x="500" y="247" text-anchor="middle" font-size="20">Core Switch</text>
+<g font-size="17" text-anchor="middle">
+<rect x="60" y="325" width="150" height="55" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="135" y="359">CSE Switch</text>
+<rect x="275" y="325" width="150" height="55" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="350" y="359">ECE Switch</text>
+<rect x="490" y="325" width="150" height="55" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="565" y="359">EEE Switch</text>
+<rect x="705" y="325" width="180" height="55" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="3"/><text x="795" y="359">Admin / Library</text>
+</g>
+<g stroke="#2563eb" stroke-width="3" fill="none">
+<line x1="500" y1="75" x2="500" y2="115"/><line x1="500" y1="170" x2="500" y2="210"/>
+<line x1="500" y1="270" x2="135" y2="325"/><line x1="500" y1="270" x2="350" y2="325"/><line x1="500" y1="270" x2="565" y2="325"/><line x1="500" y1="270" x2="795" y2="325"/>
+</g>
+<g font-size="15" text-anchor="middle">
+<rect x="45" y="430" width="180" height="45" rx="8" fill="#f3f4f6"/><text x="135" y="458">PCs • Labs • APs</text>
+<rect x="260" y="430" width="180" height="45" rx="8" fill="#f3f4f6"/><text x="350" y="458">PCs • Labs • APs</text>
+<rect x="475" y="430" width="180" height="45" rx="8" fill="#f3f4f6"/><text x="565" y="458">PCs • Labs • APs</text>
+<rect x="705" y="430" width="180" height="45" rx="8" fill="#f3f4f6"/><text x="795" y="458">Servers • PCs • APs</text>
+</g>
+<g stroke="#059669" stroke-width="3"><line x1="135" y1="380" x2="135" y2="430"/><line x1="350" y1="380" x2="350" y2="430"/><line x1="565" y1="380" x2="565" y2="430"/><line x1="795" y1="380" x2="795" y2="430"/></g>
+<text x="500" y="530" text-anchor="middle" font-size="20" font-weight="bold">Hierarchical / Tree Structure</text>
+<text x="500" y="565" text-anchor="middle" font-size="16">Core → Department/Building Switches → Access Devices</text>
+<text x="500" y="595" text-anchor="middle" font-size="16">Recommended: switches instead of hubs for the modern campus network</text>
+</svg>
+</div>
+
+<h3>Hardware</h3>
+<table><tr><th>Device</th><th>Purpose</th></tr>
+<tr><td>Router</td><td>Connects campus network to Internet/WAN and performs routing.</td></tr>
+<tr><td>Core/Distribution Switch</td><td>Connects major departments/buildings.</td></tr>
+<tr><td>Access Switch</td><td>Connects PCs, printers, IP phones, APs and other end devices.</td></tr>
+<tr><td>Wireless Access Point</td><td>Provides Wi-Fi to students, faculty and staff.</td></tr>
+<tr><td>Hub</td><td>Can be used for basic/legacy demonstrations, but switches are preferred in a modern LAN.</td></tr></table>
+
+<h3>Suggested VLAN Structure</h3>
+<table><tr><th>VLAN</th><th>Department / Service</th></tr>
+<tr><td>10</td><td>CSE</td></tr><tr><td>20</td><td>ECE</td></tr><tr><td>30</td><td>EEE</td></tr>
+<tr><td>40</td><td>Administration</td></tr><tr><td>50</td><td>Faculty</td></tr><tr><td>60</td><td>Students</td></tr>
+<tr><td>70</td><td>Library</td></tr><tr><td>80</td><td>Servers</td></tr><tr><td>90</td><td>Guest Wi-Fi</td></tr></table>
+
+<h3>Advantages</h3>
+<ul><li>Easy to expand for new buildings and departments.</li><li>Department-wise management is easier.</li><li>VLANs provide logical separation.</li><li>Switches improve performance compared with hubs.</li><li>Fault isolation and network management are easier.</li></ul>
+<div class="success"><b>Conclusion:</b> A Router + Core/Distribution Switches + Access Switches + Wireless Access Points provides a scalable hierarchical/tree-based campus network.</div>
+</div></section>
+
+<footer>
+Computer Networks — Visual Study Portal • Questions 1–10
+</footer>
+</div>
+
+<script>
+function go(id){
+  document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});
+}
+function expandAll(){
+  document.querySelectorAll("details").forEach(d=>d.open=true);
+}
+function collapseAll(){
+  document.querySelectorAll("details").forEach(d=>d.open=false);
+}
+function filterSections(){
+  const q=document.getElementById("search").value.toLowerCase().trim();
+  document.querySelectorAll("section.card").forEach(s=>{
+    s.classList.toggle("hidden", q && !s.innerText.toLowerCase().includes(q));
+  });
+}
+document.addEventListener("keydown",e=>{
+  if(e.ctrlKey && e.key.toLowerCase()==="p"){e.preventDefault();window.print();}
+});
+</script>
+</body>
+</html>
