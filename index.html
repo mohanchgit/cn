@@ -1,481 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Computer Networks - Course Index</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #ffffff;
-            color: #222;
-        }
-
-        header {
-            background: #f4f7fb;
-            border-bottom: 2px solid #d9e2ec;
-            text-align: center;
-            padding: 25px 15px;
-        }
-
-        header h1 {
-            margin: 0 0 8px;
-            font-size: 30px;
-            color: #123b5d;
-        }
-
-        header p {
-            margin: 0;
-            font-size: 16px;
-            color: #555;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px 20px 40px;
-        }
-
-        .top-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        #searchBox {
-            flex: 1;
-            min-width: 250px;
-            padding: 13px 16px;
-            border: 1px solid #bbb;
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        #searchBox:focus {
-            border-color: #2878b5;
-        }
-
-        .count {
-            padding: 13px 18px;
-            background: #f1f5f9;
-            border: 1px solid #d5dde5;
-            border-radius: 8px;
-            font-weight: bold;
-            color: #34495e;
-        }
-
-        .topics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 18px;
-        }
-
-        .card {
-            background: #fff;
-            border: 1px solid #d8dee5;
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 175px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-        }
-
-        .number {
-            display: inline-block;
-            width: 35px;
-            height: 35px;
-            line-height: 35px;
-            text-align: center;
-            border-radius: 50%;
-            background: #eaf3fa;
-            color: #155a85;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .card h2 {
-            font-size: 18px;
-            line-height: 1.4;
-            margin: 0 0 10px;
-            color: #173f5f;
-        }
-
-        .card p {
-            font-size: 14px;
-            line-height: 1.5;
-            color: #666;
-            margin: 0 0 15px;
-        }
-
-        .open-btn {
-            display: inline-block;
-            text-decoration: none;
-            text-align: center;
-            background: #1769aa;
-            color: white;
-            padding: 10px 14px;
-            border-radius: 7px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .open-btn:hover {
-            background: #0d4f82;
-        }
-
-        .no-result {
-            display: none;
-            text-align: center;
-            padding: 40px;
-            color: #777;
-            font-size: 18px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            border-top: 1px solid #ddd;
-            color: #666;
-            font-size: 14px;
-        }
-
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 24px;
-            }
-
-            .container {
-                padding: 18px 12px 30px;
-            }
-
-            .topics {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks - Topics</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f6f8fb;color:#1f2937}
+.header{background:#fff;border-bottom:1px solid #e5e7eb;padding:28px 20px;text-align:center}
+.header h1{margin:0;font-size:30px;color:#17324d}
+.header p{margin:8px 0 0;color:#667085;font-size:14px}
+.wrap{max-width:1050px;margin:auto;padding:24px 18px 45px}
+.toolbar{display:flex;gap:10px;margin-bottom:24px}
+.search{flex:1;position:relative}
+.search span{position:absolute;left:13px;top:11px}
+.search input{width:100%;padding:12px 14px 12px 38px;border:1px solid #d8dee8;border-radius:7px;background:#fff;font-size:14px;outline:none}
+.search input:focus{border-color:#5b8def}
+select{padding:0 12px;border:1px solid #d8dee8;border-radius:7px;background:#fff;font-size:13px;color:#344054}
+.section{margin:25px 0 0}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.section-title h2{font-size:18px;margin:0;color:#203b56}
+.section-title span{font-size:12px;color:#98a2b3}
+.topic-list{background:#fff;border:1px solid #e2e7ee;border-radius:9px;overflow:hidden}
+.topic{display:flex;align-items:center;gap:14px;padding:15px 16px;text-decoration:none;color:inherit;border-bottom:1px solid #edf0f4;transition:background .15s}
+.topic:last-child{border-bottom:0}
+.topic:hover{background:#f8fbff}
+.num{width:34px;height:34px;flex:0 0 34px;border-radius:7px;background:#eef4ff;color:#2563eb;display:grid;place-items:center;font-weight:bold;font-size:12px}
+.topic-text{min-width:0;display:flex;flex-direction:column;gap:4px;flex:1}
+.topic-text strong{font-size:14px;color:#243b53}
+.topic-text small{font-size:12px;color:#7b8794}
+.arrow{font-size:25px;color:#98a2b3;line-height:1}
+.no-result{display:none;text-align:center;padding:35px;color:#667085;background:#fff;border:1px solid #e2e7ee;border-radius:9px}
+.lab{margin-top:25px}
+.lab a{display:flex;align-items:center;justify-content:space-between;background:#17324d;color:#fff;text-decoration:none;padding:15px 17px;border-radius:8px;font-size:14px;font-weight:bold}
+.footer{text-align:center;color:#98a2b3;font-size:12px;margin-top:32px}
+@media(max-width:650px){
+ .header h1{font-size:24px}
+ .toolbar{flex-direction:column}
+ select{height:42px}
+ .topic{padding:13px 12px;gap:10px}
+ .topic-text strong{font-size:13px}
+ .topic-text small{font-size:11px}
+}
+</style>
 </head>
-
 <body>
 
-<header>
-    <h1>Computer Networks – Interactive Course Topics & Learning Resources</h1>
-    <p>Learn. Simulate. Configure. Verify. Master Computer Networks through interactive lessons, hands-on labs, Cisco Packet Tracer activities, and curated video resources.</p>
-    <p1><a href="CN_LAB.html">🧪 Laboratory</a></p1>
+<header class="header">
+  <h1>Computer Networks</h1>
+  <p>Interactive Learning Topics</p>
 </header>
 
-<div class="container">
-
-    <div class="top-bar">
-        <input
-            type="text"
-            id="searchBox"
-            placeholder="Search Computer Networks topics..."
-            onkeyup="searchTopics()"
-        >
-
-        <div class="count">
-            Topics: <span id="topicCount">19</span>
-        </div>
+<main class="wrap">
+  <div class="toolbar">
+    <div class="search">
+      <span>🔎</span>
+      <input id="search" type="search" placeholder="Search a topic...">
     </div>
+    <select id="filter" aria-label="Select topic group">
+      <option value="all">All Topics</option>
+      <option value="basics">Basics</option>
+      <option value="data link layer">Data Link Layer</option>
+      <option value="network layer">Network Layer</option>
+      <option value="assignments">Assignments</option>
+    </select>
+  </div>
 
-    <div class="topics" id="topicContainer">
-
-        <div class="card">
-            <div>
-                <span class="number">01</span>
-                <h2>Introduction to Computer Networks</h2>
-                <p>Introduction, uses of computer networks, and classification of networks.</p>
-            </div>
-            <a class="open-btn" href="Introduction%20to%20CN%20Uses%20of%20CN%20classification%20of%20CN.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">02</span>
-                <h2>Network Hardware &amp; Network Software</h2>
-                <p>Learn about network hardware components and network software.</p>
-            </div>
-            <a class="open-btn" href="Network%20Hardware_Network%20software.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">03</span>
-                <h2>Network Topologies &amp; Connectors</h2>
-                <p>Explore network topologies and commonly used networking connectors.</p>
-            </div>
-            <a class="open-btn" href="Networks%20topologies%20connectors.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">04</span>
-                <h2>OSI Reference Model</h2>
-                <p>Understand the seven layers of the OSI reference model.</p>
-            </div>
-            <a class="open-btn" href="OSI%20reference%20model.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">05</span>
-                <h2>TCP/IP Protocol Stack</h2>
-                <p>Learn the architecture and layers of the TCP/IP protocol stack.</p>
-            </div>
-            <a class="open-btn" href="TCP_IP%20protocol%20stack.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">06</span>
-                <h2>Guided &amp; Unguided Transmission Media</h2>
-                <p>Study wired and wireless transmission media used in computer networks.</p>
-            </div>
-            <a class="open-btn" href="Guided%20%26%20Unguided%20Transmission%20Media.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">07</span>
-                <h2>Switching Techniques &amp; Encoding Signals</h2>
-                <p>Understand circuit switching, packet switching, and signal encoding.</p>
-            </div>
-            <a class="open-btn" href="Switching%20techniques%2C%20encoding%20signal.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">08</span>
-                <h2>Data Link Layer Services &amp; DLL Design Issues</h2>
-                <p>Study DLL services, framing, flow control, and design issues.</p>
-            </div>
-            <a class="open-btn" href="Data%20Link%20Layer%20Services%20%26%20DLL%20Design%20Issues.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">09</span>
-                <h2>Error Detection &amp; Correction</h2>
-                <p>Learn techniques used to detect and correct transmission errors.</p>
-            </div>
-            <a class="open-btn" href="Error%20Detection%20and%20Correction.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">10</span>
-                <h2>Error Detection &amp; Correction – CN</h2>
-                <p>Interactive concepts and examples related to network error control.</p>
-            </div>
-            <a class="open-btn" href="Error%20Detection%20and%20Correction_CN.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">11</span>
-                <h2>Stop-and-Wait &amp; Sliding Window Protocols</h2>
-                <p>Understand reliable transmission using Stop-and-Wait and Sliding Window.</p>
-            </div>
-            <a class="open-btn" href="Stop-and-Wait%20%26%20Sliding%20Window%20Protocols.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">12</span>
-                <h2>Go-Back-N &amp; Selective Repeat</h2>
-                <p>Compare Go-Back-N and Selective Repeat ARQ protocols.</p>
-            </div>
-            <a class="open-btn" href="Go-Back-N%20%26%20Selective%20Repeat.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">13</span>
-                <h2>ALOHA, CSMA &amp; CSMA/CD</h2>
-                <p>Study random access and medium access control protocols.</p>
-            </div>
-            <a class="open-btn" href="ALOHA%2C%20CSMA%20%26%20CSMACD.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">14</span>
-                <h2>CSMA/CA, Ethernet &amp; Gigabit Ethernet</h2>
-                <p>Explore Ethernet technologies and collision avoidance mechanisms.</p>
-            </div>
-            <a class="open-btn" href="CSMACA%2C%20Ethernet%20%26%20Gigabit%20Ethernet.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">15</span>
-                <h2>Design Issues of Network Layer</h2>
-                <p>Understand the major design considerations of the network layer.</p>
-            </div>
-            <a class="open-btn" href="Design%20issues%20of%20Network%20layer.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">16</span>
-                <h2>IP Addressing, IPv4 &amp; IPv6</h2>
-                <p>Learn IP addressing concepts and compare IPv4 with IPv6.</p>
-            </div>
-            <a class="open-btn" href="IP%20Addressing%2C%20IPv4%20%26%20IPv6.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">17</span>
-                <h2>Subnetting</h2>
-                <p>Understand subnetting, subnet masks, and IP address allocation.</p>
-            </div>
-            <a class="open-btn" href="Subnetting_CN.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">18</span>
-                <h2>ARP, DHCP &amp; Tunneling</h2>
-                <p>Study address resolution, dynamic IP configuration, and tunneling.</p>
-            </div>
-            <a class="open-btn" href="ARP%2C%20DHCP%20%26%20Tunneling.html">
-                Open Topic
-            </a>
-        </div>
-
-        <div class="card">
-            <div>
-                <span class="number">19</span>
-                <h2>NAT &amp; Port Address Translation (PAT)</h2>
-                <p>Understand NAT, PAT, private addresses, and public IP translation.</p>
-            </div>
-            <a class="open-btn" href="NAT%20%26%20Port%20Address%20Translation%20(PAT).html">
-                Open Topic
-            </a>
-        </div>
+  <div id="sections">
+    <section class="section" data-section="basics">
+      <div class="section-title"><h2>1. Basics</h2><span>Topics 01–07</span></div>
+      <div class="topic-list">
         
-        <div class="card">
-            <div>
-                <span class="number">20</span>
-                <h2>Homework Assignment 1</h2>
-                
-            </div>
-            <a class="open-btn" href="HA1_QA.html">
-                Open Topic
-            </a>
- 	   </div>
-      
-        <div class="card">
-            <div>
-                <span class="number">21</span>
-                <h2>Homework Assignment 2</h2>
-                
-            </div>
-            <a class="open-btn" href="HA2_QA.html">
-                Open Topic
-            </a>
- 	       </div>
-</div>
+      <a class="topic" href="Introduction%20to%20CN%20Uses%20of%20CN%20classification%20of%20CN.html" target="_blank" rel="noopener"
+         data-title="introduction to computer networks" data-section="basics">
+        <span class="num">01</span>
+        <span class="topic-text">
+          <strong>Introduction to Computer Networks</strong>
+          <small>Network basics, uses and classification</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Network%20Hardware_Network%20software.html" target="_blank" rel="noopener"
+         data-title="network hardware & network software" data-section="basics">
+        <span class="num">02</span>
+        <span class="topic-text">
+          <strong>Network Hardware & Network Software</strong>
+          <small>Network hardware and software</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Networks%20topologies%20connectors.html" target="_blank" rel="noopener"
+         data-title="network topologies & connectors" data-section="basics">
+        <span class="num">03</span>
+        <span class="topic-text">
+          <strong>Network Topologies & Connectors</strong>
+          <small>Topologies and connectors</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="OSI%20reference%20model.html" target="_blank" rel="noopener"
+         data-title="osi reference model" data-section="basics">
+        <span class="num">04</span>
+        <span class="topic-text">
+          <strong>OSI Reference Model</strong>
+          <small>Seven layers of the OSI model</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="TCP_IP%20protocol%20stack.html" target="_blank" rel="noopener"
+         data-title="tcp/ip protocol stack" data-section="basics">
+        <span class="num">05</span>
+        <span class="topic-text">
+          <strong>TCP/IP Protocol Stack</strong>
+          <small>TCP/IP protocol architecture</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Guided%20%26%20Unguided%20Transmission%20Media.html" target="_blank" rel="noopener"
+         data-title="guided & unguided transmission media" data-section="basics">
+        <span class="num">06</span>
+        <span class="topic-text">
+          <strong>Guided & Unguided Transmission Media</strong>
+          <small>Guided and unguided media</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Switching%20techniques%2C%20encoding%20signal.html" target="_blank" rel="noopener"
+         data-title="switching techniques & encoding signals" data-section="basics">
+        <span class="num">07</span>
+        <span class="topic-text">
+          <strong>Switching Techniques & Encoding Signals</strong>
+          <small>Switching and signal encoding</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      </div>
+    </section>
 
-
-
-
-
+    <section class="section" data-section="data link layer">
+      <div class="section-title"><h2>2. Data Link Layer</h2><span>Topics 08–14</span></div>
+      <div class="topic-list">
         
+      <a class="topic" href="Data%20Link%20Layer%20Services%20%26%20DLL%20Design%20Issues.html" target="_blank" rel="noopener"
+         data-title="data link layer services & dll design issues" data-section="data link layer">
+        <span class="num">08</span>
+        <span class="topic-text">
+          <strong>Data Link Layer Services & DLL Design Issues</strong>
+          <small>Data Link Layer services and design</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Error%20Detection%20and%20Correction.html" target="_blank" rel="noopener"
+         data-title="error detection & correction" data-section="data link layer">
+        <span class="num">09</span>
+        <span class="topic-text">
+          <strong>Error Detection & Correction</strong>
+          <small>Error detection and correction</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Error%20Detection%20and%20Correction_CN.html" target="_blank" rel="noopener"
+         data-title="error detection & correction – cn" data-section="data link layer">
+        <span class="num">10</span>
+        <span class="topic-text">
+          <strong>Error Detection & Correction – CN</strong>
+          <small>Network error-control concepts</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Stop-and-Wait%20%26%20Sliding%20Window%20Protocols.html" target="_blank" rel="noopener"
+         data-title="stop-and-wait & sliding window protocols" data-section="data link layer">
+        <span class="num">11</span>
+        <span class="topic-text">
+          <strong>Stop-and-Wait & Sliding Window Protocols</strong>
+          <small>Stop-and-Wait and Sliding Window</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Go-Back-N%20%26%20Selective%20Repeat.html" target="_blank" rel="noopener"
+         data-title="go-back-n & selective repeat" data-section="data link layer">
+        <span class="num">12</span>
+        <span class="topic-text">
+          <strong>Go-Back-N & Selective Repeat</strong>
+          <small>Go-Back-N and Selective Repeat</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="ALOHA%2C%20CSMA%20%26%20CSMACD.html" target="_blank" rel="noopener"
+         data-title="aloha, csma & csma/cd" data-section="data link layer">
+        <span class="num">13</span>
+        <span class="topic-text">
+          <strong>ALOHA, CSMA & CSMA/CD</strong>
+          <small>ALOHA, CSMA and CSMA/CD</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="CSMACA%2C%20Ethernet%20%26%20Gigabit%20Ethernet.html" target="_blank" rel="noopener"
+         data-title="csma/ca, ethernet & gigabit ethernet" data-section="data link layer">
+        <span class="num">14</span>
+        <span class="topic-text">
+          <strong>CSMA/CA, Ethernet & Gigabit Ethernet</strong>
+          <small>CSMA/CA and Ethernet</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      </div>
+    </section>
 
-    </div>
+    <section class="section" data-section="network layer">
+      <div class="section-title"><h2>3. Network Layer</h2><span>Topics 15–19</span></div>
+      <div class="topic-list">
+        
+      <a class="topic" href="Design%20issues%20of%20Network%20layer.html" target="_blank" rel="noopener"
+         data-title="design issues of network layer" data-section="network layer">
+        <span class="num">15</span>
+        <span class="topic-text">
+          <strong>Design Issues of Network Layer</strong>
+          <small>Network Layer design issues</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="IP%20Addressing%2C%20IPv4%20%26%20IPv6.html" target="_blank" rel="noopener"
+         data-title="ip addressing, ipv4 & ipv6" data-section="network layer">
+        <span class="num">16</span>
+        <span class="topic-text">
+          <strong>IP Addressing, IPv4 & IPv6</strong>
+          <small>IP addressing, IPv4 and IPv6</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="Subnetting_CN.html" target="_blank" rel="noopener"
+         data-title="subnetting" data-section="network layer">
+        <span class="num">17</span>
+        <span class="topic-text">
+          <strong>Subnetting</strong>
+          <small>Subnetting and subnet masks</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="ARP%2C%20DHCP%20%26%20Tunneling.html" target="_blank" rel="noopener"
+         data-title="arp, dhcp & tunneling" data-section="network layer">
+        <span class="num">18</span>
+        <span class="topic-text">
+          <strong>ARP, DHCP & Tunneling</strong>
+          <small>ARP, DHCP and tunneling</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="NAT%20%26%20Port%20Address%20Translation%20(PAT).html" target="_blank" rel="noopener"
+         data-title="nat & port address translation (pat)" data-section="network layer">
+        <span class="num">19</span>
+        <span class="topic-text">
+          <strong>NAT & Port Address Translation (PAT)</strong>
+          <small>NAT and Port Address Translation</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      </div>
+    </section>
 
-    <div class="no-result" id="noResult">
-        No matching topic found.
-    </div>
+    <section class="section" data-section="assignments" id="assignments">
+      <div class="section-title"><h2>4. Assignments</h2><span>Topics 20–21</span></div>
+      <div class="topic-list">
+        
+      <a class="topic" href="HA1_QA.html" target="_blank" rel="noopener"
+         data-title="homework assignment 1" data-section="assignments">
+        <span class="num">20</span>
+        <span class="topic-text">
+          <strong>Homework Assignment 1</strong>
+          <small>Homework Assignment 1</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      <a class="topic" href="HA2_QA.html" target="_blank" rel="noopener"
+         data-title="homework assignment 2" data-section="assignments">
+        <span class="num">21</span>
+        <span class="topic-text">
+          <strong>Homework Assignment 2</strong>
+          <small>Homework Assignment 2</small>
+        </span>
+        <span class="arrow">›</span>
+      </a>
+      </div>
+    </section>
+  </div>
 
-</div>
+  <div class="no-result" id="empty">No matching topic found.</div>
 
-<footer>
-    <p>Computer Networks | Interactive Learning Resources</p>
-</footer>
+  <div class="lab">
+    <a href="CN_LAB.html" target="_blank" rel="noopener">
+      <span>🧪 Open Computer Networks Laboratory</span><span>→</span>
+    </a>
+  </div>
+
+  <div class="footer">Computer Networks | Interactive Learning Resources</div>
+</main>
 
 <script>
-    function searchTopics() {
+const topics = [...document.querySelectorAll(".topic")];
+const sections = [...document.querySelectorAll(".section")];
+const search = document.getElementById("search");
+const filter = document.getElementById("filter");
+const empty = document.getElementById("empty");
 
-        const searchText =
-            document.getElementById("searchBox").value.toLowerCase();
+function update(){
+  const q = search.value.trim().toLowerCase();
+  const f = filter.value;
+  let total = 0;
 
-        const cards =
-            document.querySelectorAll(".card");
+  sections.forEach(section => {
+    let shown = 0;
+    section.querySelectorAll(".topic").forEach(topic => {
+      const okText = !q || topic.dataset.title.includes(q);
+      const okGroup = f === "all" || topic.dataset.section === f;
+      const show = okText && okGroup;
+      topic.style.display = show ? "flex" : "none";
+      if(show) { shown++; total++; }
+    });
+    section.style.display = shown ? "block" : "none";
+  });
 
-        let visibleCount = 0;
-
-        cards.forEach(function(card) {
-
-            const text = card.innerText.toLowerCase();
-
-            if (text.includes(searchText)) {
-                card.style.display = "flex";
-                visibleCount++;
-            } else {
-                card.style.display = "none";
-            }
-
-        });
-
-        document.getElementById("topicCount").textContent = visibleCount;
-
-        document.getElementById("noResult").style.display =
-            visibleCount === 0 ? "block" : "none";
-    }
+  empty.style.display = total ? "none" : "block";
+}
+search.addEventListener("input", update);
+filter.addEventListener("change", update);
+update();
 </script>
-
 </body>
 </html>
