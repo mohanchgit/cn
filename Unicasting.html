@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Computer Networks - Unicasting, Multicasting & Broadcasting</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f1f5f9;
+    color: #172033;
+    line-height: 1.6;
+}
+
+/* HEADER */
+
+header {
+    background: linear-gradient(135deg, #172554, #2563eb);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    margin: 8px 0;
+    font-size: 17px;
+}
+
+/* NAVIGATION */
+
+nav {
+    background: #0f172a;
+    padding: 10px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav button {
+    background: transparent;
+    color: white;
+    border: 1px solid #64748b;
+    border-radius: 6px;
+    padding: 9px 14px;
+    margin: 3px;
+    cursor: pointer;
+}
+
+nav button:hover {
+    background: #2563eb;
+}
+
+/* MAIN */
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 25px;
+}
+
+section {
+    background: white;
+    margin-bottom: 25px;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+h2 {
+    color: #1d4ed8;
+    border-bottom: 2px solid #dbeafe;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #334155;
+}
+
+/* CARDS */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+    gap: 18px;
+}
+
+.card {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 10px;
+    border-left: 5px solid #2563eb;
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+/* HIGHLIGHTS */
+
+.highlight {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+}
+
+.success {
+    background: #f0fdf4;
+    border-left: 5px solid #16a34a;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+}
+
+.warning {
+    background: #fff7ed;
+    border-left: 5px solid #f97316;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+}
+
+/* TABLE */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #1e3a8a;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+/* NETWORK */
+
+.network {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.network svg {
+    width: 100%;
+    height: 100%;
+}
+
+.link {
+    stroke: #94a3b8;
+    stroke-width: 5;
+}
+
+.active-link {
+    stroke: #16a34a;
+    stroke-width: 8;
+}
+
+.node {
+    fill: #2563eb;
+    stroke: white;
+    stroke-width: 3;
+}
+
+.destination {
+    fill: #16a34a;
+}
+
+.source {
+    fill: #7c3aed;
+}
+
+.node-text {
+    fill: white;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.packet {
+    fill: #ef4444;
+    stroke: white;
+    stroke-width: 2;
+}
+
+/* CONTROLS */
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.controls button {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background: #1d4ed8;
+}
+
+.controls .reset {
+    background: #dc2626;
+}
+
+.status {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    min-height: 50px;
+}
+
+/* BADGES */
+
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 13px;
+}
+
+/* QUIZ */
+
+.quiz {
+    background: #f8fafc;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.quiz button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    margin: 6px 0;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.quiz button:hover {
+    background: #eff6ff;
+}
+
+.answer {
+    display: none;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+/* FOOTER */
+
+footer {
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 25px;
+}
+
+@media(max-width:700px) {
+
+    header h1 {
+        font-size: 23px;
+    }
+
+    .network {
+        height: 400px;
+    }
+
+    nav {
+        position: static;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Computer Networks</h1>
+
+<p>
+Unicasting • Multicasting • Broadcasting
+</p>
+
+<p>
+Interactive Faculty Lecture & Student Learning Module
+</p>
+
+</header>
+
+
+<nav>
+
+<button onclick="goTo('objectives')">Objectives</button>
+
+<button onclick="goTo('basics')">Basics</button>
+
+<button onclick="goTo('unicast')">Unicast</button>
+
+<button onclick="goTo('multicast')">Multicast</button>
+
+<button onclick="goTo('broadcast')">Broadcast</button>
+
+<button onclick="goTo('comparison')">Comparison</button>
+
+<button onclick="goTo('quiz')">Quiz</button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- OBJECTIVES -->
+
+<section id="objectives">
+
+<h2>1. Learning Objectives</h2>
+
+<p>After completing this lecture, students should be able to:</p>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Understand Unicasting</h3>
+
+<p>
+Explain one-to-one communication between a sender and a specific receiver.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Understand Multicasting</h3>
+
+<p>
+Explain one-to-many communication where the sender transmits to a selected group.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Understand Broadcasting</h3>
+
+<p>
+Explain one-to-all communication within an applicable broadcast domain.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Compare Communication Types</h3>
+
+<p>
+Identify differences in destination, packet delivery and bandwidth usage.
+</p>
+
+</div>
+
+</div>
+
+<div class="highlight">
+
+<strong>Faculty Opening Question:</strong>
+
+Imagine a teacher wants to send a message to one student,
+a selected group of students, or the entire class.
+
+Which communication method would be used in each case?
+
+</div>
+
+</section>
+
+
+<!-- BASICS -->
+
+<section id="basics">
+
+<h2>2. Communication Types</h2>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Unicast</h3>
+
+<p>
+One sender → One receiver
+</p>
+
+<p>
+Example: A web client communicating with a web server.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Multicast</h3>
+
+<p>
+One sender → Selected group of receivers
+</p>
+
+<p>
+Example: Multicast-based streaming or group communication.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Broadcast</h3>
+
+<p>
+One sender → All applicable receivers in the broadcast domain
+</p>
+
+<p>
+Example: ARP request in an IPv4 LAN.
+</p>
+
+</div>
+
+</div>
+
+
+<table>
+
+<tr>
+
+<th>Communication</th>
+
+<th>Sender</th>
+
+<th>Receivers</th>
+
+<th>Basic Idea</th>
+
+</tr>
+
+<tr>
+
+<td>Unicast</td>
+
+<td>1</td>
+
+<td>1</td>
+
+<td>Specific receiver</td>
+
+</tr>
+
+<tr>
+
+<td>Multicast</td>
+
+<td>1</td>
+
+<td>Selected group</td>
+
+<td>Group communication</td>
+
+</tr>
+
+<tr>
+
+<td>Broadcast</td>
+
+<td>1</td>
+
+<td>All applicable hosts</td>
+
+<td>Everyone in broadcast domain</td>
+
+</tr>
+
+</table>
+
+</section>
+
+
+<!-- UNICAST -->
+
+<section id="unicast">
+
+<h2>3. Unicasting</h2>
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+Unicasting is a communication method in which one sender sends
+data to one specific receiver.
+
+<br><br>
+
+<strong>Pattern:</strong>
+
+1 → 1
+
+</div>
+
+
+<h3>Real-World Analogy</h3>
+
+<p>
+
+A teacher sends a private message to one particular student.
+
+</p>
+
+
+<h3>Network Example</h3>
+
+<p>
+
+Computer A wants to communicate with Server B.
+
+</p>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 520">
+
+<!-- LINKS -->
+
+<line id="u1" class="link"
+x1="180" y1="260"
+x2="400" y2="260"/>
+
+<line id="u2" class="link"
+x1="400" y1="260"
+x2="620" y2="160"/>
+
+<line id="u3" class="link"
+x1="620" y1="160"
+x2="830" y2="260"/>
+
+
+<!-- NODES -->
+
+<circle class="node source"
+cx="180" cy="260" r="45"/>
+
+<circle class="node"
+cx="400" cy="260" r="45"/>
+
+<circle class="node"
+cx="620" cy="160" r="45"/>
+
+<circle class="node destination"
+cx="830" cy="260" r="45"/>
+
+
+<!-- LABELS -->
+
+<text class="node-text"
+x="180" y="260">PC-A</text>
+
+<text class="node-text"
+x="400" y="260">R1</text>
+
+<text class="node-text"
+x="620" y="160">R2</text>
+
+<text class="node-text"
+x="830" y="260">PC-B</text>
+
+
+<!-- PACKET -->
+
+<circle id="unicastPacket"
+class="packet"
+cx="180"
+cy="260"
+r="11"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startUnicast()">
+▶ Start Unicast
+</button>
+
+<button class="reset"
+onclick="resetUnicast()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="unicastStatus"
+class="status">
+
+Ready. Click Start Unicast.
+
+</div>
+
+
+<h3>Characteristics</h3>
+
+<ul>
+
+<li>One sender.</li>
+
+<li>One specific receiver.</li>
+
+<li>Uses a specific destination address.</li>
+
+<li>Common for normal client-server communication.</li>
+
+<li>Each separate receiver requires separate unicast communication.</li>
+
+</ul>
+
+
+<h3>Examples</h3>
+
+<ul>
+
+<li>Web browsing</li>
+
+<li>SSH connection</li>
+
+<li>FTP connection</li>
+
+<li>Email communication</li>
+
+<li>One computer communicating with another computer</li>
+
+</ul>
+
+</section>
+
+
+<!-- MULTICAST -->
+
+<section id="multicast">
+
+<h2>4. Multicasting</h2>
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+Multicasting is a communication method where one sender sends
+data to a specific group of receivers that have joined the multicast group.
+
+<br><br>
+
+<strong>Pattern:</strong>
+
+1 → Selected Group
+
+</div>
+
+
+<h3>Real-World Analogy</h3>
+
+<p>
+
+A teacher sends information only to students enrolled in a particular course.
+
+</p>
+
+
+<h3>Multicast Animation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 520">
+
+
+<!-- LINKS -->
+
+<line id="m1" class="link"
+x1="180" y1="260"
+x2="390" y2="150"/>
+
+<line id="m2" class="link"
+x1="180" y1="260"
+x2="390" y2="370"/>
+
+<line id="m3" class="link"
+x1="390" y1="150"
+x2="620" y2="100"/>
+
+<line id="m4" class="link"
+x1="390" y1="150"
+x2="620" y2="260"/>
+
+<line id="m5" class="link"
+x1="390" y1="370"
+x2="620" y2="420"/>
+
+
+<!-- SOURCE -->
+
+<circle class="node source"
+cx="180"
+cy="260"
+r="45"/>
+
+<text class="node-text"
+x="180"
+y="260">Source</text>
+
+
+<!-- ROUTERS -->
+
+<circle class="node"
+cx="390"
+cy="150"
+r="45"/>
+
+<circle class="node"
+cx="390"
+cy="370"
+r="45"/>
+
+<text class="node-text"
+x="390"
+y="150">R1</text>
+
+<text class="node-text"
+x="390"
+y="370">R2</text>
+
+
+<!-- RECEIVERS -->
+
+<circle id="g1"
+class="node destination"
+cx="620"
+cy="100"
+r="42"/>
+
+<circle id="g2"
+class="node destination"
+cx="620"
+cy="260"
+r="42"/>
+
+<circle id="g3"
+class="node"
+cx="620"
+cy="420"
+r="42"/>
+
+
+<text class="node-text"
+x="620"
+y="100">Host 1</text>
+
+<text class="node-text"
+x="620"
+y="260">Host 2</text>
+
+<text class="node-text"
+x="620"
+y="420">Host 3</text>
+
+
+<!-- PACKETS -->
+
+<circle id="multiP1"
+class="packet"
+cx="180"
+cy="260"
+r="10"/>
+
+<circle id="multiP2"
+class="packet"
+cx="180"
+cy="260"
+r="10"
+style="display:none"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startMulticast()">
+▶ Start Multicast
+</button>
+
+<button class="reset"
+onclick="resetMulticast()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="multicastStatus"
+class="status">
+
+Ready. Click Start Multicast.
+
+</div>
+
+
+<div class="success">
+
+<strong>Important Concept:</strong>
+
+The sender does not need to create an independent application-level
+copy for every member of the multicast group.
+The network can replicate traffic along branches where appropriate.
+
+</div>
+
+
+<h3>Examples</h3>
+
+<ul>
+
+<li>IPTV</li>
+
+<li>Live streaming to subscribed receivers</li>
+
+<li>Online group communication</li>
+
+<li>Routing protocol group communication in appropriate designs</li>
+
+</ul>
+
+
+<h3>Multicast Addressing</h3>
+
+<p>
+
+In IPv4, multicast addresses belong to:
+
+<strong>224.0.0.0 – 239.255.255.255</strong>
+
+</p>
+
+<p>
+
+Example:
+
+<strong>239.1.1.1</strong>
+
+</p>
+
+</section>
+
+
+<!-- BROADCAST -->
+
+<section id="broadcast">
+
+<h2>5. Broadcasting</h2>
+
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+Broadcasting is a communication method in which a sender transmits
+to all applicable hosts within the broadcast domain.
+
+<br><br>
+
+<strong>Pattern:</strong>
+
+1 → All
+
+</div>
+
+
+<h3>Real-World Analogy</h3>
+
+<p>
+
+A teacher makes an announcement to the entire classroom.
+
+</p>
+
+
+<h3>Broadcast Animation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 520">
+
+
+<!-- LINKS -->
+
+<line id="b1" class="link"
+x1="180" y1="260"
+x2="400" y2="130"/>
+
+<line id="b2" class="link"
+x1="180" y1="260"
+x2="400" y2="390"/>
+
+<line id="b3" class="link"
+x1="400" y1="130"
+x2="650" y2="100"/>
+
+<line id="b4" class="link"
+x1="400" y1="130"
+x2="650" y2="260"/>
+
+<line id="b5" class="link"
+x1="400" y1="390"
+x2="650" y2="390"/>
+
+
+<!-- SOURCE -->
+
+<circle class="node source"
+cx="180"
+cy="260"
+r="45"/>
+
+<text class="node-text"
+x="180"
+y="260">Host-A</text>
+
+
+<!-- ROUTERS -->
+
+<circle class="node"
+cx="400"
+cy="130"
+r="45"/>
+
+<circle class="node"
+cx="400"
+cy="390"
+r="45"/>
+
+<text class="node-text"
+x="400"
+y="130">Switch</text>
+
+<text class="node-text"
+x="400"
+y="390">Switch</text>
+
+
+<!-- HOSTS -->
+
+<circle class="node destination"
+cx="650"
+cy="100"
+r="42"/>
+
+<circle class="node destination"
+cx="650"
+cy="260"
+r="42"/>
+
+<circle class="node destination"
+cx="650"
+cy="390"
+r="42"/>
+
+
+<text class="node-text"
+x="650"
+y="100">Host-B</text>
+
+<text class="node-text"
+x="650"
+y="260">Host-C</text>
+
+<text class="node-text"
+x="650"
+y="390">Host-D</text>
+
+
+<!-- PACKET -->
+
+<circle id="broadcastPacket"
+class="packet"
+cx="180"
+cy="260"
+r="10"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startBroadcast()">
+▶ Start Broadcast
+</button>
+
+<button class="reset"
+onclick="resetBroadcast()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="broadcastStatus"
+class="status">
+
+Ready. Click Start Broadcast.
+
+</div>
+
+
+<h3>IPv4 Broadcast</h3>
+
+<p>
+
+An IPv4 network can use a broadcast address to reach all hosts
+in the relevant broadcast domain.
+
+</p>
+
+<div class="warning">
+
+<strong>Example:</strong>
+
+In a simple IPv4 LAN, an ARP request is sent as a broadcast so that
+the host owning the requested IPv4 address can respond.
+
+</div>
+
+
+<h3>Important Point</h3>
+
+<p>
+
+Routers normally do not forward ordinary IPv4 broadcasts between
+broadcast domains.
+
+</p>
+
+</section>
+
+
+<!-- COMPARISON -->
+
+<section id="comparison">
+
+<h2>6. Unicast vs Multicast vs Broadcast</h2>
+
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>Unicast</th>
+
+<th>Multicast</th>
+
+<th>Broadcast</th>
+
+</tr>
+
+
+<tr>
+
+<td>Communication</td>
+
+<td>One-to-One</td>
+
+<td>One-to-Selected Group</td>
+
+<td>One-to-All in Broadcast Domain</td>
+
+</tr>
+
+
+<tr>
+
+<td>Receivers</td>
+
+<td>One</td>
+
+<td>Selected receivers</td>
+
+<td>All applicable hosts</td>
+
+</tr>
+
+
+<tr>
+
+<td>Addressing</td>
+
+<td>Specific destination</td>
+
+<td>Multicast group address</td>
+
+<td>Broadcast address</td>
+
+</tr>
+
+
+<tr>
+
+<td>Example</td>
+
+<td>Web browsing</td>
+
+<td>IPTV / group streaming</td>
+
+<td>ARP request in IPv4 LAN</td>
+
+</tr>
+
+
+<tr>
+
+<td>Bandwidth</td>
+
+<td>Can require separate traffic per receiver</td>
+
+<td>Efficient for selected groups when supported</td>
+
+<td>Can consume resources across the broadcast domain</td>
+
+</tr>
+
+
+<tr>
+
+<td>Scope</td>
+
+<td>Specific destination</td>
+
+<td>Group members</td>
+
+<td>Broadcast domain</td>
+
+</tr>
+
+</table>
+
+
+<h3>Easy Memory Trick</h3>
+
+
+<div class="card-grid">
+
+
+<div class="card">
+
+<h3>UNICAST</h3>
+
+<p style="font-size:25px;text-align:center;">
+
+1 → 1
+
+</p>
+
+<p>
+
+<strong>One person → One person</strong>
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>MULTICAST</h3>
+
+<p style="font-size:25px;text-align:center;">
+
+1 → Group
+
+</p>
+
+<p>
+
+<strong>One person → Selected group</strong>
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>BROADCAST</h3>
+
+<p style="font-size:25px;text-align:center;">
+
+1 → All
+
+</p>
+
+<p>
+
+<strong>One person → Everyone in the broadcast domain</strong>
+
+</p>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- CLASSROOM ACTIVITY -->
+
+<section>
+
+<h2>7. Classroom Activity</h2>
+
+
+<div class="highlight">
+
+<strong>Scenario:</strong>
+
+There are 40 students in a classroom.
+
+</div>
+
+
+<table>
+
+<tr>
+
+<th>Situation</th>
+
+<th>Communication Type</th>
+
+</tr>
+
+<tr>
+
+<td>Send a private message to Student A</td>
+
+<td>Unicast</td>
+
+</tr>
+
+<tr>
+
+<td>Send an announcement only to Blockchain students</td>
+
+<td>Multicast</td>
+
+</tr>
+
+<tr>
+
+<td>Make an announcement to all students in the classroom network</td>
+
+<td>Broadcast</td>
+
+</tr>
+
+</table>
+
+
+<div class="success">
+
+<strong>Faculty Question:</strong>
+
+Ask students to give one real-world example of each communication type.
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz">
+
+<h2>8. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<h3>Q1. What is the communication pattern of unicast?</h3>
+
+<button onclick="answer(this,true)">
+
+A. One-to-One
+
+</button>
+
+<button onclick="answer(this,false)">
+
+B. One-to-All
+
+</button>
+
+<button onclick="answer(this,false)">
+
+C. One-to-Selected Group
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q2. Which communication type targets a selected group?</h3>
+
+<button onclick="answer(this,false)">
+
+A. Unicast
+
+</button>
+
+<button onclick="answer(this,true)">
+
+B. Multicast
+
+</button>
+
+<button onclick="answer(this,false)">
+
+C. Broadcast
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q3. Which is a common IPv4 broadcast example?</h3>
+
+<button onclick="answer(this,true)">
+
+A. ARP Request
+
+</button>
+
+<button onclick="answer(this,false)">
+
+B. HTTPS Session
+
+</button>
+
+<button onclick="answer(this,false)">
+
+C. SSH Session
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q4. IPv4 multicast addresses are in which range?</h3>
+
+<button onclick="answer(this,false)">
+
+A. 192.168.0.0 – 192.168.255.255
+
+</button>
+
+<button onclick="answer(this,true)">
+
+B. 224.0.0.0 – 239.255.255.255
+
+</button>
+
+<button onclick="answer(this,false)">
+
+C. 127.0.0.0 – 127.255.255.255
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q5. What does broadcast mean?</h3>
+
+<button onclick="answer(this,false)">
+
+A. Send to one host
+
+</button>
+
+<button onclick="answer(this,false)">
+
+B. Send to selected group
+
+</button>
+
+<button onclick="answer(this,true)">
+
+C. Send to all applicable hosts in the broadcast domain
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q6. Which communication is represented by 1 → Group?</h3>
+
+<button onclick="answer(this,false)">
+
+A. Unicast
+
+</button>
+
+<button onclick="answer(this,true)">
+
+B. Multicast
+
+</button>
+
+<button onclick="answer(this,false)">
+
+C. Broadcast
+
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+</section>
+
+
+<!-- FACULTY FLOW -->
+
+<section>
+
+<h2>9. Suggested Faculty Teaching Flow</h2>
+
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>5 Minutes</h3>
+
+<p>
+
+Introduce the concept using classroom communication examples.
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+
+Explain unicast and demonstrate the animation.
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+
+Explain multicast and demonstrate group communication.
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+
+Explain broadcast and demonstrate packet propagation.
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+
+Compare bandwidth and receiver behavior.
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+
+Conduct the interactive quiz.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+
+<section>
+
+<h2>10. Quick Revision</h2>
+
+
+<div class="highlight">
+
+<strong>UNCAST:</strong>
+
+One sender → One receiver
+
+<br><br>
+
+<strong>MULTICAST:</strong>
+
+One sender → Selected group
+
+<br><br>
+
+<strong>BROADCAST:</strong>
+
+One sender → All applicable hosts in the broadcast domain
+
+</div>
+
+
+<table>
+
+<tr>
+
+<th>Concept</th>
+
+<th>Memory Keyword</th>
+
+</tr>
+
+<tr>
+
+<td>Unicast</td>
+
+<td>Specific Receiver</td>
+
+</tr>
+
+<tr>
+
+<td>Multicast</td>
+
+<td>Selected Group</td>
+
+</tr>
+
+<tr>
+
+<td>Broadcast</td>
+
+<td>Everyone in Broadcast Domain</td>
+
+</tr>
+
+</table>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+Computer Networks Lecture Module<br>
+
+Unicasting • Multicasting • Broadcasting
+
+</footer>
+
+
+<script>
+
+/* ==========================================
+   NAVIGATION
+========================================== */
+
+function goTo(id) {
+
+    const element = document.getElementById(id);
+
+    if(element) {
+
+        element.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+
+/* ==========================================
+   UNICAST ANIMATION
+========================================== */
+
+let unicastTimer;
+
+function startUnicast() {
+
+    clearInterval(unicastTimer);
+
+    let x = 180;
+
+    const packet =
+        document.getElementById("unicastPacket");
+
+    const status =
+        document.getElementById("unicastStatus");
+
+    status.innerHTML =
+        "PC-A creates a packet for one specific destination: PC-B.";
+
+    unicastTimer = setInterval(function() {
+
+        x += 4;
+
+        packet.setAttribute("cx", x);
+
+        if(x >= 400) {
+
+            status.innerHTML =
+                "Packet reached R1 → forwarded toward R2.";
+
+        }
+
+        if(x >= 620) {
+
+            status.innerHTML =
+                "Packet reached R2 → forwarding to PC-B.";
+
+        }
+
+        if(x >= 830) {
+
+            clearInterval(unicastTimer);
+
+            status.innerHTML =
+                "✓ Unicast completed: one sender → one receiver.";
+
+        }
+
+    }, 30);
+
+}
+
+
+function resetUnicast() {
+
+    clearInterval(unicastTimer);
+
+    document.getElementById("unicastPacket")
+        .setAttribute("cx",180);
+
+    document.getElementById("unicastStatus")
+        .innerHTML =
+        "Ready. Click Start Unicast.";
+
+}
+
+
+/* ==========================================
+   MULTICAST ANIMATION
+========================================== */
+
+function startMulticast() {
+
+    resetMulticast();
+
+    const status =
+        document.getElementById("multicastStatus");
+
+    status.innerHTML =
+        "Source sends one multicast packet toward the multicast group.";
+
+    setTimeout(function() {
+
+        document.getElementById("m1")
+            .classList.add("active-link");
+
+        document.getElementById("m2")
+            .classList.add("active-link");
+
+        status.innerHTML =
+            "Network forwards the multicast traffic toward group members.";
+
+    },1000);
+
+
+    setTimeout(function() {
+
+        document.getElementById("m3")
+            .classList.add("active-link");
+
+        document.getElementById("m4")
+            .classList.add("active-link");
+
+        status.innerHTML =
+            "R1 forwards traffic toward Host 1 and Host 2.";
+
+    },2200);
+
+
+    setTimeout(function() {
+
+        document.getElementById("g1")
+            .setAttribute("fill","#16a34a");
+
+        document.getElementById("g2")
+            .setAttribute("fill","#16a34a");
+
+        status.innerHTML =
+            "Host 1 and Host 2 are members of the multicast group.";
+
+    },3500);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "✓ Multicast completed: one sender → selected group.";
+
+    },4500);
+
+}
+
+
+function resetMulticast() {
+
+    document.querySelectorAll(
+        "#m1,#m2,#m3,#m4,#m5"
+    ).forEach(function(line) {
+
+        line.classList.remove("active-link");
+
+    });
+
+    document.getElementById("multicastStatus")
+        .innerHTML =
+        "Ready. Click Start Multicast.";
+
+}
+
+
+/* ==========================================
+   BROADCAST ANIMATION
+========================================== */
+
+function startBroadcast() {
+
+    resetBroadcast();
+
+    const status =
+        document.getElementById("broadcastStatus");
+
+    status.innerHTML =
+        "Host-A sends a broadcast frame.";
+
+    setTimeout(function() {
+
+        document.getElementById("b1")
+            .classList.add("active-link");
+
+        document.getElementById("b2")
+            .classList.add("active-link");
+
+        status.innerHTML =
+            "Broadcast traffic is propagated within the broadcast domain.";
+
+    },1000);
+
+
+    setTimeout(function() {
+
+        document.getElementById("b3")
+            .classList.add("active-link");
+
+        document.getElementById("b4")
+            .classList.add("active-link");
+
+        document.getElementById("b5")
+            .classList.add("active-link");
+
+        status.innerHTML =
+            "Switches forward the broadcast toward applicable hosts.";
+
+    },2200);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "Host-B, Host-C and Host-D receive the broadcast.";
+
+    },3500);
+
+
+    setTimeout(function() {
+
+        status.innerHTML =
+            "✓ Broadcast completed: one sender → all applicable hosts.";
+
+    },4500);
+
+}
+
+
+function resetBroadcast() {
+
+    document.querySelectorAll(
+        "#b1,#b2,#b3,#b4,#b5"
+    ).forEach(function(line) {
+
+        line.classList.remove("active-link");
+
+    });
+
+    document.getElementById("broadcastStatus")
+        .innerHTML =
+        "Ready. Click Start Broadcast.";
+
+}
+
+
+/* ==========================================
+   QUIZ
+========================================== */
+
+function answer(button, correct) {
+
+    const quiz =
+        button.parentElement;
+
+    const result =
+        quiz.querySelector(".answer");
+
+    result.style.display = "block";
+
+    if(correct) {
+
+        result.style.background =
+            "#dcfce7";
+
+        result.style.color =
+            "#166534";
+
+        result.innerHTML =
+            "✓ Correct Answer!";
+
+    } else {
+
+        result.style.background =
+            "#fee2e2";
+
+        result.style.color =
+            "#991b1b";
+
+        result.innerHTML =
+            "✗ Incorrect. Try again.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
