@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Computer Networks - OSPF and BGP</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f1f5f9;
+    color:#172033;
+    line-height:1.6;
+}
+
+/* HEADER */
+
+header{
+    background:linear-gradient(135deg,#172554,#2563eb);
+    color:white;
+    text-align:center;
+    padding:30px 20px;
+}
+
+header h1{
+    margin:0;
+    font-size:34px;
+}
+
+header p{
+    margin:7px 0;
+    font-size:17px;
+}
+
+/* NAVIGATION */
+
+nav{
+    background:#0f172a;
+    padding:10px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+nav button{
+    background:transparent;
+    color:white;
+    border:1px solid #64748b;
+    padding:9px 14px;
+    margin:3px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+nav button:hover{
+    background:#2563eb;
+}
+
+/* MAIN */
+
+.container{
+    max-width:1250px;
+    margin:auto;
+    padding:25px;
+}
+
+section{
+    background:white;
+    margin-bottom:25px;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 4px 15px rgba(0,0,0,.07);
+}
+
+h2{
+    color:#1d4ed8;
+    border-bottom:2px solid #dbeafe;
+    padding-bottom:8px;
+}
+
+h3{
+    color:#334155;
+}
+
+/* CARDS */
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#f8fafc;
+    padding:18px;
+    border-radius:10px;
+    border-left:5px solid #2563eb;
+}
+
+/* HIGHLIGHTS */
+
+.highlight{
+    background:#eff6ff;
+    border-left:5px solid #2563eb;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.success{
+    background:#f0fdf4;
+    border-left:5px solid #16a34a;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.warning{
+    background:#fff7ed;
+    border-left:5px solid #f97316;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.danger{
+    background:#fef2f2;
+    border-left:5px solid #dc2626;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+/* TABLE */
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin:15px 0;
+}
+
+th,td{
+    border:1px solid #cbd5e1;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#1e3a8a;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f8fafc;
+}
+
+/* NETWORK */
+
+.network{
+    position:relative;
+    width:100%;
+    height:500px;
+    background:#f8fafc;
+    border:2px solid #cbd5e1;
+    border-radius:12px;
+    overflow:hidden;
+    margin:20px 0;
+}
+
+.network svg{
+    width:100%;
+    height:100%;
+}
+
+.link{
+    stroke:#94a3b8;
+    stroke-width:5;
+}
+
+.active{
+    stroke:#16a34a;
+    stroke-width:8;
+}
+
+.bgpLink{
+    stroke:#7c3aed;
+    stroke-width:6;
+}
+
+.bgpActive{
+    stroke:#16a34a;
+    stroke-width:9;
+}
+
+.failed{
+    stroke:#dc2626;
+    stroke-width:9;
+    stroke-dasharray:14 8;
+}
+
+.node{
+    fill:#2563eb;
+    stroke:white;
+    stroke-width:3;
+}
+
+.router{
+    fill:#7c3aed;
+}
+
+.areaNode{
+    fill:#0891b2;
+}
+
+.asNode{
+    fill:#f97316;
+}
+
+.destination{
+    fill:#16a34a;
+}
+
+.nodeText{
+    fill:white;
+    font-size:14px;
+    font-weight:bold;
+    text-anchor:middle;
+    dominant-baseline:middle;
+}
+
+.label{
+    font-size:14px;
+    font-weight:bold;
+    fill:#172033;
+}
+
+.packet{
+    fill:#ef4444;
+    stroke:white;
+    stroke-width:2;
+}
+
+/* CONTROLS */
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:15px 0;
+}
+
+.controls button{
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.controls button:hover{
+    background:#1d4ed8;
+}
+
+.controls .reset{
+    background:#dc2626;
+}
+
+.controls .green{
+    background:#16a34a;
+}
+
+/* STATUS */
+
+.status{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:15px;
+    border-radius:8px;
+    font-family:monospace;
+    min-height:55px;
+}
+
+/* STEPS */
+
+.step{
+    background:#f8fafc;
+    border-left:4px solid #2563eb;
+    padding:12px;
+    margin:8px 0;
+    border-radius:5px;
+}
+
+/* CODE */
+
+pre{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:18px;
+    border-radius:8px;
+    overflow:auto;
+}
+
+/* QUIZ */
+
+.quiz{
+    background:#f8fafc;
+    padding:18px;
+    margin:15px 0;
+    border-radius:10px;
+}
+
+.quiz button{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #cbd5e1;
+    background:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.quiz button:hover{
+    background:#eff6ff;
+}
+
+.answer{
+    display:none;
+    padding:10px;
+    margin-top:8px;
+    border-radius:6px;
+}
+
+/* FOOTER */
+
+footer{
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+@media(max-width:700px){
+
+    header h1{
+        font-size:24px;
+    }
+
+    nav{
+        position:static;
+    }
+
+    .network{
+        height:400px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>Computer Networks</h1>
+
+<p>OSPF • BGP • Interior Gateway Routing • Inter-Domain Routing</p>
+
+<p>Interactive Faculty Lecture & Student Learning Module</p>
+
+</header>
+
+
+<nav>
+
+<button onclick="goTo('objectives')">Objectives</button>
+
+<button onclick="goTo('ospf')">OSPF</button>
+
+<button onclick="goTo('ospfAnim')">OSPF Animation</button>
+
+<button onclick="goTo('drbdr')">DR/BDR</button>
+
+<button onclick="goTo('bgp')">BGP</button>
+
+<button onclick="goTo('bgpAnim')">BGP Animation</button>
+
+<button onclick="goTo('path')">Path Selection</button>
+
+<button onclick="goTo('comparison')">Comparison</button>
+
+<button onclick="goTo('quiz')">Quiz</button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- OBJECTIVES -->
+
+<section id="objectives">
+
+<h2>1. Learning Objectives</h2>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>OSPF</h3>
+
+<p>
+Understand OSPF as a link-state Interior Gateway Protocol.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>OSPF Areas</h3>
+
+<p>
+Understand Area 0, non-backbone areas, and hierarchical OSPF design.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>DR / BDR</h3>
+
+<p>
+Understand their role on OSPF multi-access networks.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>BGP</h3>
+
+<p>
+Understand BGP as a path-vector protocol used for inter-domain routing.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>AS_PATH</h3>
+
+<p>
+Understand how AS path information is carried in BGP route advertisements.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Route Selection</h3>
+
+<p>
+Understand that BGP route selection uses attributes and policy rather than simply shortest physical distance.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="highlight">
+
+<strong>Opening Question:</strong>
+
+Why does a university's internal network use a protocol such as OSPF,
+while the global Internet needs BGP between autonomous systems?
+
+</div>
+
+</section>
+
+
+<!-- OSPF -->
+
+<section id="ospf">
+
+<h2>2. OSPF – Open Shortest Path First</h2>
+
+<div class="highlight">
+
+<strong>OSPF</strong> is a link-state Interior Gateway Protocol (IGP)
+used to exchange routing information within an autonomous system.
+
+</div>
+
+
+<h3>Important OSPF Characteristics</h3>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>OSPF</th>
+</tr>
+
+<tr>
+<td>Type</td>
+<td>Link-State IGP</td>
+</tr>
+
+<tr>
+<td>Algorithm</td>
+<td>Shortest Path First (SPF)</td>
+</tr>
+
+<tr>
+<td>Algorithm Basis</td>
+<td>Dijkstra</td>
+</tr>
+
+<tr>
+<td>Metric</td>
+<td>Cost</td>
+</tr>
+
+<tr>
+<td>Database</td>
+<td>Link-State Database (LSDB)</td>
+</tr>
+
+<tr>
+<td>Design</td>
+<td>Supports hierarchical areas</td>
+</tr>
+
+<tr>
+<td>Backbone</td>
+<td>Area 0</td>
+</tr>
+
+</table>
+
+
+<h3>OSPF Operation</h3>
+
+<div class="step">
+
+<strong>1.</strong> Discover neighbors.
+
+</div>
+
+<div class="step">
+
+<strong>2.</strong> Form OSPF neighbor relationships.
+
+</div>
+
+<div class="step">
+
+<strong>3.</strong> Exchange link-state information.
+
+</div>
+
+<div class="step">
+
+<strong>4.</strong> Build LSDB.
+
+</div>
+
+<div class="step">
+
+<strong>5.</strong> Run SPF.
+
+</div>
+
+<div class="step">
+
+<strong>6.</strong> Calculate best paths.
+
+</div>
+
+<div class="step">
+
+<strong>7.</strong> Install selected routes.
+
+</div>
+
+</section>
+
+
+<!-- OSPF ANIMATION -->
+
+<section id="ospfAnim">
+
+<h2>3. OSPF Neighbor & LSA Animation</h2>
+
+<p>
+
+The following animation illustrates the conceptual process:
+neighbor discovery → link-state information exchange → topology knowledge.
+
+</p>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+
+<line id="o1"
+class="link"
+x1="180" y1="250"
+x2="400" y2="120"/>
+
+<line id="o2"
+class="link"
+x1="180" y1="250"
+x2="400" y2="380"/>
+
+<line id="o3"
+class="link"
+x1="400" y1="120"
+x2="620" y2="250"/>
+
+<line id="o4"
+class="link"
+x1="400" y1="380"
+x2="620" y2="250"/>
+
+<line id="o5"
+class="link"
+x1="620" y1="250"
+x2="820" y2="250"/>
+
+
+<circle class="node router"
+cx="180" cy="250" r="45"/>
+
+<circle class="node router"
+cx="400" cy="120" r="45"/>
+
+<circle class="node router"
+cx="400" cy="380" r="45"/>
+
+<circle class="node router"
+cx="620" cy="250" r="45"/>
+
+<circle class="node destination"
+cx="820" cy="250" r="45"/>
+
+
+<text class="nodeText"
+x="180" y="250">R1</text>
+
+<text class="nodeText"
+x="400" y="120">R2</text>
+
+<text class="nodeText"
+x="400" y="380">R3</text>
+
+<text class="nodeText"
+x="620" y="250">R4</text>
+
+<text class="nodeText"
+x="820" y="250">LAN</text>
+
+
+<circle id="ospfPacket"
+class="packet"
+cx="180"
+cy="250"
+r="11"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startOSPF()">
+▶ Start OSPF
+</button>
+
+<button class="reset"
+onclick="resetOSPF()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="ospfStatus" class="status">
+
+Ready. Click Start OSPF.
+
+</div>
+
+
+<div id="ospfSteps"></div>
+
+</section>
+
+
+<!-- OSPF AREAS -->
+
+<section>
+
+<h2>4. OSPF Areas and Hierarchical Design</h2>
+
+<div class="highlight">
+
+Large OSPF networks can be divided into areas.
+<strong>Area 0</strong> is the backbone area.
+
+</div>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+
+<!-- AREA 0 -->
+
+<rect x="360"
+y="50"
+width="280"
+height="160"
+rx="20"
+fill="#eff6ff"
+stroke="#2563eb"
+stroke-width="3"/>
+
+<text x="500"
+y="80"
+text-anchor="middle"
+font-weight="bold">
+
+AREA 0 – BACKBONE
+
+</text>
+
+
+<circle class="node router"
+cx="430" cy="140" r="40"/>
+
+<circle class="node router"
+cx="570" cy="140" r="40"/>
+
+<text class="nodeText"
+x="430" y="140">R1</text>
+
+<text class="nodeText"
+x="570" y="140">R2</text>
+
+
+<!-- AREA 1 -->
+
+<rect x="60"
+y="270"
+width="280"
+height="160"
+rx="20"
+fill="#f0fdf4"
+stroke="#16a34a"
+stroke-width="3"/>
+
+<text x="200"
+y="300"
+text-anchor="middle"
+font-weight="bold">
+
+AREA 1
+
+</text>
+
+<circle class="node areaNode"
+cx="150" cy="370" r="40"/>
+
+<circle class="node areaNode"
+cx="250" cy="370" r="40"/>
+
+<text class="nodeText"
+x="150" y="370">R3</text>
+
+<text class="nodeText"
+x="250" y="370">R4</text>
+
+
+<!-- AREA 2 -->
+
+<rect x="660"
+y="270"
+width="280"
+height="160"
+rx="20"
+fill="#fff7ed"
+stroke="#f97316"
+stroke-width="3"/>
+
+<text x="800"
+y="300"
+text-anchor="middle"
+font-weight="bold">
+
+AREA 2
+
+</text>
+
+<circle class="node areaNode"
+cx="750" cy="370" r="40"/>
+
+<circle class="node areaNode"
+cx="850" cy="370" r="40"/>
+
+<text class="nodeText"
+x="750" y="370">R5</text>
+
+<text class="nodeText"
+x="850" y="370">R6</text>
+
+
+<!-- LINKS -->
+
+<line class="link"
+x1="430" y1="180"
+x2="250" y2="330"/>
+
+<line class="link"
+x1="570" y1="180"
+x2="750" y2="330"/>
+
+</svg>
+
+</div>
+
+
+<div class="success">
+
+<strong>Memory Trick:</strong>
+
+Area 0 = Backbone
+
+<br><br>
+
+Other areas connect to the backbone through appropriate OSPF area-border functions.
+
+</div>
+
+</section>
+
+
+<!-- DR BDR -->
+
+<section id="drbdr">
+
+<h2>5. OSPF DR and BDR</h2>
+
+<div class="highlight">
+
+On certain multi-access networks, OSPF uses a
+<strong>Designated Router (DR)</strong> and
+<strong>Backup Designated Router (BDR)</strong>
+to reduce the number of full adjacency relationships.
+
+</div>
+
+
+<h3>Why?</h3>
+
+<p>
+
+Suppose 5 routers share one multi-access network.
+
+Without DR/BDR, the number of potential router-to-router relationships
+can grow quickly.
+
+DR/BDR helps organize OSPF adjacency and LSA exchange on such networks.
+
+</p>
+
+
+<h3>DR/BDR Animation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+
+<line class="link"
+x1="500" y1="250"
+x2="220" y2="100"/>
+
+<line class="link"
+x1="500" y1="250"
+x2="780" y2="100"/>
+
+<line class="link"
+x1="500" y1="250"
+x2="220" y2="400"/>
+
+<line class="link"
+x1="500" y1="250"
+x2="780" y2="400"/>
+
+
+<circle class="node destination"
+cx="500" cy="250" r="55"/>
+
+<text class="nodeText"
+x="500" y="250">DR</text>
+
+
+<circle class="node router"
+cx="220" cy="100" r="45"/>
+
+<circle class="node areaNode"
+cx="780" cy="100" r="45"/>
+
+<circle class="node router"
+cx="220" cy="400" r="45"/>
+
+<circle class="node router"
+cx="780" cy="400" r="45"/>
+
+
+<text class="nodeText"
+x="220" y="100">R1</text>
+
+<text class="nodeText"
+x="780" y="100">BDR</text>
+
+<text class="nodeText"
+x="220" y="400">R3</text>
+
+<text class="nodeText"
+x="780" y="400">R4</text>
+
+</svg>
+
+</div>
+
+
+<div class="highlight">
+
+<strong>Key idea:</strong>
+
+DR and BDR are elected on network types where OSPF uses this mechanism.
+They are not a feature required on every OSPF network type.
+
+</div>
+
+</section>
+
+
+<!-- BGP -->
+
+<section id="bgp">
+
+<h2>6. BGP – Border Gateway Protocol</h2>
+
+<div class="highlight">
+
+<strong>BGP</strong> is a path-vector routing protocol used primarily
+for exchanging routing information between Autonomous Systems (ASes).
+
+</div>
+
+
+<h3>What is an Autonomous System?</h3>
+
+<p>
+
+An <strong>Autonomous System (AS)</strong> is a network or collection
+of networks under a common routing administration and policy.
+
+</p>
+
+
+<h3>OSPF vs BGP Scope</h3>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>OSPF</h3>
+
+<p>
+
+Primarily used <strong>inside</strong> an autonomous system.
+
+</p>
+
+<p>
+
+<strong>IGP</strong>
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>BGP</h3>
+
+<p>
+
+Used for routing information exchange <strong>between autonomous systems</strong>.
+
+</p>
+
+<p>
+
+<strong>EGP / Inter-domain routing protocol</strong>
+
+</p>
+
+</div>
+
+</div>
+
+
+<h3>BGP Key Characteristics</h3>
+
+<ul>
+
+<li>Path-vector protocol.</li>
+
+<li>Uses attributes to support routing policy.</li>
+
+<li>AS_PATH records the autonomous systems a route advertisement has traversed.</li>
+
+<li>eBGP operates between different autonomous systems.</li>
+
+<li>iBGP operates between BGP speakers within the same autonomous system.</li>
+
+<li>Supports route advertisement and withdrawal.</li>
+
+</ul>
+
+</section>
+
+
+<!-- BGP ANIMATION -->
+
+<section id="bgpAnim">
+
+<h2>7. BGP Inter-AS Route Advertisement</h2>
+
+
+<p>
+
+The animation demonstrates a simplified BGP route advertisement
+between autonomous systems.
+
+</p>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+
+<!-- AS1 -->
+
+<rect x="40"
+y="100"
+width="260"
+height="300"
+rx="20"
+fill="#eff6ff"
+stroke="#2563eb"
+stroke-width="3"/>
+
+<text x="170"
+y="135"
+text-anchor="middle"
+font-weight="bold">
+
+AS 100
+
+</text>
+
+
+<circle class="node asNode"
+cx="170" cy="250" r="50"/>
+
+<text class="nodeText"
+x="170" y="250">R1</text>
+
+
+<!-- AS2 -->
+
+<rect x="370"
+y="100"
+width="260"
+height="300"
+rx="20"
+fill="#f0fdf4"
+stroke="#16a34a"
+stroke-width="3"/>
+
+<text x="500"
+y="135"
+text-anchor="middle"
+font-weight="bold">
+
+AS 200
+
+</text>
+
+
+<circle class="node asNode"
+cx="500" cy="250" r="50"/>
+
+<text class="nodeText"
+x="500" y="250">R2</text>
+
+
+<!-- AS3 -->
+
+<rect x="700"
+y="100"
+width="260"
+height="300"
+rx="20"
+fill="#fff7ed"
+stroke="#f97316"
+stroke-width="3"/>
+
+<text x="830"
+y="135"
+text-anchor="middle"
+font-weight="bold">
+
+AS 300
+
+</text>
+
+
+<circle class="node asNode"
+cx="830" cy="250" r="50"/>
+
+<text class="nodeText"
+x="830" y="250">R3</text>
+
+
+<!-- LINKS -->
+
+<line id="bg1"
+class="bgpLink"
+x1="220" y1="250"
+x2="450" y2="250"/>
+
+<line id="bg2"
+class="bgpLink"
+x1="550" y1="250"
+x2="780" y2="250"/>
+
+
+<!-- PACKET -->
+
+<circle id="bgpPacket"
+class="packet"
+cx="170"
+cy="250"
+r="11"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startBGP()">
+▶ Advertise Route
+</button>
+
+<button class="reset"
+onclick="resetBGP()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="bgpStatus" class="status">
+
+Ready. Click Advertise Route.
+
+</div>
+
+
+<div id="bgpSteps"></div>
+
+
+<div class="highlight">
+
+<strong>Example:</strong>
+
+Suppose AS 300 advertises network:
+
+<strong>203.0.113.0/24</strong>
+
+AS 200 receives it and can advertise it to AS 100 with
+appropriate path information.
+
+</div>
+
+</section>
+
+
+<!-- BGP PATH -->
+
+<section id="path">
+
+<h2>8. BGP Path Selection</h2>
+
+<div class="highlight">
+
+BGP does not simply select a route based on the fewest physical
+hops. BGP evaluates route attributes and local routing policy.
+
+</div>
+
+
+<h3>Important BGP Attributes</h3>
+
+<table>
+
+<tr>
+<th>Attribute</th>
+<th>Purpose / Concept</th>
+</tr>
+
+<tr>
+<td>AS_PATH</td>
+<td>Records the sequence of ASes in the route advertisement.</td>
+</tr>
+
+<tr>
+<td>NEXT_HOP</td>
+<td>Identifies the next-hop information for reaching the advertised destination.</td>
+</tr>
+
+<tr>
+<td>LOCAL_PREF</td>
+<td>Used within an AS to express preference among routes.</td>
+</tr>
+
+<tr>
+<td>MED</td>
+<td>Can provide a preference signal between neighboring ASes.</td>
+</tr>
+
+<tr>
+<td>COMMUNITY</td>
+<td>Provides a way to group routes for applying policy.</td>
+</tr>
+
+</table>
+
+
+<h3>AS_PATH Example</h3>
+
+<pre>
+Network: 203.0.113.0/24
+
+AS 300
+   |
+   | Advertisement
+   ↓
+AS_PATH = 300
+
+AS 200 receives:
+AS_PATH = 300
+
+AS 200 advertises to AS 100:
+
+AS_PATH = 200 300
+</pre>
+
+
+<div class="warning">
+
+<strong>Loop Prevention Concept:</strong>
+
+An AS can reject a BGP route advertisement if its own AS number
+appears in the AS_PATH.
+
+</div>
+
+
+<h3>Simplified Route Comparison</h3>
+
+<table>
+
+<tr>
+<th>Route</th>
+<th>AS_PATH</th>
+<th>Example Interpretation</th>
+</tr>
+
+<tr>
+<td>Route A</td>
+<td>200 300</td>
+<td>Traverses AS 200 and AS 300</td>
+</tr>
+
+<tr>
+<td>Route B</td>
+<td>400 500 300</td>
+<td>Traverses AS 400, AS 500 and AS 300</td>
+</tr>
+
+</table>
+
+
+<div class="highlight">
+
+<strong>Important Teaching Point:</strong>
+
+Do not teach BGP as simply "choose the shortest AS_PATH."
+BGP route selection involves multiple attributes and policies,
+and the exact decision process depends on the implementation and configuration.
+
+</div>
+
+</section>
+
+
+<!-- BGP WITHDRAWAL -->
+
+<section>
+
+<h2>9. BGP Route Withdrawal</h2>
+
+<div class="network">
+
+<svg viewBox="0 0 1000 450">
+
+
+<line id="w1"
+class="bgpLink"
+x1="200" y1="225"
+x2="500" y2="225"/>
+
+<line id="w2"
+class="bgpLink"
+x1="500" y1="225"
+x2="800" y2="225"/>
+
+
+<circle class="node asNode"
+cx="200" cy="225" r="50"/>
+
+<circle class="node asNode"
+cx="500" cy="225" r="50"/>
+
+<circle class="node destination"
+cx="800" cy="225" r="50"/>
+
+
+<text class="nodeText"
+x="200" y="225">AS100</text>
+
+<text class="nodeText"
+x="500" y="225">AS200</text>
+
+<text class="nodeText"
+x="800" y="225">AS300</text>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button class="green"
+onclick="withdrawRoute()">
+
+⚠ Withdraw Route
+
+</button>
+
+<button onclick="recoverRoute()">
+
+↻ Restore Route
+
+</button>
+
+</div>
+
+
+<div id="withdrawStatus" class="status">
+
+Route is currently advertised.
+
+</div>
+
+</section>
+
+
+<!-- OSPF CONFIG -->
+
+<section>
+
+<h2>10. OSPF Cisco Configuration Example</h2>
+
+<pre>
+Router(config)# router ospf 1
+
+Router(config-router)#
+network 192.168.1.0 0.0.0.255 area 0
+
+Router(config-router)#
+network 10.0.0.0 0.0.0.3 area 0
+</pre>
+
+
+<div class="highlight">
+
+<strong>Interpretation:</strong>
+
+The router enables an OSPF process and associates the specified
+interfaces/networks with Area 0.
+
+</div>
+
+</section>
+
+
+<!-- BGP CONFIG -->
+
+<section>
+
+<h2>11. Basic BGP Configuration Example</h2>
+
+<pre>
+Router(config)# router bgp 65001
+
+Router(config-router)#
+neighbor 10.0.0.2 remote-as 65002
+
+Router(config-router)#
+network 203.0.113.0 mask 255.255.255.0
+</pre>
+
+
+<div class="highlight">
+
+<strong>Important:</strong>
+
+The exact BGP configuration depends on the network design,
+addressing, policy requirements, platform and whether the session
+is eBGP or iBGP.
+
+</div>
+
+</section>
+
+
+<!-- COMPARISON -->
+
+<section id="comparison">
+
+<h2>12. OSPF vs BGP</h2>
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>OSPF</th>
+
+<th>BGP</th>
+
+</tr>
+
+
+<tr>
+
+<td>Type</td>
+
+<td>Link-State</td>
+
+<td>Path Vector</td>
+
+</tr>
+
+
+<tr>
+
+<td>Primary Scope</td>
+
+<td>Within an AS</td>
+
+<td>Between ASes / inter-domain routing</td>
+
+</tr>
+
+
+<tr>
+
+<td>Example Role</td>
+
+<td>Interior Gateway Protocol</td>
+
+<td>Inter-domain routing protocol</td>
+
+</tr>
+
+
+<tr>
+
+<td>Algorithm / Method</td>
+
+<td>SPF / Dijkstra</td>
+
+<td>Path-vector and policy-based route selection</td>
+
+</tr>
+
+
+<tr>
+
+<td>Metric / Attributes</td>
+
+<td>Cost</td>
+
+<td>Multiple path attributes and policies</td>
+
+</tr>
+
+
+<tr>
+
+<td>Database</td>
+
+<td>LSDB</td>
+
+<td>BGP Routing Information Base and Adj-RIBs/RIBs conceptually</td>
+
+</tr>
+
+
+<tr>
+
+<td>Hierarchy</td>
+
+<td>Areas</td>
+
+<td>Autonomous Systems</td>
+
+</tr>
+
+
+<tr>
+
+<td>Loop Prevention</td>
+
+<td>Topology / SPF mechanisms</td>
+
+<td>AS_PATH is a key mechanism for inter-AS loop prevention</td>
+
+</tr>
+
+
+<tr>
+
+<td>Typical Use</td>
+
+<td>Enterprise/campus internal routing</td>
+
+<td>Internet and inter-domain routing</td>
+
+</tr>
+
+</table>
+
+</section>
+
+
+<!-- FACULTY -->
+
+<section>
+
+<h2>13. Faculty Teaching Flow</h2>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>5 Minutes</h3>
+
+<p>
+Explain the difference between an Autonomous System and a network.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>15 Minutes</h3>
+
+<p>
+Introduce OSPF and link-state routing.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+Demonstrate OSPF neighbor and LSA animation.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+Explain Area 0 and OSPF areas.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+Explain DR and BDR.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>15 Minutes</h3>
+
+<p>
+Introduce BGP and Autonomous Systems.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>15 Minutes</h3>
+
+<p>
+Demonstrate BGP route advertisement and AS_PATH.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>10 Minutes</h3>
+
+<p>
+Compare OSPF and BGP.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz">
+
+<h2>14. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<h3>Q1. What type of routing protocol is OSPF?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Link-State IGP
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. Path Vector
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Transport protocol
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q2. Which algorithm is associated with OSPF SPF calculation?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. Bellman-Ford
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. Dijkstra
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. RSA
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q3. What is the OSPF backbone area?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Area 0
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. Area 1
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Area 100
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q4. What type of routing protocol is BGP?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. Link-State
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. Path Vector
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Distance Vector only
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q5. What does AS_PATH contain?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Autonomous systems traversed by the route advertisement
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. MAC addresses of all hosts
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. TCP port numbers
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q6. What is eBGP used for?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. BGP routing between different autonomous systems
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. Switching inside one Ethernet LAN
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. DNS resolution
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q7. Which protocol is primarily associated with Internet inter-domain routing?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. OSPF
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. BGP
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. ARP
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q8. Which statement is correct?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. BGP simply chooses the physically shortest route.
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. BGP uses multiple attributes and routing policies.
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. OSPF is used only for Ethernet switching.
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+
+<section>
+
+<h2>15. Quick Revision</h2>
+
+<div class="highlight">
+
+<strong>OSPF</strong>
+
+→ Link-State IGP
+
+<br><br>
+
+<strong>OSPF</strong>
+
+→ Uses LSDB + SPF/Dijkstra
+
+<br><br>
+
+<strong>OSPF</strong>
+
+→ Cost metric
+
+<br><br>
+
+<strong>OSPF Area 0</strong>
+
+→ Backbone area
+
+<br><br>
+
+<strong>BGP</strong>
+
+→ Path-Vector routing protocol
+
+<br><br>
+
+<strong>BGP</strong>
+
+→ Inter-domain routing
+
+<br><br>
+
+<strong>AS_PATH</strong>
+
+→ Records AS sequence in route advertisement
+
+<br><br>
+
+<strong>eBGP</strong>
+
+→ Between different ASes
+
+<br><br>
+
+<strong>iBGP</strong>
+
+→ Within the same AS
+
+</div>
+
+
+<h3>Easy Memory Trick</h3>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>OSPF</h3>
+
+<p style="font-size:24px;text-align:center">
+
+<strong>Inside AS</strong>
+
+</p>
+
+<p>
+
+Topology → LSDB → SPF → Routing Table
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>BGP</h3>
+
+<p style="font-size:24px;text-align:center">
+
+<strong>Between ASes</strong>
+
+</p>
+
+<p>
+
+Route → Attributes → Policy → Best Path
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+Computer Networks Interactive Lecture<br>
+
+OSPF • BGP • Routing Protocols
+
+</footer>
+
+
+<script>
+
+/* ==========================================
+NAVIGATION
+========================================== */
+
+function goTo(id){
+
+    const element=document.getElementById(id);
+
+    if(element){
+
+        element.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+
+    }
+
+}
+
+
+/* ==========================================
+OSPF ANIMATION
+========================================== */
+
+let ospfTimer;
+
+function startOSPF(){
+
+    resetOSPF();
+
+    const status=
+        document.getElementById("ospfStatus");
+
+    const steps=
+        document.getElementById("ospfSteps");
+
+    let x=180;
+
+    status.innerHTML=
+        "R1 begins OSPF neighbor discovery.";
+
+    ospfTimer=setInterval(function(){
+
+        x+=4;
+
+        document.getElementById("ospfPacket")
+            .setAttribute("cx",x);
+
+        if(x>=400){
+
+            document.getElementById("o1")
+                .classList.add("active");
+
+            document.getElementById("o2")
+                .classList.add("active");
+
+            status.innerHTML=
+                "R1 discovers neighboring routers and forms OSPF relationships.";
+
+        }
+
+        if(x>=620){
+
+            document.getElementById("o3")
+                .classList.add("active");
+
+            document.getElementById("o4")
+                .classList.add("active");
+
+            status.innerHTML=
+                "Link-state information is exchanged within the OSPF routing scope.";
+
+        }
+
+        if(x>=820){
+
+            document.getElementById("o5")
+                .classList.add("active");
+
+            clearInterval(ospfTimer);
+
+            status.innerHTML=
+                "✓ OSPF topology information is available for SPF calculation.";
+
+            steps.innerHTML=`
+
+            <div class="step">
+            <strong>1.</strong> Neighbor discovery
+            </div>
+
+            <div class="step">
+            <strong>2.</strong> Link-state exchange
+            </div>
+
+            <div class="step">
+            <strong>3.</strong> LSDB construction
+            </div>
+
+            <div class="step">
+            <strong>4.</strong> SPF calculation
+            </div>
+
+            <div class="step">
+            <strong>5.</strong> Routing table installation
+            </div>
+
+            `;
+
+        }
+
+    },30);
+
+}
+
+
+function resetOSPF(){
+
+    clearInterval(ospfTimer);
+
+    document.getElementById("ospfPacket")
+        .setAttribute("cx",180);
+
+    document.querySelectorAll(
+        "#o1,#o2,#o3,#o4,#o5"
+    ).forEach(function(line){
+
+        line.classList.remove("active");
+
+    });
+
+    document.getElementById("ospfStatus")
+        .innerHTML=
+        "Ready. Click Start OSPF.";
+
+    document.getElementById("ospfSteps")
+        .innerHTML="";
+
+}
+
+
+/* ==========================================
+BGP ANIMATION
+========================================== */
+
+let bgpTimer;
+
+function startBGP(){
+
+    resetBGP();
+
+    const packet=
+        document.getElementById("bgpPacket");
+
+    const status=
+        document.getElementById("bgpStatus");
+
+    const steps=
+        document.getElementById("bgpSteps");
+
+    let x=170;
+
+    status.innerHTML=
+        "AS 300 originates a route advertisement for its network.";
+
+    /* Start from AS300 visually */
+    packet.setAttribute("cx",830);
+
+    bgpTimer=setInterval(function(){
+
+        x-=5;
+
+        packet.setAttribute("cx",x);
+
+        if(x<=780){
+
+            document.getElementById("bg2")
+                .classList.add("bgpActive");
+
+            status.innerHTML=
+                "AS 300 advertises its route to AS 200.";
+
+        }
+
+        if(x<=550){
+
+            status.innerHTML=
+                "AS 200 receives the route and records path information such as AS_PATH.";
+
+        }
+
+        if(x<=450){
+
+            document.getElementById("bg1")
+                .classList.add("bgpActive");
+
+            status.innerHTML=
+                "AS 200 can advertise the route toward AS 100 with updated path information.";
+
+        }
+
+        if(x<=220){
+
+            clearInterval(bgpTimer);
+
+            status.innerHTML=
+                "✓ AS 100 has received the BGP route advertisement.";
+
+            steps.innerHTML=`
+
+            <div class="step">
+            <strong>Route:</strong> 203.0.113.0/24
+            </div>
+
+            <div class="step">
+            <strong>Origin AS:</strong> 300
+            </div>
+
+            <div class="step">
+            <strong>AS 200 advertises:</strong> AS_PATH = 200 300
+            </div>
+
+            <div class="step">
+            <strong>Concept:</strong> BGP carries path information and applies routing policy.
+            </div>
+
+            `;
+
+        }
+
+    },30);
+
+}
+
+
+function resetBGP(){
+
+    clearInterval(bgpTimer);
+
+    document.getElementById("bgpPacket")
+        .setAttribute("cx",830);
+
+    document.querySelectorAll(
+        "#bg1,#bg2"
+    ).forEach(function(line){
+
+        line.classList.remove("bgpActive");
+
+    });
+
+    document.getElementById("bgpStatus")
+        .innerHTML=
+        "Ready. Click Advertise Route.";
+
+    document.getElementById("bgpSteps")
+        .innerHTML="";
+
+}
+
+
+/* ==========================================
+BGP WITHDRAWAL
+========================================== */
+
+function withdrawRoute(){
+
+    document.getElementById("w2")
+        .classList.add("failed");
+
+    document.getElementById("withdrawStatus")
+        .innerHTML=
+        "⚠ AS 300 route is no longer available. A BGP withdrawal can remove the route advertisement from downstream routing information.";
+
+}
+
+
+function recoverRoute(){
+
+    document.getElementById("w2")
+        .classList.remove("failed");
+
+    document.getElementById("withdrawStatus")
+        .innerHTML=
+        "✓ Route advertisement restored.";
+
+}
+
+
+/* ==========================================
+QUIZ
+========================================== */
+
+function quizAnswer(button,correct){
+
+    const quiz=
+        button.parentElement;
+
+    const answer=
+        quiz.querySelector(".answer");
+
+    answer.style.display="block";
+
+    if(correct){
+
+        answer.style.background="#dcfce7";
+
+        answer.style.color="#166534";
+
+        answer.innerHTML=
+            "✓ Correct Answer!";
+
+    }else{
+
+        answer.style.background="#fee2e2";
+
+        answer.style.color="#991b1b";
+
+        answer.innerHTML=
+            "✗ Incorrect. Try again.";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+</html>
+
