@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Distance Vector Routing - RIP & Hierarchical Routing</title>
+
+<style>
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f1f5f9;
+    color:#172033;
+    line-height:1.6;
+}
+
+header{
+    background:linear-gradient(135deg,#172554,#2563eb);
+    color:white;
+    text-align:center;
+    padding:30px 20px;
+}
+
+header h1{
+    margin:0;
+    font-size:32px;
+}
+
+header p{
+    margin:7px 0;
+}
+
+nav{
+    background:#0f172a;
+    padding:10px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+nav button{
+    background:transparent;
+    color:white;
+    border:1px solid #64748b;
+    padding:9px 14px;
+    margin:3px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+nav button:hover{
+    background:#2563eb;
+}
+
+.container{
+    max-width:1250px;
+    margin:auto;
+    padding:25px;
+}
+
+section{
+    background:white;
+    margin-bottom:25px;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 4px 15px rgba(0,0,0,.07);
+}
+
+h2{
+    color:#1d4ed8;
+    border-bottom:2px solid #dbeafe;
+    padding-bottom:8px;
+}
+
+h3{
+    color:#334155;
+}
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#f8fafc;
+    padding:18px;
+    border-radius:10px;
+    border-left:5px solid #2563eb;
+}
+
+.highlight{
+    background:#eff6ff;
+    border-left:5px solid #2563eb;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.success{
+    background:#f0fdf4;
+    border-left:5px solid #16a34a;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.warning{
+    background:#fff7ed;
+    border-left:5px solid #f97316;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.danger{
+    background:#fef2f2;
+    border-left:5px solid #dc2626;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin:15px 0;
+}
+
+th,td{
+    border:1px solid #cbd5e1;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#1e3a8a;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f8fafc;
+}
+
+.network{
+    position:relative;
+    width:100%;
+    height:500px;
+    background:#f8fafc;
+    border:2px solid #cbd5e1;
+    border-radius:12px;
+    overflow:hidden;
+    margin:20px 0;
+}
+
+.network svg{
+    width:100%;
+    height:100%;
+}
+
+.link{
+    stroke:#94a3b8;
+    stroke-width:5;
+}
+
+.active{
+    stroke:#16a34a;
+    stroke-width:8;
+}
+
+.failed{
+    stroke:#dc2626;
+    stroke-width:8;
+    stroke-dasharray:12 8;
+}
+
+.node{
+    fill:#2563eb;
+    stroke:white;
+    stroke-width:3;
+}
+
+.router{
+    fill:#7c3aed;
+}
+
+.destination{
+    fill:#16a34a;
+}
+
+.nodeText{
+    fill:white;
+    font-size:15px;
+    font-weight:bold;
+    text-anchor:middle;
+    dominant-baseline:middle;
+}
+
+.packet{
+    fill:#ef4444;
+    stroke:white;
+    stroke-width:2;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:15px 0;
+}
+
+.controls button{
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.controls button:hover{
+    background:#1d4ed8;
+}
+
+.controls .reset{
+    background:#dc2626;
+}
+
+.controls .green{
+    background:#16a34a;
+}
+
+.status{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:15px;
+    border-radius:8px;
+    font-family:monospace;
+    min-height:55px;
+    margin-top:10px;
+}
+
+.step{
+    background:#f8fafc;
+    border-left:4px solid #2563eb;
+    padding:12px;
+    margin:8px 0;
+    border-radius:5px;
+}
+
+.badge{
+    display:inline-block;
+    background:#dbeafe;
+    color:#1e40af;
+    padding:5px 10px;
+    border-radius:20px;
+    margin:3px;
+    font-size:13px;
+}
+
+.routeTable{
+    background:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+    overflow-x:auto;
+}
+
+.quiz{
+    background:#f8fafc;
+    padding:18px;
+    margin:15px 0;
+    border-radius:10px;
+}
+
+.quiz button{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #cbd5e1;
+    background:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.quiz button:hover{
+    background:#eff6ff;
+}
+
+.answer{
+    display:none;
+    padding:10px;
+    margin-top:8px;
+    border-radius:6px;
+}
+
+pre{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:18px;
+    border-radius:8px;
+    overflow:auto;
+}
+
+footer{
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+@media(max-width:700px){
+    header h1{font-size:23px}
+    nav{position:static}
+    .network{height:400px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Computer Networks</h1>
+
+<p>Distance Vector Routing • RIP • Hierarchical Routing</p>
+
+<p>Interactive Faculty Lecture & Student Learning Module</p>
+
+</header>
+
+
+<nav>
+
+<button onclick="goTo('objectives')">Objectives</button>
+<button onclick="goTo('distance')">Distance Vector</button>
+<button onclick="goTo('animation')">Animation</button>
+<button onclick="goTo('rip')">RIP</button>
+<button onclick="goTo('count')">Count to Infinity</button>
+<button onclick="goTo('hierarchical')">Hierarchical</button>
+<button onclick="goTo('comparison')">Comparison</button>
+<button onclick="goTo('quiz')">Quiz</button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- OBJECTIVES -->
+
+<section id="objectives">
+
+<h2>1. Learning Objectives</h2>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>Understand Distance Vector</h3>
+<p>Explain how routers learn routes from neighboring routers.</p>
+</div>
+
+<div class="card">
+<h3>Understand RIP</h3>
+<p>Explain RIP operation and hop-count-based routing.</p>
+</div>
+
+<div class="card">
+<h3>Routing Table</h3>
+<p>Understand how routes are added and updated.</p>
+</div>
+
+<div class="card">
+<h3>Count to Infinity</h3>
+<p>Understand a classical distance-vector routing problem.</p>
+</div>
+
+<div class="card">
+<h3>Hierarchical Routing</h3>
+<p>Understand how large networks can be divided into logical areas or regions.</p>
+</div>
+
+</div>
+
+<div class="highlight">
+
+<strong>Faculty Opening Question:</strong>
+
+"If Router A does not know how to reach Network X,
+how can another router help Router A learn the route?"
+
+</div>
+
+</section>
+
+
+<!-- DISTANCE VECTOR -->
+
+<section id="distance">
+
+<h2>2. Distance Vector Routing</h2>
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+Distance Vector is a routing approach in which a router maintains
+information about destinations and the distance to those destinations,
+and learns routing information from neighboring routers.
+
+</div>
+
+<h3>Simple Idea</h3>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Distance</h3>
+
+<p>
+How far is the destination according to the routing metric?
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Vector</h3>
+
+<p>
+Which direction or next hop should be used?
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Neighbor</h3>
+
+<p>
+Routers exchange routing information with neighboring routers.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Update</h3>
+
+<p>
+Routing information is updated according to the protocol's rules.
+</p>
+
+</div>
+
+</div>
+
+
+<h3>Basic Formula</h3>
+
+<div class="highlight">
+
+<strong>
+
+New Distance = Distance to Neighbor + Neighbor's Distance to Destination
+
+</strong>
+
+<br><br>
+
+Example:
+
+<br>
+
+Router A → Router B = 1 hop
+
+<br>
+
+Router B → Network X = 2 hops
+
+<br>
+
+Therefore:
+
+<strong>A → X = 1 + 2 = 3 hops</strong>
+
+</div>
+
+
+<h3>Key Characteristics</h3>
+
+<ul>
+
+<li>Routers communicate with neighbors.</li>
+<li>Routing information is based on a metric.</li>
+<li>Traditional RIP uses hop count.</li>
+<li>Routing tables are periodically or event-driven updated according to the protocol.</li>
+<li>Distance-vector protocols can experience convergence problems.</li>
+
+</ul>
+
+</section>
+
+
+<!-- ANIMATION -->
+
+<section id="animation">
+
+<h2>3. Distance Vector Routing Animation</h2>
+
+<p>
+
+Observe how Router A learns about Network D through neighboring routers.
+
+</p>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+<!-- Links -->
+
+<line id="dvAB"
+class="link"
+x1="180" y1="250"
+x2="400" y2="130"/>
+
+<line id="dvBC"
+class="link"
+x1="400" y1="130"
+x2="620" y2="250"/>
+
+<line id="dvCD"
+class="link"
+x1="620" y1="250"
+x2="830" y2="250"/>
+
+
+<!-- Nodes -->
+
+<circle class="node router"
+cx="180" cy="250" r="45"/>
+
+<circle class="node router"
+cx="400" cy="130" r="45"/>
+
+<circle class="node router"
+cx="620" cy="250" r="45"/>
+
+<circle class="node destination"
+cx="830" cy="250" r="45"/>
+
+
+<text class="nodeText"
+x="180" y="250">A</text>
+
+<text class="nodeText"
+x="400" y="130">B</text>
+
+<text class="nodeText"
+x="620" y="250">C</text>
+
+<text class="nodeText"
+x="830" y="250">D</text>
+
+
+<circle id="dvPacket"
+class="packet"
+cx="180"
+cy="250"
+r="10"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startDV()">
+▶ Start Distance Vector
+</button>
+
+<button class="reset"
+onclick="resetDV()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="dvStatus" class="status">
+
+Ready. Click Start Distance Vector.
+
+</div>
+
+
+<div id="dvSteps"></div>
+
+
+<h3>What is Happening?</h3>
+
+<div class="step">
+<strong>Step 1:</strong>
+Router A knows only directly connected information.
+</div>
+
+<div class="step">
+<strong>Step 2:</strong>
+Router B advertises information to Router A.
+</div>
+
+<div class="step">
+<strong>Step 3:</strong>
+Router A evaluates the received distance.
+</div>
+
+<div class="step">
+<strong>Step 4:</strong>
+Router A adds the cost to reach B.
+</div>
+
+<div class="step">
+<strong>Step 5:</strong>
+Router A installs the route if it is selected according to the routing protocol.
+</div>
+
+</section>
+
+
+<!-- RIP -->
+
+<section id="rip">
+
+<h2>4. RIP – Routing Information Protocol</h2>
+
+<div class="highlight">
+
+<strong>RIP</strong> is a distance-vector routing protocol that uses
+<strong>hop count</strong> as its routing metric.
+
+</div>
+
+
+<h3>RIP Basic Concepts</h3>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>RIP</th>
+</tr>
+
+<tr>
+<td>Routing Type</td>
+<td>Distance Vector</td>
+</tr>
+
+<tr>
+<td>Metric</td>
+<td>Hop Count</td>
+</tr>
+
+<tr>
+<td>Maximum usable hop count</td>
+<td>15</td>
+</tr>
+
+<tr>
+<td>Hop count 16</td>
+<td>Considered unreachable</td>
+</tr>
+
+<tr>
+<td>IPv4 Version</td>
+<td>RIPv1 / RIPv2</td>
+</tr>
+
+<tr>
+<td>IPv6 Version</td>
+<td>RIPng</td>
+</tr>
+
+</table>
+
+
+<h3>Example</h3>
+
+<div class="network">
+
+<svg viewBox="0 0 1000 450">
+
+<line class="link" x1="150" y1="225" x2="330" y2="225"/>
+<line class="link" x1="330" y1="225" x2="510" y2="225"/>
+<line class="link" x1="510" y1="225" x2="690" y2="225"/>
+<line class="link" x1="690" y1="225" x2="850" y2="225"/>
+
+<circle class="node router"
+cx="150" cy="225" r="40"/>
+
+<circle class="node router"
+cx="330" cy="225" r="40"/>
+
+<circle class="node router"
+cx="510" cy="225" r="40"/>
+
+<circle class="node router"
+cx="690" cy="225" r="40"/>
+
+<circle class="node destination"
+cx="850" cy="225" r="40"/>
+
+<text class="nodeText" x="150" y="225">R1</text>
+<text class="nodeText" x="330" y="225">R2</text>
+<text class="nodeText" x="510" y="225">R3</text>
+<text class="nodeText" x="690" y="225">R4</text>
+<text class="nodeText" x="850" y="225">LAN</text>
+
+</svg>
+
+</div>
+
+
+<div class="highlight">
+
+R1 → R2 → R3 → R4 → LAN
+
+<br><br>
+
+RIP calculates:
+
+<strong>4 hops</strong>
+
+</div>
+
+
+<h3>Cisco RIP Example</h3>
+
+<pre>
+Router(config)# router rip
+Router(config-router)# version 2
+Router(config-router)# network 192.168.1.0
+Router(config-router)# network 10.0.0.0
+</pre>
+
+
+<div class="warning">
+
+<strong>Teaching Point:</strong>
+
+RIP is easy to understand and useful for teaching the
+distance-vector concept, but its hop-count metric and scalability
+limitations make it unsuitable for many modern large enterprise networks.
+
+</div>
+
+</section>
+
+
+<!-- COUNT TO INFINITY -->
+
+<section id="count">
+
+<h2>5. Count-to-Infinity Problem</h2>
+
+<div class="danger">
+
+<strong>Important Distance-Vector Problem:</strong>
+
+After a route failure, routers may temporarily advertise incorrect
+routes to each other and progressively increase the metric.
+
+</div>
+
+
+<h3>Example</h3>
+
+<div class="network">
+
+<svg viewBox="0 0 1000 450">
+
+<line id="ciAB"
+class="link"
+x1="200" y1="225"
+x2="500" y2="225"/>
+
+<line id="ciBC"
+class="link"
+x1="500" y1="225"
+x2="800" y2="225"/>
+
+
+<circle class="node router"
+cx="200" cy="225" r="45"/>
+
+<circle class="node router"
+cx="500" cy="225" r="45"/>
+
+<circle class="node destination"
+cx="800" cy="225" r="45"/>
+
+
+<text class="nodeText"
+x="200" y="225">A</text>
+
+<text class="nodeText"
+x="500" y="225">B</text>
+
+<text class="nodeText"
+x="800" y="225">Network X</text>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button class="green"
+onclick="startCountInfinity()">
+
+▶ Demonstrate Failure
+
+</button>
+
+<button class="reset"
+onclick="resetCount()">
+
+↻ Reset
+
+</button>
+
+</div>
+
+
+<div id="countStatus" class="status">
+
+Normal route: A → B → Network X
+
+</div>
+
+
+<div id="countValue"
+style="font-size:32px;text-align:center;margin:20px;font-weight:bold">
+
+Metric = 1
+
+</div>
+
+
+<h3>How can it happen?</h3>
+
+<div class="step">
+1. Network X becomes unreachable from B.
+</div>
+
+<div class="step">
+2. A may still have outdated information from B.
+</div>
+
+<div class="step">
+3. B may hear information from A and incorrectly believe A has a path.
+</div>
+
+<div class="step">
+4. Metrics can increase as incorrect information circulates.
+</div>
+
+<div class="step">
+5. Protocol mechanisms such as split horizon, route poisoning and triggered updates help reduce such problems.
+</div>
+
+
+<h3>Split Horizon</h3>
+
+<div class="highlight">
+
+<strong>Split Horizon:</strong>
+
+A router does not advertise a route back through the same interface
+from which it learned that route.
+
+</div>
+
+
+<h3>Route Poisoning</h3>
+
+<div class="highlight">
+
+<strong>Route Poisoning:</strong>
+
+A failed route can be advertised with an unreachable metric.
+
+For RIP, a metric of <strong>16</strong> represents unreachable.
+
+</div>
+
+</section>
+
+
+<!-- HIERARCHICAL -->
+
+<section id="hierarchical">
+
+<h2>6. Hierarchical Routing</h2>
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+Hierarchical routing organizes a large network into logical
+areas, regions, or levels so that routing information can be
+managed more efficiently.
+
+</div>
+
+
+<h3>Why Hierarchical Routing?</h3>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Scalability</h3>
+
+<p>
+Large networks are divided into manageable sections.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Smaller Routing Information</h3>
+
+<p>
+Routers do not always need detailed information about every
+individual network everywhere.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Reduced Overhead</h3>
+
+<p>
+Routing updates can be limited to appropriate areas.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Faster Management</h3>
+
+<p>
+Failures and changes can often be contained within an area.
+</p>
+
+</div>
+
+</div>
+
+
+<h3>Hierarchical Network Animation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 520">
+
+
+<!-- CORE -->
+
+<circle class="node router"
+cx="500" cy="100" r="55"/>
+
+<text class="nodeText"
+x="500" y="100">CORE</text>
+
+
+<!-- AREA 1 -->
+
+<circle class="node"
+cx="250" cy="280" r="55"/>
+
+<circle class="node"
+cx="150" cy="420" r="45"/>
+
+<circle class="node"
+cx="350" cy="420" r="45"/>
+
+
+<!-- AREA 2 -->
+
+<circle class="node"
+cx="750" cy="280" r="55"/>
+
+<circle class="node"
+cx="650" cy="420" r="45"/>
+
+<circle class="node"
+cx="850" cy="420" r="45"/>
+
+
+<!-- LINKS -->
+
+<line class="link"
+x1="500" y1="100"
+x2="250" y2="280"/>
+
+<line class="link"
+x1="500" y1="100"
+x2="750" y2="280"/>
+
+<line class="link"
+x1="250" y1="280"
+x2="150" y2="420"/>
+
+<line class="link"
+x1="250" y1="280"
+x2="350" y2="420"/>
+
+<line class="link"
+x1="750" y1="280"
+x2="650" y2="420"/>
+
+<line class="link"
+x1="750" y1="280"
+x2="850" y2="420"/>
+
+
+<text class="nodeText"
+x="250" y="280">AREA 1</text>
+
+<text class="nodeText"
+x="750" y="280">AREA 2</text>
+
+
+<text
+x="150"
+y="470"
+text-anchor="middle">
+
+LAN A
+
+</text>
+
+<text
+x="350"
+y="470"
+text-anchor="middle">
+
+LAN B
+
+</text>
+
+<text
+x="650"
+y="470"
+text-anchor="middle">
+
+LAN C
+
+</text>
+
+<text
+x="850"
+y="470"
+text-anchor="middle">
+
+LAN D
+
+</text>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startHierarchy()">
+
+▶ Show Hierarchy
+
+</button>
+
+<button class="reset"
+onclick="resetHierarchy()">
+
+↻ Reset
+
+</button>
+
+</div>
+
+
+<div id="hierarchyStatus" class="status">
+
+Ready. Click Show Hierarchy.
+
+</div>
+
+
+<h3>Common Hierarchical Concept</h3>
+
+<div class="highlight">
+
+<strong>Core → Area → Subnetwork → Host</strong>
+
+</div>
+
+
+<p>
+
+Hierarchical design is particularly important when networks become
+large and require structured routing information.
+
+</p>
+
+</section>
+
+
+<!-- COMPARISON -->
+
+<section id="comparison">
+
+<h2>7. Distance Vector vs Link State</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Distance Vector</th>
+<th>Link State</th>
+</tr>
+
+<tr>
+<td>Information</td>
+<td>Distance and direction toward destinations</td>
+<td>Topology/link-state information</td>
+</tr>
+
+<tr>
+<td>Knowledge</td>
+<td>Primarily neighbor-based information</td>
+<td>More complete topology information within its scope</td>
+</tr>
+
+<tr>
+<td>Example</td>
+<td>RIP</td>
+<td>OSPF</td>
+</tr>
+
+<tr>
+<td>Algorithm</td>
+<td>Bellman-Ford family concept</td>
+<td>Dijkstra / SPF</td>
+</tr>
+
+<tr>
+<td>Convergence</td>
+<td>Can be slower depending on protocol and topology</td>
+<td>Generally faster within suitable designs</td>
+</tr>
+
+<tr>
+<td>Example Metric</td>
+<td>RIP: Hop count</td>
+<td>OSPF: Cost</td>
+</tr>
+
+</table>
+
+
+<h2>8. Distance Vector vs Hierarchical Routing</h2>
+
+<table>
+
+<tr>
+<th>Concept</th>
+<th>Main Idea</th>
+</tr>
+
+<tr>
+<td>Distance Vector</td>
+<td>Routers learn route distance and next-hop information from neighbors.</td>
+</tr>
+
+<tr>
+<td>RIP</td>
+<td>A distance-vector protocol using hop count.</td>
+</tr>
+
+<tr>
+<td>Hierarchical Routing</td>
+<td>Network organization into areas or levels to improve scalability and manageability.</td>
+</tr>
+
+</table>
+
+</section>
+
+
+<!-- FACULTY -->
+
+<section>
+
+<h2>9. Faculty Teaching Flow</h2>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>5 Minutes</h3>
+<p>Introduce routing using a road-navigation analogy.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Explain distance + vector + neighbor concept.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Run the Distance Vector animation.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Explain RIP and hop-count metric.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Demonstrate count-to-infinity.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Explain split horizon and route poisoning.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Introduce hierarchical routing.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Conduct the quiz and discussion.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz">
+
+<h2>10. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<h3>Q1. What type of routing protocol is RIP?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Distance Vector
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. Link State
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Path Vector
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q2. What metric does traditional RIP use?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Hop Count
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. Delay only
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. CPU Utilization
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q3. What does a router learn in the distance-vector approach?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. Only MAC addresses
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. Distance and direction/next-hop information toward destinations
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Only application data
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q4. In RIP, what does metric 16 represent?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. Best route
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. Unreachable
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Directly connected
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q5. What is the count-to-infinity problem?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Incorrect route information can cause a metric to increase progressively
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. A switch runs out of MAC addresses
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. A host loses its IP address
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q6. Which technique helps prevent routing information from being advertised back through the interface where it was learned?</h3>
+
+<button onclick="quizAnswer(this,true)">
+A. Split Horizon
+</button>
+
+<button onclick="quizAnswer(this,false)">
+B. NAT
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. DHCP
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q7. What is a major purpose of hierarchical routing?</h3>
+
+<button onclick="quizAnswer(this,false)">
+A. Increase packet size
+</button>
+
+<button onclick="quizAnswer(this,true)">
+B. Improve scalability and manageability
+</button>
+
+<button onclick="quizAnswer(this,false)">
+C. Replace IP addressing
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+
+<section>
+
+<h2>11. Quick Revision</h2>
+
+<div class="highlight">
+
+<strong>Distance Vector</strong>
+
+→ Learn routes from neighbors.
+
+<br><br>
+
+<strong>RIP</strong>
+
+→ Distance Vector + Hop Count.
+
+<br><br>
+
+<strong>RIP Metric 16</strong>
+
+→ Unreachable.
+
+<br><br>
+
+<strong>Count to Infinity</strong>
+
+→ Incorrect distance information can circulate and increase the metric.
+
+<br><br>
+
+<strong>Split Horizon</strong>
+
+→ Do not advertise a learned route back through the same interface.
+
+<br><br>
+
+<strong>Hierarchical Routing</strong>
+
+→ Divide a large routing problem into logical areas/levels.
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+Computer Networks Interactive Lecture<br>
+
+Distance Vector • RIP • Hierarchical Routing
+
+</footer>
+
+
+<script>
+
+/* =========================================
+NAVIGATION
+========================================= */
+
+function goTo(id){
+
+    const element=document.getElementById(id);
+
+    if(element){
+
+        element.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+
+    }
+
+}
+
+
+/* =========================================
+DISTANCE VECTOR ANIMATION
+========================================= */
+
+let dvTimer;
+
+function startDV(){
+
+    resetDV();
+
+    const packet=document.getElementById("dvPacket");
+
+    const status=document.getElementById("dvStatus");
+
+    const steps=document.getElementById("dvSteps");
+
+    let x=180;
+
+    status.innerHTML=
+        "Router A sends/receives routing information through its neighbor relationships.";
+
+    dvTimer=setInterval(function(){
+
+        x+=4;
+
+        packet.setAttribute("cx",x);
+
+        if(x>=400){
+
+            document.getElementById("dvAB")
+                .classList.add("active");
+
+            status.innerHTML=
+                "Router B advertises that destination D is reachable through B's routing information.";
+
+        }
+
+        if(x>=620){
+
+            document.getElementById("dvBC")
+                .classList.add("active");
+
+            status.innerHTML=
+                "Router C advertises its distance toward destination D.";
+
+        }
+
+        if(x>=830){
+
+            clearInterval(dvTimer);
+
+            document.getElementById("dvCD")
+                .classList.add("active");
+
+            status.innerHTML=
+                "✓ Router A can calculate the route toward D using neighbor information.";
+
+            steps.innerHTML=`
+
+            <div class="step">
+            <strong>Calculation:</strong>
+            A → B = 1 hop
+            </div>
+
+            <div class="step">
+            B → C = 1 hop
+            </div>
+
+            <div class="step">
+            C → D = 1 hop
+            </div>
+
+            <div class="step">
+            <strong>Total = 3 hops</strong>
+            </div>
+
+            `;
+
+        }
+
+    },30);
+
+}
+
+
+function resetDV(){
+
+    clearInterval(dvTimer);
+
+    document.getElementById("dvPacket")
+        .setAttribute("cx",180);
+
+    document.querySelectorAll(
+        "#dvAB,#dvBC,#dvCD"
+    ).forEach(function(line){
+
+        line.classList.remove("active");
+
+    });
+
+    document.getElementById("dvStatus")
+        .innerHTML=
+        "Ready. Click Start Distance Vector.";
+
+    document.getElementById("dvSteps")
+        .innerHTML="";
+
+}
+
+
+/* =========================================
+COUNT TO INFINITY
+========================================= */
+
+let countTimer;
+
+function startCountInfinity(){
+
+    clearInterval(countTimer);
+
+    let value=1;
+
+    const display=
+        document.getElementById("countValue");
+
+    const status=
+        document.getElementById("countStatus");
+
+    document.getElementById("ciBC")
+        .classList.add("failed");
+
+    status.innerHTML=
+        "Network X has failed. Routers may temporarily have stale information.";
+
+    countTimer=setInterval(function(){
+
+        value++;
+
+        display.innerHTML=
+            "Metric = "+value;
+
+        if(value<6){
+
+            status.innerHTML=
+                "Router A and B exchange outdated route information.";
+
+        }
+
+        if(value===6){
+
+            status.innerHTML=
+                "Metric continues increasing because the routers have not yet converged.";
+
+        }
+
+        if(value>=10){
+
+            clearInterval(countTimer);
+
+            display.innerHTML=
+                "Metric = 16 → UNREACHABLE";
+
+            status.innerHTML=
+                "✓ RIP treats metric 16 as unreachable. Route poisoning can advertise the failed route accordingly.";
+
+        }
+
+    },600);
+
+}
+
+
+function resetCount(){
+
+    clearInterval(countTimer);
+
+    document.getElementById("ciBC")
+        .classList.remove("failed");
+
+    document.getElementById("countValue")
+        .innerHTML=
+        "Metric = 1";
+
+    document.getElementById("countStatus")
+        .innerHTML=
+        "Normal route: A → B → Network X";
+
+}
+
+
+/* =========================================
+HIERARCHICAL ANIMATION
+========================================= */
+
+function startHierarchy(){
+
+    const status=
+        document.getElementById("hierarchyStatus");
+
+    status.innerHTML=
+        "Level 1: CORE router manages communication between major areas.";
+
+    setTimeout(function(){
+
+        status.innerHTML=
+            "Level 2: Area 1 and Area 2 organize groups of networks.";
+
+    },1200);
+
+    setTimeout(function(){
+
+        status.innerHTML=
+            "Level 3: Individual LANs exist within each area.";
+
+    },2400);
+
+    setTimeout(function(){
+
+        status.innerHTML=
+            "✓ Hierarchical organization reduces the need for every router to maintain every detailed route globally.";
+
+    },3600);
+
+}
+
+
+function resetHierarchy(){
+
+    document.getElementById("hierarchyStatus")
+        .innerHTML=
+        "Ready. Click Show Hierarchy.";
+
+}
+
+
+/* =========================================
+QUIZ
+========================================= */
+
+function quizAnswer(button,correct){
+
+    const quiz=button.parentElement;
+
+    const result=quiz.querySelector(".answer");
+
+    result.style.display="block";
+
+    if(correct){
+
+        result.style.background="#dcfce7";
+
+        result.style.color="#166534";
+
+        result.innerHTML=
+            "✓ Correct Answer!";
+
+    }else{
+
+        result.style.background="#fee2e2";
+
+        result.style.color="#991b1b";
+
+        result.innerHTML=
+            "✗ Incorrect. Try again.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
