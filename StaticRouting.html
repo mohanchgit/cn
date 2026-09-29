@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Networks - Static & Dynamic Routing</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(135deg, #172554, #2563eb);
+    color: white;
+    padding: 28px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 16px;
+}
+
+nav {
+    background: #0f172a;
+    padding: 10px;
+    text-align: center;
+    position: sticky;
+    top: 102px;
+    z-index: 90;
+}
+
+nav button {
+    background: transparent;
+    color: white;
+    border: 1px solid #64748b;
+    padding: 9px 14px;
+    margin: 3px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+nav button:hover {
+    background: #2563eb;
+}
+
+.container {
+    max-width: 1250px;
+    margin: auto;
+    padding: 25px;
+}
+
+section {
+    background: white;
+    margin-bottom: 25px;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+h2 {
+    color: #1d4ed8;
+    border-bottom: 2px solid #dbeafe;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #334155;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: #f8fafc;
+    padding: 18px;
+    border-left: 5px solid #2563eb;
+    border-radius: 8px;
+}
+
+.highlight {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+}
+
+.warning {
+    background: #fff7ed;
+    border-left: 5px solid #f97316;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+}
+
+.success {
+    background: #f0fdf4;
+    border-left: 5px solid #16a34a;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #1e3a8a;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+/* NETWORK */
+.network-area {
+    position: relative;
+    height: 470px;
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.node {
+    fill: #2563eb;
+    stroke: white;
+    stroke-width: 3;
+}
+
+.node-text {
+    fill: white;
+    font-size: 15px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.link {
+    stroke: #64748b;
+    stroke-width: 5;
+}
+
+.link-label {
+    fill: #111827;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.active-link {
+    stroke: #16a34a;
+    stroke-width: 8;
+}
+
+.packet {
+    fill: #ef4444;
+    stroke: white;
+    stroke-width: 2;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.controls button {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.controls button:hover {
+    background: #1d4ed8;
+}
+
+.controls button.stop {
+    background: #dc2626;
+}
+
+.controls button.green {
+    background: #16a34a;
+}
+
+.status {
+    padding: 15px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 8px;
+    font-family: monospace;
+    min-height: 55px;
+}
+
+.route-box {
+    background: #ecfdf5;
+    border: 2px solid #22c55e;
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.algorithm-step {
+    padding: 12px;
+    margin: 7px 0;
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.quiz {
+    background: #f8fafc;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.quiz button {
+    display: block;
+    margin: 6px 0;
+    padding: 9px 14px;
+    width: 100%;
+    text-align: left;
+    border: 1px solid #cbd5e1;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.quiz button:hover {
+    background: #eff6ff;
+}
+
+.answer {
+    display: none;
+    padding: 10px;
+    margin-top: 8px;
+    background: #dcfce7;
+    border-left: 4px solid #16a34a;
+}
+
+.badge {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 13px;
+}
+
+footer {
+    background: #0f172a;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+@media(max-width:700px) {
+    header h1 {
+        font-size: 23px;
+    }
+
+    nav {
+        position: static;
+    }
+
+    .network-area {
+        height: 380px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Computer Networks: Routing Concepts</h1>
+    <p>Static Routing • Dynamic Routing • Shortest Path • Flooding</p>
+</header>
+
+<nav>
+    <button onclick="showSection('objectives')">Objectives</button>
+    <button onclick="showSection('routing')">Routing Basics</button>
+    <button onclick="showSection('static')">Static Routing</button>
+    <button onclick="showSection('dynamic')">Dynamic Routing</button>
+    <button onclick="showSection('shortest')">Shortest Path</button>
+    <button onclick="showSection('flooding')">Flooding</button>
+    <button onclick="showSection('comparison')">Comparison</button>
+    <button onclick="showSection('quiz')">Quiz</button>
+</nav>
+
+<div class="container">
+
+<!-- OBJECTIVES -->
+<section id="objectives">
+<h2>1. Learning Objectives</h2>
+
+<p>After completing this lecture, students should be able to:</p>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>01. Understand Routing</h3>
+<p>Explain why routers need routing information to forward packets between networks.</p>
+</div>
+
+<div class="card">
+<h3>02. Static Routing</h3>
+<p>Configure and explain manually created routes.</p>
+</div>
+
+<div class="card">
+<h3>03. Dynamic Routing</h3>
+<p>Explain how routers automatically learn and update routes.</p>
+</div>
+
+<div class="card">
+<h3>04. Shortest Path</h3>
+<p>Understand shortest-path routing using Dijkstra's algorithm.</p>
+</div>
+
+<div class="card">
+<h3>05. Flooding</h3>
+<p>Understand how packets are forwarded through multiple outgoing links.</p>
+</div>
+
+<div class="card">
+<h3>06. Compare Routing</h3>
+<p>Differentiate static and dynamic routing based on operation, maintenance and scalability.</p>
+</div>
+
+</div>
+
+<div class="highlight">
+<strong>Faculty Teaching Tip:</strong>
+Start with the question: 
+"How does a packet know which router it should use to reach another network?"
+</div>
+</section>
+
+
+<!-- ROUTING BASICS -->
+<section id="routing">
+
+<h2>2. What is Routing?</h2>
+
+<p>
+<strong>Routing</strong> is the process of selecting a path for packets
+to travel from a source network to a destination network.
+</p>
+
+<div class="highlight">
+<strong>Simple Example:</strong><br>
+If Computer A wants to communicate with Computer B located in another network,
+the packet may have to travel through several routers.
+The routers use routing information to decide the next hop.
+</div>
+
+<h3>Basic Routing Process</h3>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>Step 1</h3>
+<p>Source creates a packet.</p>
+</div>
+
+<div class="card">
+<h3>Step 2</h3>
+<p>Packet reaches the default gateway/router.</p>
+</div>
+
+<div class="card">
+<h3>Step 3</h3>
+<p>Router checks its routing table.</p>
+</div>
+
+<div class="card">
+<h3>Step 4</h3>
+<p>Router selects the next hop.</p>
+</div>
+
+<div class="card">
+<h3>Step 5</h3>
+<p>Packet continues toward the destination.</p>
+</div>
+
+</div>
+
+<h3>Important Terms</h3>
+
+<span class="badge">Source</span>
+<span class="badge">Destination</span>
+<span class="badge">Next Hop</span>
+<span class="badge">Routing Table</span>
+<span class="badge">Metric</span>
+<span class="badge">Interface</span>
+<span class="badge">Path</span>
+
+</section>
+
+
+<!-- STATIC -->
+<section id="static">
+
+<h2>3. Static Routing</h2>
+
+<p>
+<strong>Static routing</strong> is a routing method in which the network
+administrator manually configures routes on the router.
+</p>
+
+<div class="highlight">
+<strong>Key Idea:</strong>
+The router does not automatically discover the route.
+The administrator explicitly tells the router where a destination network can be reached.
+</div>
+
+<h3>Example Cisco Command</h3>
+
+<pre style="background:#0f172a;color:#e2e8f0;padding:18px;border-radius:8px;">
+Router(config)# ip route 192.168.3.0 255.255.255.0 10.0.0.2
+</pre>
+
+<p>Meaning:</p>
+
+<ul>
+<li><strong>192.168.3.0</strong> → Destination network</li>
+<li><strong>255.255.255.0</strong> → Destination subnet mask</li>
+<li><strong>10.0.0.2</strong> → Next-hop address</li>
+</ul>
+
+<h3>Static Routing Animation</h3>
+
+<div class="network-area">
+<svg viewBox="0 0 1000 470">
+
+<line class="link" x1="170" y1="235" x2="390" y2="235"/>
+<line class="link" x1="390" y1="235" x2="610" y2="235"/>
+<line class="link" x1="610" y1="235" x2="830" y2="235"/>
+
+<circle class="node" cx="170" cy="235" r="45"/>
+<circle class="node" cx="390" cy="235" r="45"/>
+<circle class="node" cx="610" cy="235" r="45"/>
+<circle class="node" cx="830" cy="235" r="45"/>
+
+<text class="node-text" x="170" y="235">PC-A</text>
+<text class="node-text" x="390" y="235">R1</text>
+<text class="node-text" x="610" y="235">R2</text>
+<text class="node-text" x="830" y="235">PC-B</text>
+
+<text class="link-label" x="280" y="215">10.0.0.0/30</text>
+<text class="link-label" x="500" y="215">10.0.0.4/30</text>
+<text class="link-label" x="720" y="215">192.168.3.0/24</text>
+
+<circle id="staticPacket" class="packet" cx="170" cy="235" r="10"/>
+
+</svg>
+</div>
+
+<div class="controls">
+<button onclick="startStatic()">▶ Start Packet</button>
+<button onclick="pauseStatic()" class="stop">⏸ Pause</button>
+<button onclick="resetStatic()">↻ Reset</button>
+</div>
+
+<div id="staticStatus" class="status">
+Ready. Click "Start Packet".
+</div>
+
+<h3>Advantages</h3>
+<ul>
+<li>Simple for small networks.</li>
+<li>No routing protocol overhead.</li>
+<li>Predictable path.</li>
+<li>Can provide administrator-controlled routing.</li>
+</ul>
+
+<h3>Limitations</h3>
+<ul>
+<li>Manual configuration.</li>
+<li>Does not automatically adapt to topology changes.</li>
+<li>Large networks become difficult to maintain.</li>
+</ul>
+
+</section>
+
+
+<!-- DYNAMIC -->
+<section id="dynamic">
+
+<h2>4. Dynamic Routing</h2>
+
+<p>
+<strong>Dynamic routing</strong> allows routers to automatically learn
+routing information by communicating through routing protocols.
+</p>
+
+<div class="highlight">
+<strong>Examples:</strong>
+RIP, OSPF, EIGRP and BGP are examples of routing protocols used in different network environments.
+</div>
+
+<h3>How Dynamic Routing Works</h3>
+
+<div class="card-grid">
+
+<div class="card">
+<strong>1. Discover</strong>
+<p>Routers discover neighboring routers.</p>
+</div>
+
+<div class="card">
+<strong>2. Exchange</strong>
+<p>Routers exchange routing information.</p>
+</div>
+
+<div class="card">
+<strong>3. Calculate</strong>
+<p>Routers calculate available paths.</p>
+</div>
+
+<div class="card">
+<strong>4. Select</strong>
+<p>A route is selected according to the protocol's rules and metrics.</p>
+</div>
+
+<div class="card">
+<strong>5. Update</strong>
+<p>Routing information can change when the topology changes.</p>
+</div>
+
+</div>
+
+<h3>Dynamic Routing Animation</h3>
+
+<div class="network-area">
+
+<svg viewBox="0 0 1000 470">
+
+<line id="d1" class="link" x1="180" y1="235" x2="390" y2="120"/>
+<line id="d2" class="link" x1="390" y1="120" x2="610" y2="235"/>
+<line id="d3" class="link" x1="180" y1="235" x2="390" y2="350"/>
+<line id="d4" class="link" x1="390" y1="350" x2="610" y2="235"/>
+<line id="d5" class="link" x1="610" y1="235" x2="830" y2="235"/>
+
+<circle class="node" cx="180" cy="235" r="42"/>
+<circle class="node" cx="390" cy="120" r="42"/>
+<circle class="node" cx="390" cy="350" r="42"/>
+<circle class="node" cx="610" cy="235" r="42"/>
+<circle class="node" cx="830" cy="235" r="42"/>
+
+<text class="node-text" x="180" y="235">R1</text>
+<text class="node-text" x="390" y="120">R2</text>
+<text class="node-text" x="390" y="350">R3</text>
+<text class="node-text" x="610" y="235">R4</text>
+<text class="node-text" x="830" y="235">R5</text>
+
+<circle id="dynamicPacket" class="packet" cx="180" cy="235" r="10"/>
+
+</svg>
+</div>
+
+<div class="controls">
+<button onclick="startDynamic()">▶ Discover & Route</button>
+<button onclick="resetDynamic()">↻ Reset</button>
+</div>
+
+<div id="dynamicStatus" class="status">
+Click "Discover & Route" to see dynamic routing.
+</div>
+
+<h3>Common Dynamic Routing Protocols</h3>
+
+<table>
+<tr>
+<th>Protocol</th>
+<th>Category</th>
+<th>Main Concept</th>
+</tr>
+<tr>
+<td>RIP</td>
+<td>Distance Vector</td>
+<td>Uses hop count as its routing metric.</td>
+</tr>
+<tr>
+<td>OSPF</td>
+<td>Link State</td>
+<td>Uses link-state information and shortest-path calculation.</td>
+</tr>
+<tr>
+<td>EIGRP</td>
+<td>Advanced Distance Vector</td>
+<td>Uses multiple route characteristics in its metric calculation.</td>
+</tr>
+<tr>
+<td>BGP</td>
+<td>Path Vector</td>
+<td>Used for routing between autonomous systems.</td>
+</tr>
+</table>
+
+</section>
+
+
+<!-- SHORTEST PATH -->
+<section id="shortest">
+
+<h2>5. Shortest Path Routing</h2>
+
+<p>
+Shortest-path routing attempts to select a path based on a defined cost or metric.
+</p>
+
+<div class="highlight">
+<strong>Important:</strong>
+"Shortest" does not necessarily mean physically shortest.
+It depends on the metric used by the routing algorithm.
+</div>
+
+<h3>Dijkstra's Algorithm</h3>
+
+<p>
+Dijkstra's algorithm is commonly associated with shortest-path computation
+in link-state routing concepts such as OSPF.
+</p>
+
+<h3>Example Network</h3>
+
+<div class="network-area">
+
+<svg viewBox="0 0 1000 470">
+
+<line id="sAB" class="link" x1="180" y1="130" x2="430" y2="100"/>
+<line id="sAC" class="link" x1="180" y1="130" x2="430" y2="340"/>
+<line id="sBD" class="link" x1="430" y1="100" x2="700" y2="220"/>
+<line id="sCD" class="link" x1="430" y1="340" x2="700" y2="220"/>
+<line id="sBE" class="link" x1="430" y1="100" x2="850" y2="330"/>
+<line id="sDE" class="link" x1="700" y1="220" x2="850" y2="330"/>
+
+<circle class="node" cx="180" cy="130" r="42"/>
+<circle class="node" cx="430" cy="100" r="42"/>
+<circle class="node" cx="430" cy="340" r="42"/>
+<circle class="node" cx="700" cy="220" r="42"/>
+<circle class="node" cx="850" cy="330" r="42"/>
+
+<text class="node-text" x="180" y="130">A</text>
+<text class="node-text" x="430" y="100">B</text>
+<text class="node-text" x="430" y="340">C</text>
+<text class="node-text" x="700" y="220">D</text>
+<text class="node-text" x="850" y="330">E</text>
+
+<text class="link-label" x="300" y="95">2</text>
+<text class="link-label" x="300" y="250">5</text>
+<text class="link-label" x="560" y="130">2</text>
+<text class="link-label" x="560" y="300">1</text>
+<text class="link-label" x="650" y="100">7</text>
+<text class="link-label" x="780" y="285">2</text>
+
+</svg>
+
+</div>
+
+<div class="controls">
+<button onclick="runDijkstra()">▶ Run Shortest Path</button>
+<button onclick="resetShortest()">↻ Reset</button>
+</div>
+
+<div id="dijkstraSteps"></div>
+
+<div id="shortestResult" class="route-box">
+Shortest path will appear here.
+</div>
+
+<h3>Step-by-Step Concept</h3>
+
+<div class="algorithm-step">
+<strong>Step 1:</strong> Set source distance = 0.
+</div>
+
+<div class="algorithm-step">
+<strong>Step 2:</strong> Set all other distances = infinity.
+</div>
+
+<div class="algorithm-step">
+<strong>Step 3:</strong> Select the unvisited node with the smallest distance.
+</div>
+
+<div class="algorithm-step">
+<strong>Step 4:</strong> Update neighboring node distances.
+</div>
+
+<div class="algorithm-step">
+<strong>Step 5:</strong> Mark the selected node as visited.
+</div>
+
+<div class="algorithm-step">
+<strong>Step 6:</strong> Continue until the destination is reached.
+</div>
+
+</section>
+
+
+<!-- FLOODING -->
+<section id="flooding">
+
+<h2>6. Flooding</h2>
+
+<p>
+<strong>Flooding</strong> is a routing technique in which a packet is
+forwarded through multiple outgoing links, subject to mechanisms that
+prevent endless circulation.
+</p>
+
+<div class="warning">
+<strong>Important:</strong>
+Without controls such as hop limits, sequence numbers, or duplicate detection,
+flooding can create many duplicate packets and excessive traffic.
+</div>
+
+<h3>Flooding Animation</h3>
+
+<div class="network-area">
+
+<svg viewBox="0 0 1000 470">
+
+<line class="link" x1="180" y1="235" x2="400" y2="120"/>
+<line class="link" x1="180" y1="235" x2="400" y2="350"/>
+<line class="link" x1="400" y1="120" x2="620" y2="120"/>
+<line class="link" x1="400" y1="120" x2="620" y2="350"/>
+<line class="link" x1="400" y1="350" x2="620" y2="350"/>
+<line class="link" x1="620" y1="120" x2="820" y2="235"/>
+<line class="link" x1="620" y1="350" x2="820" y2="235"/>
+
+<circle class="node" cx="180" cy="235" r="42"/>
+<circle class="node" cx="400" cy="120" r="42"/>
+<circle class="node" cx="400" cy="350" r="42"/>
+<circle class="node" cx="620" cy="120" r="42"/>
+<circle class="node" cx="620" cy="350" r="42"/>
+<circle class="node" cx="820" cy="235" r="42"/>
+
+<text class="node-text" x="180" y="235">S</text>
+<text class="node-text" x="400" y="120">R1</text>
+<text class="node-text" x="400" y="350">R2</text>
+<text class="node-text" x="620" y="120">R3</text>
+<text class="node-text" x="620" y="350">R4</text>
+<text class="node-text" x="820" y="235">D</text>
+
+<circle id="floodPacket" class="packet" cx="180" cy="235" r="10"/>
+
+</svg>
+
+</div>
+
+<div class="controls">
+<button onclick="startFlooding()">▶ Start Flooding</button>
+<button onclick="resetFlooding()">↻ Reset</button>
+</div>
+
+<div id="floodStatus" class="status">
+Click "Start Flooding".
+</div>
+
+<h3>Flooding Characteristics</h3>
+
+<ul>
+<li>Packet can be copied to multiple outgoing links.</li>
+<li>Creates multiple possible paths.</li>
+<li>Can be useful for information dissemination in certain network designs.</li>
+<li>Can generate significant traffic.</li>
+<li>Duplicate packet control is important.</li>
+<li>Hop count / TTL can limit propagation.</li>
+</ul>
+
+</section>
+
+
+<!-- COMPARISON -->
+<section id="comparison">
+
+<h2>7. Static Routing vs Dynamic Routing</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Static Routing</th>
+<th>Dynamic Routing</th>
+</tr>
+
+<tr>
+<td>Configuration</td>
+<td>Manual</td>
+<td>Automatic through routing protocols</td>
+</tr>
+
+<tr>
+<td>Route Updates</td>
+<td>Administrator updates routes</td>
+<td>Routers exchange routing information</td>
+</tr>
+
+<tr>
+<td>Scalability</td>
+<td>Suitable for smaller/simple networks</td>
+<td>Better suited to changing and larger networks</td>
+</tr>
+
+<tr>
+<td>Overhead</td>
+<td>Low routing-protocol overhead</td>
+<td>Routing protocol introduces processing and communication overhead</td>
+</tr>
+
+<tr>
+<td>Failure Adaptation</td>
+<td>Requires manual changes unless supplemented by other mechanisms</td>
+<td>Protocols can recalculate routes according to their design</td>
+</tr>
+
+<tr>
+<td>Administration</td>
+<td>More manual maintenance</td>
+<td>More automated</td>
+</tr>
+
+<tr>
+<td>Examples</td>
+<td>ip route</td>
+<td>RIP, OSPF, EIGRP, BGP</td>
+</tr>
+
+</table>
+
+<h3>When to Use?</h3>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>Static Routing</h3>
+<ul>
+<li>Small networks</li>
+<li>Stub networks</li>
+<li>Specific controlled routes</li>
+<li>Simple topology</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Dynamic Routing</h3>
+<ul>
+<li>Large networks</li>
+<li>Multiple paths</li>
+<li>Changing topology</li>
+<li>Automatic route learning</li>
+</ul>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ROUTING TABLE -->
+<section>
+
+<h2>8. Example Routing Table</h2>
+
+<table>
+
+<tr>
+<th>Destination Network</th>
+<th>Subnet Mask</th>
+<th>Next Hop</th>
+<th>Interface</th>
+<th>Type</th>
+</tr>
+
+<tr>
+<td>192.168.1.0</td>
+<td>255.255.255.0</td>
+<td>Directly Connected</td>
+<td>G0/0</td>
+<td>C</td>
+</tr>
+
+<tr>
+<td>192.168.2.0</td>
+<td>255.255.255.0</td>
+<td>10.0.0.2</td>
+<td>G0/1</td>
+<td>S</td>
+</tr>
+
+<tr>
+<td>192.168.3.0</td>
+<td>255.255.255.0</td>
+<td>10.0.0.6</td>
+<td>G0/2</td>
+<td>O</td>
+</tr>
+
+</table>
+
+<p>
+<strong>C</strong> = Connected route<br>
+<strong>S</strong> = Static route<br>
+<strong>O</strong> = OSPF-learned route
+</p>
+
+</section>
+
+
+<!-- PACKET FLOW -->
+<section>
+
+<h2>9. Think Like a Router</h2>
+
+<div class="highlight">
+
+<p>
+Suppose a packet has:
+</p>
+
+<p>
+<strong>Source:</strong> 192.168.1.10
+</p>
+
+<p>
+<strong>Destination:</strong> 192.168.3.20
+</p>
+
+<p>
+The router checks the destination IP address and searches its routing table.
+It then selects the most appropriate matching route.
+</p>
+
+</div>
+
+<h3>Basic Decision Process</h3>
+
+<ol>
+<li>Read destination IP address.</li>
+<li>Search routing table.</li>
+<li>Find matching destination network.</li>
+<li>Select route according to routing-table rules.</li>
+<li>Determine next hop/interface.</li>
+<li>Forward packet.</li>
+</ol>
+
+</section>
+
+
+<!-- QUIZ -->
+<section id="quiz">
+
+<h2>10. Student Quiz</h2>
+
+<div class="quiz">
+
+<h3>Q1. What is routing?</h3>
+
+<button onclick="checkAnswer(this,false)">A. Encrypting a packet</button>
+<button onclick="checkAnswer(this,true)">B. Selecting a path for packet delivery</button>
+<button onclick="checkAnswer(this,false)">C. Compressing a packet</button>
+<button onclick="checkAnswer(this,false)">D. Creating a MAC address</button>
+
+<div class="answer">
+Correct! Routing determines how packets travel toward their destination.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q2. Which routing method requires manual configuration?</h3>
+
+<button onclick="checkAnswer(this,true)">A. Static Routing</button>
+<button onclick="checkAnswer(this,false)">B. Dynamic Routing</button>
+<button onclick="checkAnswer(this,false)">C. Flooding</button>
+<button onclick="checkAnswer(this,false)">D. Broadcasting</button>
+
+<div class="answer">
+Correct! Static routes are manually configured by an administrator.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q3. Which protocol is a link-state routing protocol?</h3>
+
+<button onclick="checkAnswer(this,false)">A. RIP</button>
+<button onclick="checkAnswer(this,true)">B. OSPF</button>
+<button onclick="checkAnswer(this,false)">C. FTP</button>
+<button onclick="checkAnswer(this,false)">D. HTTP</button>
+
+<div class="answer">
+Correct! OSPF is a link-state routing protocol.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q4. What metric does traditional RIP use?</h3>
+
+<button onclick="checkAnswer(this,true)">A. Hop Count</button>
+<button onclick="checkAnswer(this,false)">B. Bandwidth only</button>
+<button onclick="checkAnswer(this,false)">C. CPU usage</button>
+<button onclick="checkAnswer(this,false)">D. MAC address</button>
+
+<div class="answer">
+Correct! RIP uses hop count as its routing metric.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q5. Which algorithm is associated with shortest-path computation in link-state routing?</h3>
+
+<button onclick="checkAnswer(this,false)">A. RSA</button>
+<button onclick="checkAnswer(this,true)">B. Dijkstra</button>
+<button onclick="checkAnswer(this,false)">C. SHA-512</button>
+<button onclick="checkAnswer(this,false)">D. AES</button>
+
+<div class="answer">
+Correct! Dijkstra's shortest-path algorithm is associated with link-state routing.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q6. What is a major problem with uncontrolled flooding?</h3>
+
+<button onclick="checkAnswer(this,true)">A. Excessive duplicate traffic</button>
+<button onclick="checkAnswer(this,false)">B. No packet transmission</button>
+<button onclick="checkAnswer(this,false)">C. No routing information</button>
+<button onclick="checkAnswer(this,false)">D. Encryption failure</button>
+
+<div class="answer">
+Correct! Flooding can create many duplicate packets and excessive network traffic.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FACULTY -->
+<section>
+
+<h2>11. Faculty Teaching Flow</h2>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>5 Minutes</h3>
+<p>Introduce routing using a real-world road-map analogy.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Explain routing tables and next-hop decisions.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Demonstrate static routing.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Explain dynamic routing and routing protocols.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Demonstrate shortest-path routing.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Demonstrate flooding and discuss duplicate traffic.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Conduct the interactive quiz.</p>
+</div>
+
+</div>
+
+<div class="success">
+<strong>Classroom Activity:</strong>
+Ask students to draw a network with 5 routers and identify at least
+two different paths between a source and destination. Ask them to decide
+which path should be selected and what metric could be used.
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+<section>
+
+<h2>12. Quick Revision</h2>
+
+<table>
+
+<tr>
+<th>Concept</th>
+<th>Remember This</th>
+</tr>
+
+<tr>
+<td>Routing</td>
+<td>Selecting a path for packet delivery.</td>
+</tr>
+
+<tr>
+<td>Static Routing</td>
+<td>Routes are manually configured.</td>
+</tr>
+
+<tr>
+<td>Dynamic Routing</td>
+<td>Routes are learned and updated using routing protocols.</td>
+</tr>
+
+<tr>
+<td>RIP</td>
+<td>Distance-vector protocol; hop count metric.</td>
+</tr>
+
+<tr>
+<td>OSPF</td>
+<td>Link-state protocol using shortest-path computation.</td>
+</tr>
+
+<tr>
+<td>Dijkstra</td>
+<td>Shortest-path algorithm.</td>
+</tr>
+
+<tr>
+<td>Flooding</td>
+<td>Forwarding through multiple outgoing paths with duplicate-control mechanisms.</td>
+</tr>
+
+</table>
+
+<div class="highlight">
+<strong>One-line memory trick:</strong><br><br>
+
+Static = <strong>Administrator decides</strong><br>
+Dynamic = <strong>Routers learn</strong><br>
+Shortest Path = <strong>Best path according to a metric</strong><br>
+Flooding = <strong>Send through multiple outgoing paths</strong>
+</div>
+
+</section>
+
+</div>
+
+<footer>
+Computer Networks Lecture Module |
+Static Routing • Dynamic Routing • Shortest Path • Flooding
+</footer>
+
+
+<script>
+
+/* ============================
+   SECTION NAVIGATION
+============================ */
+
+function showSection(id) {
+    const section = document.getElementById(id);
+
+    if(section) {
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+
+/* ============================
+   STATIC ROUTING ANIMATION
+============================ */
+
+let staticTimer = null;
+let staticPosition = 170;
+
+function startStatic() {
+
+    clearInterval(staticTimer);
+
+    staticPosition = 170;
+
+    document.getElementById("staticStatus").innerHTML =
+        "Packet created at PC-A → forwarding to R1.";
+
+    staticTimer = setInterval(function() {
+
+        staticPosition += 4;
+
+        document.getElementById("staticPacket")
+            .setAttribute("cx", staticPosition);
+
+        if(staticPosition >= 390) {
+
+            document.getElementById("staticStatus").innerHTML =
+                "Packet reached R1 → R1 checks static routing table → next hop R2.";
+
+        }
+
+        if(staticPosition >= 610) {
+
+            document.getElementById("staticStatus").innerHTML =
+                "Packet reached R2 → destination network is reachable through the connected path.";
+
+        }
+
+        if(staticPosition >= 830) {
+
+            clearInterval(staticTimer);
+
+            document.getElementById("staticStatus").innerHTML =
+                "✓ Packet reached PC-B. Static route successfully forwarded the packet.";
+
+        }
+
+    }, 30);
+}
+
+function pauseStatic() {
+    clearInterval(staticTimer);
+
+    document.getElementById("staticStatus").innerHTML =
+        "Animation paused.";
+}
+
+function resetStatic() {
+
+    clearInterval(staticTimer);
+
+    document.getElementById("staticPacket")
+        .setAttribute("cx",170);
+
+    document.getElementById("staticStatus").innerHTML =
+        "Ready. Click 'Start Packet'.";
+}
+
+
+/* ============================
+   DYNAMIC ROUTING ANIMATION
+============================ */
+
+function startDynamic() {
+
+    resetDynamic();
+
+    const status = document.getElementById("dynamicStatus");
+
+    status.innerHTML =
+        "Step 1: R1 discovers neighboring routers.";
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "Step 2: R1 exchanges routing information with neighbors.";
+
+        document.getElementById("d1")
+            .classList.add("active-link");
+
+        document.getElementById("d3")
+            .classList.add("active-link");
+
+    }, 1200);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "Step 3: Routing information propagates through the network.";
+
+        document.getElementById("d2")
+            .classList.add("active-link");
+
+        document.getElementById("d4")
+            .classList.add("active-link");
+
+    }, 2500);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "Step 4: R4 learns a route toward R5.";
+
+        document.getElementById("d5")
+            .classList.add("active-link");
+
+    }, 3800);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "✓ Dynamic routing information has been learned across the topology.";
+
+    }, 5000);
+}
+
+function resetDynamic() {
+
+    document.querySelectorAll(
+        "#d1,#d2,#d3,#d4,#d5"
+    ).forEach(function(line) {
+
+        line.classList.remove("active-link");
+
+    });
+
+    document.getElementById("dynamicStatus").innerHTML =
+        "Click 'Discover & Route' to see dynamic routing.";
+}
+
+
+/* ============================
+   DIJKSTRA
+============================ */
+
+function runDijkstra() {
+
+    const output = document.getElementById("dijkstraSteps");
+
+    output.innerHTML = "";
+
+    const steps = [
+        "Initialize: A = 0, B = ∞, C = ∞, D = ∞, E = ∞.",
+        "Visit A. Update B = 2 and C = 5.",
+        "Visit B because distance 2 is smallest.",
+        "Through B, D = 4 and E = 9.",
+        "Visit D because distance 4 is smallest.",
+        "Through D, C becomes 5 and E becomes 6.",
+        "Visit C. No better path to E is found.",
+        "Visit E. Destination reached.",
+        "Final shortest distance from A to E = 6."
+    ];
+
+    let i = 0;
+
+    const timer = setInterval(function() {
+
+        if(i >= steps.length) {
+
+            clearInterval(timer);
+
+            document.getElementById("shortestResult").innerHTML =
+                "✓ Shortest Path: A → B → D → E &nbsp;&nbsp; Total Cost = 6";
+
+            return;
+        }
+
+        const div = document.createElement("div");
+
+        div.className = "algorithm-step";
+
+        div.innerHTML =
+            "<strong>Step " + (i + 1) +
+            ":</strong> " + steps[i];
+
+        output.appendChild(div);
+
+        i++;
+
+    }, 700);
+}
+
+function resetShortest() {
+
+    document.getElementById("dijkstraSteps").innerHTML = "";
+
+    document.getElementById("shortestResult").innerHTML =
+        "Shortest path will appear here.";
+}
+
+
+/* ============================
+   FLOODING ANIMATION
+============================ */
+
+function startFlooding() {
+
+    const status = document.getElementById("floodStatus");
+
+    status.innerHTML =
+        "S sends the packet to multiple outgoing links.";
+
+    const packet = document.getElementById("floodPacket");
+
+    packet.setAttribute("cx",300);
+    packet.setAttribute("cy",170);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "R1 and R2 receive copies of the packet.";
+
+        packet.setAttribute("cx",400);
+        packet.setAttribute("cy",120);
+
+    },1000);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "R1 forwards copies toward R3 and R4.";
+
+        packet.setAttribute("cx",620);
+        packet.setAttribute("cy",120);
+
+    },2000);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "R2 also forwards packets through its outgoing links.";
+
+        packet.setAttribute("cx",620);
+        packet.setAttribute("cy",350);
+
+    },3000);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "Multiple copies can reach D. Duplicate-control mechanisms are required.";
+
+        packet.setAttribute("cx",820);
+        packet.setAttribute("cy",235);
+
+    },4000);
+
+    setTimeout(() => {
+
+        status.innerHTML =
+            "✓ Flooding demonstration completed.";
+
+    },5000);
+}
+
+function resetFlooding() {
+
+    const packet = document.getElementById("floodPacket");
+
+    packet.setAttribute("cx",180);
+    packet.setAttribute("cy",235);
+
+    document.getElementById("floodStatus").innerHTML =
+        "Click 'Start Flooding'.";
+}
+
+
+/* ============================
+   QUIZ
+============================ */
+
+function checkAnswer(button, correct) {
+
+    const quiz = button.parentElement;
+
+    const answer = quiz.querySelector(".answer");
+
+    answer.style.display = "block";
+
+    if(correct) {
+
+        answer.style.background = "#dcfce7";
+
+        answer.style.color = "#166534";
+
+        answer.innerHTML =
+            "✓ Correct Answer!";
+
+    } else {
+
+        answer.style.background = "#fee2e2";
+
+        answer.style.color = "#991b1b";
+
+        answer.innerHTML =
+            "✗ Incorrect. Try again.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
