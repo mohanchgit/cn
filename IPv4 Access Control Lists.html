@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPv4 Access Control Lists - Interactive Lecture</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Segoe UI,Arial,sans-serif;
+    background:#eef3f8;
+    color:#172033;
+    line-height:1.6;
+}
+header{
+    background:linear-gradient(135deg,#0b1f3a,#123f6d,#087f8c);
+    color:white;
+    padding:35px 20px;
+    text-align:center;
+}
+header h1{margin:0;font-size:38px}
+header p{margin:8px 0 0;font-size:18px}
+
+nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#071a2d;
+    padding:10px;
+    text-align:center;
+}
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:4px 8px;
+    padding:8px 12px;
+    display:inline-block;
+    border-radius:7px;
+}
+nav a:hover{background:#176b87}
+
+.container{
+    max-width:1250px;
+    margin:auto;
+    padding:25px;
+}
+
+section{
+    background:white;
+    margin:22px 0;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+h2{
+    color:#0b5075;
+    border-left:6px solid #0b8fa3;
+    padding-left:12px;
+}
+h3{color:#176b87}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#f5f9fc;
+    border:1px solid #d8e4ed;
+    border-radius:12px;
+    padding:18px;
+}
+
+.card strong{
+    color:#0a5a78;
+}
+
+.highlight{
+    background:#e8f7fb;
+    border-left:5px solid #0a8da5;
+    padding:15px;
+    margin:15px 0;
+    border-radius:8px;
+}
+
+.warning{
+    background:#fff5df;
+    border-left:5px solid #e2a400;
+    padding:15px;
+    border-radius:8px;
+}
+
+.danger{
+    background:#ffe9e9;
+    border-left:5px solid #c62828;
+    padding:15px;
+    border-radius:8px;
+}
+
+.success{
+    background:#eaf8ee;
+    border-left:5px solid #24934b;
+    padding:15px;
+    border-radius:8px;
+}
+
+code,pre{
+    font-family:Consolas,monospace;
+}
+
+pre{
+    background:#101923;
+    color:#d7f5ff;
+    padding:18px;
+    border-radius:10px;
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin:15px 0;
+}
+th,td{
+    border:1px solid #cbd8e2;
+    padding:11px;
+    text-align:left;
+}
+th{
+    background:#0c5376;
+    color:white;
+}
+
+button{
+    background:#0b7285;
+    color:white;
+    border:none;
+    padding:11px 18px;
+    margin:5px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+button:hover{background:#084c5a}
+
+.demo{
+    background:#071a2d;
+    color:white;
+    border-radius:15px;
+    padding:20px;
+    overflow:hidden;
+}
+
+.network{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    min-height:180px;
+    position:relative;
+}
+
+.device{
+    width:100px;
+    height:75px;
+    border-radius:12px;
+    background:#173b5c;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    border:2px solid #61d8e8;
+    z-index:2;
+}
+
+.router{
+    background:#264d70;
+    border-color:#ffd166;
+}
+
+.server{
+    background:#3b3054;
+    border-color:#caa8ff;
+}
+
+.link{
+    height:5px;
+    background:#68869d;
+    flex:1;
+    margin:0 8px;
+    position:relative;
+}
+
+.packet{
+    position:absolute;
+    width:17px;
+    height:17px;
+    border-radius:50%;
+    background:#ffcf33;
+    top:-6px;
+    left:0;
+    box-shadow:0 0 12px #ffcf33;
+}
+
+.packet.animate{
+    animation:movePacket 3s linear forwards;
+}
+
+@keyframes movePacket{
+    from{left:0}
+    to{left:calc(100% - 17px)}
+}
+
+.packet.red{
+    background:#ff4d4d;
+    box-shadow:0 0 12px #ff4d4d;
+}
+
+.packet.green{
+    background:#50e36a;
+    box-shadow:0 0 12px #50e36a;
+}
+
+.status{
+    background:#020b12;
+    color:#9ee7ff;
+    padding:15px;
+    margin-top:15px;
+    border-radius:9px;
+    min-height:65px;
+    font-family:Consolas,monospace;
+}
+
+.flow{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+}
+
+.flowbox{
+    padding:15px 20px;
+    background:#eaf4f8;
+    border:2px solid #0a7185;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.arrow{
+    font-size:25px;
+    color:#0b7285;
+}
+
+.quiz{
+    background:#f7fafc;
+    padding:18px;
+    border-radius:10px;
+    margin:15px 0;
+    border:1px solid #dce5ec;
+}
+
+.option{
+    display:block;
+    margin:8px 0;
+    padding:10px;
+    background:white;
+    border:1px solid #ccd8e0;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.option:hover{
+    background:#eaf7fa;
+}
+
+.answer{
+    display:none;
+    margin-top:10px;
+    padding:10px;
+    border-radius:7px;
+    background:#e8f8ec;
+    color:#176b38;
+    font-weight:bold;
+}
+
+.small{
+    font-size:14px;
+    color:#526273;
+}
+
+footer{
+    background:#071a2d;
+    color:white;
+    text-align:center;
+    padding:25px;
+    margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>IPv4 Access Control Lists (ACLs)</h1>
+    <p>Interactive Faculty Lecture • Student-Friendly • Packet Filtering Animation</p>
+</header>
+
+<nav>
+    <a href="#objectives">Objectives</a>
+    <a href="#acl">ACL Basics</a>
+    <a href="#types">Types</a>
+    <a href="#wildcard">Wildcard Mask</a>
+    <a href="#standard">Standard ACL</a>
+    <a href="#extended">Extended ACL</a>
+    <a href="#animation">Animation</a>
+    <a href="#commands">Cisco Commands</a>
+    <a href="#quiz">Quiz</a>
+</nav>
+
+<div class="container">
+
+<!-- OBJECTIVES -->
+<section id="objectives">
+<h2>1. Learning Objectives</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Understand</h3>
+<p>Explain what an IPv4 ACL is and why it is used in networks.</p>
+</div>
+
+<div class="card">
+<h3>Identify</h3>
+<p>Differentiate Standard ACL and Extended ACL.</p>
+</div>
+
+<div class="card">
+<h3>Apply</h3>
+<p>Create Cisco IOS ACL commands for practical network scenarios.</p>
+</div>
+
+<div class="card">
+<h3>Analyze</h3>
+<p>Determine whether a packet will be permitted or denied.</p>
+</div>
+
+</div>
+
+<div class="highlight">
+<strong>Faculty Teaching Point:</strong>
+An ACL is essentially a set of rules that a router uses to decide whether a packet should be
+<strong>permitted</strong> or <strong>denied</strong>.
+</div>
+</section>
+
+
+<!-- BASIC -->
+<section id="acl">
+<h2>2. What is an IPv4 ACL?</h2>
+
+<p>
+An <strong>Access Control List (ACL)</strong> is a sequence of rules configured on a router
+or Layer 3 device to control traffic based on specified conditions.
+</p>
+
+<div class="flow">
+<div class="flowbox">Incoming Packet</div>
+<div class="arrow">→</div>
+<div class="flowbox">ACL Check</div>
+<div class="arrow">→</div>
+<div class="flowbox">Permit / Deny</div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>PERMIT</h3>
+<p>The packet is allowed to continue processing.</p>
+</div>
+
+<div class="card">
+<h3>DENY</h3>
+<p>The packet is blocked by the ACL.</p>
+</div>
+
+<div class="card">
+<h3>ORDER MATTERS</h3>
+<p>ACL statements are checked from top to bottom.</p>
+</div>
+
+<div class="card">
+<h3>IMPLICIT DENY</h3>
+<p>There is an invisible <code>deny any</code> at the end of an ACL.</p>
+</div>
+
+</div>
+
+<div class="danger">
+<strong>Important:</strong>
+If no ACL entry matches the packet, the implicit deny causes the packet to be denied.
+</div>
+
+</section>
+
+
+<!-- TYPES -->
+<section id="types">
+<h2>3. Types of IPv4 ACLs</h2>
+
+<table>
+<tr>
+<th>Feature</th>
+<th>Standard ACL</th>
+<th>Extended ACL</th>
+</tr>
+
+<tr>
+<td>Filtering</td>
+<td>Source IPv4 address</td>
+<td>Source + Destination + Protocol + Ports</td>
+</tr>
+
+<tr>
+<td>Example</td>
+<td>Permit a specific host</td>
+<td>Permit HTTP from one network to a server</td>
+</tr>
+
+<tr>
+<td>Typical ACL Numbers</td>
+<td>1–99, 1300–1999</td>
+<td>100–199, 2000–2699</td>
+</tr>
+
+<tr>
+<td>Placement</td>
+<td>Generally closer to destination</td>
+<td>Generally closer to source</td>
+</tr>
+</table>
+
+<div class="highlight">
+<strong>Memory Tip:</strong><br>
+Standard ACL → <strong>WHO?</strong> (source address)<br>
+Extended ACL → <strong>WHO + WHERE + WHAT + WHICH SERVICE?</strong>
+</div>
+
+</section>
+
+
+<!-- WILDCARD -->
+<section id="wildcard">
+<h2>4. Wildcard Mask</h2>
+
+<p>
+Wildcard masks are commonly used in Cisco ACLs to identify which bits of an IPv4 address
+must match.
+</p>
+
+<table>
+<tr>
+<th>Wildcard Bit</th>
+<th>Meaning</th>
+</tr>
+<tr>
+<td>0</td>
+<td>Must match</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Ignore this bit</td>
+</tr>
+</table>
+
+<h3>Common Examples</h3>
+
+<table>
+<tr>
+<th>Network</th>
+<th>Subnet Mask</th>
+<th>Wildcard Mask</th>
+</tr>
+
+<tr>
+<td>192.168.1.0/24</td>
+<td>255.255.255.0</td>
+<td>0.0.0.255</td>
+</tr>
+
+<tr>
+<td>192.168.1.0/26</td>
+<td>255.255.255.192</td>
+<td>0.0.0.63</td>
+</tr>
+
+<tr>
+<td>10.0.0.0/8</td>
+<td>255.0.0.0</td>
+<td>0.255.255.255</td>
+</tr>
+</table>
+
+<div class="highlight">
+<strong>Formula:</strong><br>
+Wildcard Mask = 255.255.255.255 − Subnet Mask
+</div>
+
+</section>
+
+
+<!-- STANDARD -->
+<section id="standard">
+<h2>5. Standard IPv4 ACL</h2>
+
+<p>
+A Standard ACL filters traffic primarily using the <strong>source IPv4 address</strong>.
+</p>
+
+<h3>Example Scenario</h3>
+
+<div class="demo">
+
+<div class="network">
+
+<div class="device">
+PC-A<br>
+192.168.1.10
+</div>
+
+<div class="link">
+<div id="p1" class="packet"></div>
+</div>
+
+<div class="device router">
+ROUTER<br>
+R1
+</div>
+
+<div class="link">
+<div id="p2" class="packet"></div>
+</div>
+
+<div class="server">
+SERVER<br>
+192.168.2.10
+</div>
+
+</div>
+
+<button onclick="standardPermit()">Permit Packet</button>
+<button onclick="standardDeny()">Deny Packet</button>
+<button onclick="resetAnimation()">Reset</button>
+
+<div id="standardStatus" class="status">
+Waiting for packet...
+</div>
+
+</div>
+
+<h3>Example Requirement</h3>
+
+<p>
+Allow host <strong>192.168.1.10</strong> to access the network.
+</p>
+
+<pre>
+R1(config)# access-list 10 permit host 192.168.1.10
+R1(config)# access-list 10 deny any
+
+R1(config)# interface g0/0
+R1(config-if)# ip access-group 10 in
+</pre>
+
+<h3>Using Wildcard Mask</h3>
+
+<pre>
+R1(config)# access-list 10 permit 192.168.1.0 0.0.0.255
+</pre>
+
+<div class="warning">
+<strong>Teaching Point:</strong>
+An ACL number alone does not activate the ACL. The ACL must be applied to an interface
+using <code>ip access-group</code>.
+</div>
+
+</section>
+
+
+<!-- EXTENDED -->
+<section id="extended">
+<h2>6. Extended IPv4 ACL</h2>
+
+<p>
+Extended ACLs provide much more detailed traffic control.
+</p>
+
+<div class="grid">
+
+<div class="card">
+<strong>Source IP</strong>
+<p>Who is sending?</p>
+</div>
+
+<div class="card">
+<strong>Destination IP</strong>
+<p>Who is receiving?</p>
+</div>
+
+<div class="card">
+<strong>Protocol</strong>
+<p>TCP, UDP, ICMP, etc.</p>
+</div>
+
+<div class="card">
+<strong>Port</strong>
+<p>HTTP 80, HTTPS 443, DNS 53, SSH 22, etc.</p>
+</div>
+
+</div>
+
+<h3>Example</h3>
+
+<p>
+Allow users from <strong>192.168.1.0/24</strong> to access a web server
+<strong>192.168.2.10</strong> using HTTP.
+</p>
+
+<pre>
+R1(config)# access-list 100 permit tcp 192.168.1.0 0.0.0.255 host 192.168.2.10 eq 80
+</pre>
+
+<h3>Extended ACL Logic</h3>
+
+<div class="flow">
+<div class="flowbox">Source</div>
+<div class="arrow">→</div>
+<div class="flowbox">Destination</div>
+<div class="arrow">→</div>
+<div class="flowbox">Protocol</div>
+<div class="arrow">→</div>
+<div class="flowbox">Port</div>
+<div class="arrow">→</div>
+<div class="flowbox">Action</div>
+</div>
+
+<div class="success">
+Example:
+<strong>
+192.168.1.0/24 → 192.168.2.10 → TCP → Port 80 → PERMIT
+</strong>
+</div>
+
+</section>
+
+
+<!-- EXTENDED ANIMATION -->
+<section id="animation">
+<h2>7. Extended ACL Packet Filtering Animation</h2>
+
+<div class="demo">
+
+<h3 style="color:white;text-align:center">
+Scenario: Web Traffic Filtering
+</h3>
+
+<div class="network">
+
+<div class="device">
+Client<br>
+192.168.1.10
+</div>
+
+<div class="link">
+<div id="packetAnimation" class="packet"></div>
+</div>
+
+<div class="device router">
+ACL<br>
+ROUTER
+</div>
+
+<div class="link">
+<div id="packetAnimation2" class="packet"></div>
+</div>
+
+<div class="device server">
+Web Server<br>
+192.168.2.10
+</div>
+
+</div>
+
+<div style="text-align:center">
+<button onclick="allowHTTP()">Send HTTP Packet</button>
+<button onclick="blockFTP()">Send FTP Packet</button>
+<button onclick="blockWrongDestination()">Wrong Destination</button>
+<button onclick="resetExtended()">Reset</button>
+</div>
+
+<div id="extendedStatus" class="status">
+ACL is waiting for a packet...
+</div>
+
+</div>
+
+<h3>ACL Rule</h3>
+
+<pre>
+access-list 100 permit tcp 192.168.1.0 0.0.0.255 host 192.168.2.10 eq 80
+</pre>
+
+<h3>Decision Process</h3>
+
+<div class="flow">
+<div class="flowbox">Source Match?</div>
+<div class="arrow">→</div>
+<div class="flowbox">Destination Match?</div>
+<div class="arrow">→</div>
+<div class="flowbox">Protocol Match?</div>
+<div class="arrow">→</div>
+<div class="flowbox">Port Match?</div>
+<div class="arrow">→</div>
+<div class="flowbox">PERMIT</div>
+</div>
+
+</section>
+
+
+<!-- ACL ORDER -->
+<section>
+<h2>8. ACL Processing Order</h2>
+
+<p>
+Cisco evaluates ACL statements sequentially from the top to the bottom.
+</p>
+
+<div class="flow">
+
+<div class="flowbox">Packet Arrives</div>
+<div class="arrow">→</div>
+<div class="flowbox">ACL Entry 1</div>
+<div class="arrow">→</div>
+<div class="flowbox">ACL Entry 2</div>
+<div class="arrow">→</div>
+<div class="flowbox">ACL Entry 3</div>
+<div class="arrow">→</div>
+<div class="flowbox">Implicit Deny</div>
+
+</div>
+
+<div class="danger">
+<strong>First Match Wins!</strong><br>
+Once a packet matches an ACL statement, processing stops.
+</div>
+
+<h3>Example</h3>
+
+<pre>
+access-list 10 deny host 192.168.1.10
+access-list 10 permit 192.168.1.0 0.0.0.255
+</pre>
+
+<p>
+Host 192.168.1.10 is denied because it matches the first statement.
+Other hosts from 192.168.1.0/24 can be permitted by the second statement.
+</p>
+
+</section>
+
+
+<!-- HOST ANY -->
+<section>
+<h2>9. Important ACL Keywords</h2>
+
+<table>
+<tr>
+<th>Keyword</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+
+<tr>
+<td>host</td>
+<td>Matches one IPv4 address</td>
+<td>host 192.168.1.10</td>
+</tr>
+
+<tr>
+<td>any</td>
+<td>Matches all IPv4 addresses</td>
+<td>permit ip any any</td>
+</tr>
+
+<tr>
+<td>eq</td>
+<td>Matches a specific port</td>
+<td>eq 80</td>
+</tr>
+
+<tr>
+<td>tcp</td>
+<td>Matches TCP traffic</td>
+<td>permit tcp</td>
+</tr>
+
+<tr>
+<td>udp</td>
+<td>Matches UDP traffic</td>
+<td>permit udp</td>
+</tr>
+
+<tr>
+<td>icmp</td>
+<td>Matches ICMP traffic</td>
+<td>permit icmp</td>
+</tr>
+</table>
+
+</section>
+
+
+<!-- NAMED ACL -->
+<section>
+<h2>10. Named IPv4 ACL</h2>
+
+<p>
+Named ACLs are easier to manage because the ACL is identified by a descriptive name.
+</p>
+
+<h3>Standard Named ACL</h3>
+
+<pre>
+R1(config)# ip access-list standard STUDENT_ACCESS
+R1(config-std-nacl)# permit host 192.168.1.10
+R1(config-std-nacl)# deny any
+R1(config-std-nacl)# exit
+
+R1(config)# interface g0/0
+R1(config-if)# ip access-group STUDENT_ACCESS in
+</pre>
+
+<h3>Extended Named ACL</h3>
+
+<pre>
+R1(config)# ip access-list extended WEB_ACCESS
+R1(config-ext-nacl)# permit tcp 192.168.1.0 0.0.0.255 host 192.168.2.10 eq 80
+R1(config-ext-nacl)# deny ip any any
+R1(config-ext-nacl)# exit
+</pre>
+
+</section>
+
+
+<!-- CISCO COMMANDS -->
+<section id="commands">
+<h2>11. Cisco IOS ACL Configuration</h2>
+
+<h3>Step 1: Create Standard ACL</h3>
+
+<pre>
+R1(config)# access-list 10 permit 192.168.1.0 0.0.0.255
+</pre>
+
+<h3>Step 2: Apply ACL to Interface</h3>
+
+<pre>
+R1(config)# interface g0/0
+R1(config-if)# ip access-group 10 in
+</pre>
+
+<h3>Step 3: Verify ACL</h3>
+
+<pre>
+R1# show access-lists
+R1# show ip interface g0/0
+</pre>
+
+<h3>Extended ACL Example</h3>
+
+<pre>
+R1(config)# access-list 100 permit tcp 192.168.1.0 0.0.0.255 host 192.168.2.10 eq 80
+
+R1(config)# interface g0/1
+R1(config-if)# ip access-group 100 in
+</pre>
+
+<div class="success">
+<strong>Recommended classroom sequence:</strong>
+Create ACL → Apply ACL → Generate Traffic → Verify ACL Counters.
+</div>
+
+</section>
+
+
+<!-- INBOUND OUTBOUND -->
+<section>
+<h2>12. Inbound vs Outbound ACL</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Inbound</h3>
+<p>
+The ACL examines the packet when it enters the router interface.
+</p>
+
+<pre>
+interface g0/0
+ip access-group 100 in
+</pre>
+</div>
+
+<div class="card">
+<h3>Outbound</h3>
+<p>
+The ACL examines the packet before it leaves the router interface.
+</p>
+
+<pre>
+interface g0/1
+ip access-group 100 out
+</pre>
+</div>
+
+</div>
+
+<div class="highlight">
+<strong>Simple analogy:</strong><br>
+Inbound ACL = Security check at the entrance.<br>
+Outbound ACL = Security check at the exit.
+</div>
+
+</section>
+
+
+<!-- PLACEMENT -->
+<section>
+<h2>13. Where Should ACLs Be Placed?</h2>
+
+<table>
+<tr>
+<th>ACL Type</th>
+<th>General Placement Principle</th>
+</tr>
+
+<tr>
+<td>Standard ACL</td>
+<td>Usually closer to the destination because it filters mainly by source address.</td>
+</tr>
+
+<tr>
+<td>Extended ACL</td>
+<td>Usually closer to the source because unwanted traffic can be stopped early.</td>
+</tr>
+</table>
+
+<div class="warning">
+These are general design guidelines. Actual placement depends on the network topology,
+security requirement, and traffic flow.
+</div>
+
+</section>
+
+
+<!-- TROUBLESHOOT -->
+<section>
+<h2>14. ACL Troubleshooting</h2>
+
+<h3>Useful Commands</h3>
+
+<pre>
+show access-lists
+show ip access-lists
+show running-config
+show ip interface
+</pre>
+
+<table>
+<tr>
+<th>Problem</th>
+<th>Possible Cause</th>
+</tr>
+
+<tr>
+<td>Traffic blocked unexpectedly</td>
+<td>Incorrect ACL rule or implicit deny</td>
+</tr>
+
+<tr>
+<td>ACL does not work</td>
+<td>ACL may not be applied to the interface</td>
+</tr>
+
+<tr>
+<td>Correct rule but packet denied</td>
+<td>Earlier ACL entry may match first</td>
+</tr>
+
+<tr>
+<td>Wrong network matched</td>
+<td>Wildcard mask may be incorrect</td>
+</tr>
+</table>
+
+</section>
+
+
+<!-- COMPARISON -->
+<section>
+<h2>15. Standard vs Extended ACL</h2>
+
+<table>
+<tr>
+<th>Feature</th>
+<th>Standard</th>
+<th>Extended</th>
+</tr>
+
+<tr>
+<td>Source IP</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+
+<tr>
+<td>Destination IP</td>
+<td>Limited/No</td>
+<td>✓</td>
+</tr>
+
+<tr>
+<td>Protocol</td>
+<td>No</td>
+<td>✓</td>
+</tr>
+
+<tr>
+<td>TCP/UDP Ports</td>
+<td>No</td>
+<td>✓</td>
+</tr>
+
+<tr>
+<td>Traffic Control</td>
+<td>Basic</td>
+<td>Detailed</td>
+</tr>
+
+<tr>
+<td>Typical Numbers</td>
+<td>1–99</td>
+<td>100–199</td>
+</tr>
+</table>
+
+</section>
+
+
+<!-- FACULTY FLOW -->
+<section>
+<h2>16. Faculty Teaching Flow</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Step 1</h3>
+<p>Start with the question: <strong>"Who should be allowed to access this network?"</strong></p>
+</div>
+
+<div class="card">
+<h3>Step 2</h3>
+<p>Introduce ACL as a packet filtering mechanism.</p>
+</div>
+
+<div class="card">
+<h3>Step 3</h3>
+<p>Explain Standard ACL using source IPv4 address.</p>
+</div>
+
+<div class="card">
+<h3>Step 4</h3>
+<p>Explain Extended ACL using source, destination, protocol and port.</p>
+</div>
+
+<div class="card">
+<h3>Step 5</h3>
+<p>Demonstrate wildcard masks.</p>
+</div>
+
+<div class="card">
+<h3>Step 6</h3>
+<p>Configure ACL in Cisco Packet Tracer.</p>
+</div>
+
+<div class="card">
+<h3>Step 7</h3>
+<p>Generate ping and application traffic.</p>
+</div>
+
+<div class="card">
+<h3>Step 8</h3>
+<p>Verify using <code>show access-lists</code>.</p>
+</div>
+
+</div>
+
+<div class="highlight">
+<strong>Classroom Activity:</strong><br>
+Ask students to predict whether each packet is permitted or denied before running the
+Packet Tracer simulation.
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+<section id="quiz">
+<h2>17. Quick Assessment</h2>
+
+<div class="quiz">
+<strong>Q1. What does an ACL primarily provide?</strong>
+
+<div class="option" onclick="showAnswer('a1')">A. Packet filtering</div>
+<div class="option" onclick="showAnswer('a1')">B. IP address assignment</div>
+<div class="option" onclick="showAnswer('a1')">C. DNS resolution</div>
+
+<div id="a1" class="answer">
+Correct: A — ACLs are used for traffic filtering and access control.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q2. Which ACL type can filter using TCP/UDP port numbers?</strong>
+
+<div class="option" onclick="showAnswer('a2')">A. Standard ACL</div>
+<div class="option" onclick="showAnswer('a2')">B. Extended ACL</div>
+<div class="option" onclick="showAnswer('a2')">C. Static route</div>
+
+<div id="a2" class="answer">
+Correct: B — Extended ACLs can filter using protocol and port information.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q3. What happens when no ACL statement matches?</strong>
+
+<div class="option" onclick="showAnswer('a3')">A. Permit</div>
+<div class="option" onclick="showAnswer('a3')">B. Implicit deny</div>
+<div class="option" onclick="showAnswer('a3')">C. Broadcast</div>
+
+<div id="a3" class="answer">
+Correct: B — ACLs have an implicit deny at the end.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q4. What does wildcard bit 0 mean?</strong>
+
+<div class="option" onclick="showAnswer('a4')">A. Ignore the bit</div>
+<div class="option" onclick="showAnswer('a4')">B. Must match the bit</div>
+<div class="option" onclick="showAnswer('a4')">C. Deny the bit</div>
+
+<div id="a4" class="answer">
+Correct: B — 0 means the corresponding bit must match.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q5. Which command applies an ACL to an interface?</strong>
+
+<div class="option" onclick="showAnswer('a5')">
+A. ip access-group 10 in
+</div>
+
+<div class="option" onclick="showAnswer('a5')">
+B. ip route 10
+</div>
+
+<div class="option" onclick="showAnswer('a5')">
+C. access-enable 10
+</div>
+
+<div id="a5" class="answer">
+Correct: A — The ACL must be applied using ip access-group.
+</div>
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+<section>
+<h2>18. Final Summary</h2>
+
+<div class="flow">
+<div class="flowbox">Packet</div>
+<div class="arrow">→</div>
+<div class="flowbox">ACL</div>
+<div class="arrow">→</div>
+<div class="flowbox">First Matching Rule</div>
+<div class="arrow">→</div>
+<div class="flowbox">Permit / Deny</div>
+</div>
+
+<ul>
+<li>ACLs control IPv4 traffic.</li>
+<li>Standard ACLs primarily examine source IPv4 addresses.</li>
+<li>Extended ACLs can examine source, destination, protocol and ports.</li>
+<li>ACL statements are processed from top to bottom.</li>
+<li>First matching statement determines the action.</li>
+<li>There is an implicit deny at the end.</li>
+<li>Wildcard masks are important for network matching.</li>
+<li>An ACL must be applied to an interface to affect traffic.</li>
+<li><code>show access-lists</code> is useful for verification.</li>
+</ul>
+
+<div class="success">
+<strong>Key Memory Formula:</strong><br><br>
+Standard ACL → <strong>Source IP</strong><br>
+Extended ACL → <strong>Source + Destination + Protocol + Port</strong><br>
+ACL Processing → <strong>Top to Bottom → First Match → Permit/Deny</strong>
+</div>
+
+</section>
+
+</div>
+
+<footer>
+IPv4 Access Control Lists (ACLs) • Computer Networks Interactive Lecture
+</footer>
+
+
+<script>
+
+/* ============================
+   STANDARD ACL ANIMATION
+============================ */
+
+function standardPermit(){
+
+    const p1=document.getElementById("p1");
+    const p2=document.getElementById("p2");
+    const status=document.getElementById("standardStatus");
+
+    p1.className="packet animate";
+
+    status.innerHTML=
+    "Packet Source: 192.168.1.10<br>" +
+    "ACL Match: PERMIT<br>" +
+    "Decision: Packet is allowed.";
+
+    setTimeout(()=>{
+        p2.className="packet animate green";
+    },3000);
+}
+
+function standardDeny(){
+
+    const p1=document.getElementById("p1");
+    const status=document.getElementById("standardStatus");
+
+    p1.className="packet animate red";
+
+    status.innerHTML=
+    "Packet Source: 192.168.1.20<br>" +
+    "ACL Rule: deny<br>" +
+    "Decision: PACKET DENIED.";
+
+}
+
+function resetAnimation(){
+
+    document.getElementById("p1").className="packet";
+    document.getElementById("p2").className="packet";
+
+    document.getElementById("standardStatus").innerHTML=
+    "Waiting for packet...";
+}
+
+
+/* ============================
+   EXTENDED ACL ANIMATION
+============================ */
+
+function allowHTTP(){
+
+    const p1=document.getElementById("packetAnimation");
+    const p2=document.getElementById("packetAnimation2");
+    const status=document.getElementById("extendedStatus");
+
+    p1.className="packet animate";
+
+    status.innerHTML=
+    "Source: 192.168.1.10 ✓<br>" +
+    "Destination: 192.168.2.10 ✓<br>" +
+    "Protocol: TCP ✓<br>" +
+    "Destination Port: 80 ✓<br>" +
+    "<strong>RESULT: PERMIT</strong>";
+
+    setTimeout(()=>{
+        p2.className="packet animate green";
+    },3000);
+}
+
+function blockFTP(){
+
+    const p1=document.getElementById("packetAnimation");
+    const status=document.getElementById("extendedStatus");
+
+    p1.className="packet animate red";
+
+    status.innerHTML=
+    "Source: 192.168.1.10 ✓<br>" +
+    "Destination: 192.168.2.10 ✓<br>" +
+    "Protocol: TCP ✓<br>" +
+    "Destination Port: 21 ✗<br>" +
+    "<strong>RESULT: DENY</strong>";
+}
+
+function blockWrongDestination(){
+
+    const p1=document.getElementById("packetAnimation");
+    const status=document.getElementById("extendedStatus");
+
+    p1.className="packet animate red";
+
+    status.innerHTML=
+    "Source: 192.168.1.10 ✓<br>" +
+    "Destination: 192.168.3.10 ✗<br>" +
+    "ACL destination mismatch<br>" +
+    "<strong>RESULT: DENY</strong>";
+}
+
+function resetExtended(){
+
+    document.getElementById("packetAnimation").className="packet";
+    document.getElementById("packetAnimation2").className="packet";
+
+    document.getElementById("extendedStatus").innerHTML=
+    "ACL is waiting for a packet...";
+}
+
+
+/* ============================
+   QUIZ
+============================ */
+
+function showAnswer(id){
+
+    document.querySelectorAll(".answer").forEach(function(a){
+        a.style.display="none";
+    });
+
+    document.getElementById(id).style.display="block";
+}
+
+</script>
+
+</body>
+</html>
