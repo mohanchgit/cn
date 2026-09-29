@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Homework Assignment 3 - Computer Networks</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fa;
+    color: #222;
+    line-height: 1.7;
+}
+
+header {
+    background: #173f5f;
+    color: white;
+    text-align: center;
+    padding: 35px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header h2 {
+    margin: 8px 0;
+    font-weight: normal;
+    font-size: 22px;
+}
+
+.container {
+    max-width: 1050px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.introduction {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.introduction h2 {
+    color: #173f5f;
+}
+
+.question {
+    background: white;
+    margin-bottom: 25px;
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 6px solid #2980b9;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.question-title {
+    color: #173f5f;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.question-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 12px 0 20px;
+}
+
+.answer-title {
+    color: #2980b9;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.diagram {
+    background: #17202a;
+    color: #7bed9f;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-family: "Courier New", monospace;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.highlight {
+    background: #fff8dc;
+    border-left: 5px solid #f1c40f;
+    padding: 12px 15px;
+    margin: 15px 0;
+}
+
+.key-point {
+    background: #eaf6ff;
+    border-left: 5px solid #2980b9;
+    padding: 12px 15px;
+    margin: 15px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+th {
+    background: #eaf2f8;
+    color: #173f5f;
+}
+
+code {
+    background: #eee;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #17202a;
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+ul,
+ol {
+    padding-left: 25px;
+}
+
+footer {
+    background: #173f5f;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    margin-top: 40px;
+}
+
+/* Reading Mode */
+
+.reading-controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 10px;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+}
+
+.reading-controls button {
+    border: none;
+    background: #2980b9;
+    color: white;
+    padding: 8px 14px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.reading-controls button:hover {
+    background: #173f5f;
+}
+
+.large-text {
+    font-size: 20px;
+}
+
+.dark-mode {
+    background: #121212;
+    color: #eeeeee;
+}
+
+.dark-mode .question,
+.dark-mode .introduction {
+    background: #1e1e1e;
+}
+
+.dark-mode .question-title,
+.dark-mode .introduction h2 {
+    color: #5dade2;
+}
+
+.dark-mode .answer-title {
+    color: #5dade2;
+}
+
+.dark-mode th {
+    background: #2c3e50;
+    color: white;
+}
+
+.dark-mode td,
+.dark-mode th {
+    border-color: #555;
+}
+
+.dark-mode .reading-controls {
+    background: #1e1e1e;
+    border-color: #444;
+}
+
+@media(max-width: 700px) {
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    header h2 {
+        font-size: 18px;
+    }
+
+    .question {
+        padding: 18px;
+    }
+
+    .question-text {
+        font-size: 16px;
+    }
+
+}
+
+@media print {
+
+    .reading-controls {
+        display: none;
+    }
+
+    body {
+        background: white;
+    }
+
+    .question,
+    .introduction {
+        box-shadow: none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>HOMEWORK ASSIGNMENT – 3</h1>
+
+    <h2>Computer Networks</h2>
+
+    <p>
+        TCP, Routing, Flooding, ACL, QoS and Multicast
+    </p>
+
+</header>
+
+
+<!-- Reading Controls -->
+
+<div class="reading-controls">
+
+    <button onclick="increaseFont()">
+        A+
+    </button>
+
+    <button onclick="decreaseFont()">
+        A-
+    </button>
+
+    <button onclick="toggleDarkMode()">
+        Dark Mode
+    </button>
+
+    <button onclick="window.print()">
+        Print
+    </button>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- Introduction -->
+
+<div class="introduction">
+
+    <h2>Homework Assignment – 3</h2>
+
+    <p>
+        This assignment covers important concepts from
+        <strong>Transport Layer, Network Layer, Routing,
+        Traffic Management, Network Security and Multicast Routing.</strong>
+    </p>
+
+    <div class="key-point">
+
+        <strong>Instructions:</strong>
+
+        <ul>
+            <li>Answer all questions.</li>
+            <li>Use suitable diagrams wherever required.</li>
+            <li>Explain the concepts with examples.</li>
+            <li>Use appropriate networking terminology.</li>
+            <li>Understand the working process before writing the answer.</li>
+        </ul>
+
+    </div>
+
+</div>
+
+
+<!-- QUESTION 1 -->
+
+<div class="question">
+
+<div class="question-title">
+1. TCP Three-Way Handshake
+</div>
+
+<div class="question-text">
+
+Describe the three-way handshake protocol used for
+connection establishment in TCP.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+TCP is a connection-oriented protocol. Before actual data
+transmission begins, TCP establishes a reliable connection
+between the sender and receiver.
+</p>
+
+<div class="diagram">
+
+CLIENT                         SERVER
+
+   |                              |
+   | -------- SYN --------------> |
+   |                              |
+   | <----- SYN + ACK ----------- |
+   |                              |
+   | -------- ACK --------------> |
+   |                              |
+   |     Connection Established   |
+
+</div>
+
+<h3>Step 1 – SYN</h3>
+
+<p>
+The client sends a <strong>SYN</strong> segment to the server.
+It indicates that the client wants to establish a connection.
+</p>
+
+<h3>Step 2 – SYN + ACK</h3>
+
+<p>
+The server responds with SYN + ACK. It acknowledges the
+client's request and sends its own initial sequence number.
+</p>
+
+<h3>Step 3 – ACK</h3>
+
+<p>
+The client sends an ACK to acknowledge the server's response.
+The TCP connection is now established.
+</p>
+
+<div class="key-point">
+
+<strong>Remember:</strong>
+
+SYN → SYN + ACK → ACK
+
+</div>
+
+</div>
+
+
+<!-- QUESTION 2 -->
+
+<div class="question">
+
+<div class="question-title">
+2. TCP Connection Release and Two-Army Problem
+</div>
+
+<div class="question-text">
+
+Illustrate the process of connection release in TCP protocol
+with an analogy of the Two-Army Problem.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+TCP connection termination is generally performed using
+four control messages because TCP communication is
+full-duplex.
+</p>
+
+<div class="diagram">
+
+CLIENT                         SERVER
+
+   |                              |
+   | -------- FIN --------------> |
+   |                              |
+   | <-------- ACK -------------- |
+   |                              |
+   | <-------- FIN -------------- |
+   |                              |
+   | -------- ACK --------------> |
+   |                              |
+   |       Connection Closed      |
+
+</div>
+
+<ol>
+
+<li>
+The client sends FIN indicating that it has finished sending data.
+</li>
+
+<li>
+The server sends ACK.
+</li>
+
+<li>
+The server sends its own FIN after completing its communication.
+</li>
+
+<li>
+The client sends the final ACK.
+</li>
+
+</ol>
+
+<h3>Two-Army Problem</h3>
+
+<p>
+Imagine two armies located on opposite sides of a valley.
+They want to coordinate an attack using an unreliable messenger.
+</p>
+
+<div class="diagram">
+
+Army A
+   |
+   | "Attack at 10 AM"
+   ↓
+Army B
+   |
+   | "Message received"
+   ↓
+Army A
+
+</div>
+
+<p>
+Army A cannot obtain absolute certainty that Army B received
+the final confirmation because the communication channel
+may lose messages.
+</p>
+
+<div class="highlight">
+
+The Two-Army Problem illustrates the difficulty of achieving
+absolute certainty over an unreliable communication channel.
+
+</div>
+
+</div>
+
+
+<!-- QUESTION 3 -->
+
+<div class="question">
+
+<div class="question-title">
+3. RIP and Distance Vector Routing
+</div>
+
+<div class="question-text">
+
+Apply distance vector routing concepts to explain how RIP
+exchanges routing information and updates routing tables
+in routers.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+RIP stands for <strong>Routing Information Protocol</strong>.
+It is a distance-vector routing protocol that uses
+<strong>hop count</strong> as its metric.
+</p>
+
+<div class="diagram">
+
+        R1 -------- R2 -------- R3
+         |                       |
+       LAN1                    LAN3
+
+</div>
+
+<p>
+Suppose R2 informs R1 that LAN3 is one hop away from R2.
+R1 adds one hop to reach R2.
+</p>
+
+<div class="highlight">
+
+R1 → R2 → LAN3 = 2 hops
+
+</div>
+
+<table>
+
+<tr>
+<th>Destination</th>
+<th>Distance</th>
+<th>Next Hop</th>
+</tr>
+
+<tr>
+<td>LAN1</td>
+<td>0</td>
+<td>Direct</td>
+</tr>
+
+<tr>
+<td>LAN2</td>
+<td>1</td>
+<td>R2</td>
+</tr>
+
+<tr>
+<td>LAN3</td>
+<td>2</td>
+<td>R2</td>
+</tr>
+
+</table>
+
+<p>
+RIP routers exchange routing information and update their
+routing tables when a better route is discovered.
+</p>
+
+<div class="key-point">
+
+<strong>Important:</strong>
+RIP considers 16 hops as unreachable.
+
+</div>
+
+</div>
+
+
+<!-- QUESTION 4 -->
+
+<div class="question">
+
+<div class="question-title">
+4. Count-to-Infinity Problem
+</div>
+
+<div class="question-text">
+
+Demonstrate the occurrence of count-to-infinity problem
+in distance vector routing and explain how it can be addressed.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+The count-to-infinity problem occurs when routers continue
+increasing the metric to a destination that has actually
+become unreachable.
+</p>
+
+<div class="diagram">
+
+A -------- B -------- X
+
+Suppose X fails.
+
+B → X = 3
+A → X = 4
+B → X = 5
+A → X = 6
+B → X = 7
+...
+16 → Unreachable
+
+</div>
+
+<h3>Solutions</h3>
+
+<ul>
+
+<li>
+<strong>Split Horizon:</strong>
+A router does not advertise a route back through the
+interface from which it learned the route.
+</li>
+
+<li>
+<strong>Poison Reverse:</strong>
+The router advertises the route with an infinite metric.
+</li>
+
+<li>
+<strong>Route Poisoning:</strong>
+A failed route is immediately marked unreachable.
+</li>
+
+<li>
+<strong>Hold-Down Timer:</strong>
+Temporarily prevents unstable routing information from
+being accepted.
+</li>
+
+</ul>
+
+</div>
+
+
+<!-- QUESTION 5 -->
+
+<div class="question">
+
+<div class="question-title">
+5. TCP Congestion Control and Timer Management
+</div>
+
+<div class="question-text">
+
+Explain how TCP controls the congestion and manages the timer.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+TCP uses congestion control to prevent excessive traffic
+from overloading the network.
+</p>
+
+<h3>Slow Start</h3>
+
+<div class="diagram">
+
+1 → 2 → 4 → 8 → 16
+
+Rapid increase in congestion window
+
+</div>
+
+<h3>Congestion Avoidance</h3>
+
+<div class="diagram">
+
+16 → 17 → 18 → 19 → 20
+
+Gradual increase
+
+</div>
+
+<h3>Fast Retransmit</h3>
+
+<p>
+When TCP receives multiple duplicate acknowledgements,
+it assumes that a segment has been lost and retransmits
+the segment without waiting for the retransmission timer.
+</p>
+
+<h3>TCP Timer</h3>
+
+<div class="diagram">
+
+Send Segment
+     |
+     ↓
+Start Timer
+     |
+     ↓
+ACK received?
+   /       \
+ YES       NO
+  |         |
+Stop      Timeout
+Timer       |
+            ↓
+       Retransmit
+
+</div>
+
+<p>
+TCP uses a retransmission timer to detect lost segments.
+Other timers include persist, keepalive and TIME-WAIT timers.
+</p>
+
+</div>
+
+
+<!-- QUESTION 6 -->
+
+<div class="question">
+
+<div class="question-title">
+6. Flooding in Computer Networks
+</div>
+
+<div class="question-text">
+
+Illustrate the different ways of achieving flooding in a
+computer network and the limitations in each of them.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+Flooding is a routing technique in which a packet is
+forwarded through multiple outgoing paths.
+</p>
+
+<h3>1. Uncontrolled Flooding</h3>
+
+<p>
+The router forwards the packet through all outgoing
+interfaces except the incoming interface.
+</p>
+
+<div class="highlight">
+Limitation: Creates duplicate packets and may cause congestion.
+</div>
+
+<h3>2. TTL / Hop Count</h3>
+
+<p>
+A packet is assigned a limited lifetime.
+</p>
+
+<div class="diagram">
+
+TTL = 5
+
+5 → 4 → 3 → 2 → 1 → 0
+                  |
+                Drop
+
+</div>
+
+<p>
+Limitation: A packet may expire before reaching the destination.
+</p>
+
+<h3>3. Sequence Numbers</h3>
+
+<p>
+Each packet is given a unique sequence number.
+Routers remember packets that have already been processed.
+</p>
+
+<p>
+Limitation: Requires memory to store sequence information.
+</p>
+
+<h3>4. Selective Flooding</h3>
+
+<p>
+The router forwards packets only through selected interfaces
+that are likely to lead toward the destination.
+</p>
+
+<p>
+Limitation: Requires additional routing information.
+</p>
+
+</div>
+
+
+<!-- QUESTION 7 -->
+
+<div class="question">
+
+<div class="question-title">
+7. IPv4 Access Control List
+</div>
+
+<div class="question-text">
+
+Apply IPv4 Access Control List (ACL) concepts to configure
+network security rules for allowing and denying specific traffic.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+An ACL is a set of rules configured on a router to control
+network traffic.
+</p>
+
+<div class="diagram">
+
+PC1 = 192.168.1.10
+PC2 = 192.168.1.20
+Server = 10.0.0.10
+
+Requirement:
+
+Allow PC1
+Deny PC2
+
+</div>
+
+<h3>Example Standard ACL</h3>
+
+<pre>
+Router(config)# access-list 10 permit host 192.168.1.10
+Router(config)# access-list 10 deny any
+
+Router(config)# interface gigabitEthernet 0/0
+Router(config-if)# ip access-group 10 in
+</pre>
+
+<h3>Extended ACL Example</h3>
+
+<pre>
+access-list 100 deny tcp host 192.168.1.20
+host 10.0.0.10 eq 80
+</pre>
+
+<p>
+The above rule can deny HTTP traffic from PC2 to the server.
+</p>
+
+<div class="key-point">
+
+ACL rules are processed from top to bottom.
+The first matching rule is applied.
+
+</div>
+
+</div>
+
+
+<!-- QUESTION 8 -->
+
+<div class="question">
+
+<div class="question-title">
+8. TCP Transmission Policy and Silly Window Syndrome
+</div>
+
+<div class="question-text">
+
+Analyze the TCP transmission policy and the occurrence
+and avoidance of Silly Window Syndrome.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+TCP uses the sliding-window mechanism to control how much
+data can be transmitted before acknowledgements are received.
+</p>
+
+<h3>Silly Window Syndrome</h3>
+
+<p>
+Silly Window Syndrome occurs when very small amounts of data
+are repeatedly transmitted.
+</p>
+
+<div class="diagram">
+
+Inefficient:
+
+1 byte → Send
+1 byte → Send
+2 bytes → Send
+1 byte → Send
+
+Better:
+
+[1 + 1 + 2 + 1] bytes → Send
+
+</div>
+
+<h3>Causes</h3>
+
+<ul>
+
+<li>Receiver advertises very small windows.</li>
+
+<li>Application produces very small amounts of data.</li>
+
+</ul>
+
+<h3>Solutions</h3>
+
+<ul>
+
+<li>
+<strong>Clark's Solution:</strong>
+Receiver avoids advertising very small windows.
+</li>
+
+<li>
+<strong>Nagle's Algorithm:</strong>
+Sender combines small amounts of data before transmission.
+</li>
+
+</ul>
+
+</div>
+
+
+<!-- QUESTION 9 -->
+
+<div class="question">
+
+<div class="question-title">
+9. Token Bucket Algorithm and QoS
+</div>
+
+<div class="question-text">
+
+Explain how Token Bucket algorithm can improve the
+Quality of Service (QoS) in a network.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+The Token Bucket algorithm is used for traffic shaping
+and traffic policing.
+</p>
+
+<div class="diagram">
+
+             Tokens Added
+                  ↓
+
+          ┌──────────────┐
+          │ ● ● ● ● ● ●  │
+          │ TOKEN BUCKET │
+          └───────┬──────┘
+                  ↓
+               Packets
+                  ↓
+                Network
+
+</div>
+
+<p>
+Tokens are generated at a specified rate. A packet requires
+a sufficient number of tokens before it can be transmitted.
+</p>
+
+<h3>QoS Benefits</h3>
+
+<ul>
+
+<li>Controls bandwidth usage.</li>
+
+<li>Reduces congestion.</li>
+
+<li>Allows controlled bursts.</li>
+
+<li>Improves traffic predictability.</li>
+
+<li>Supports better network resource management.</li>
+
+</ul>
+
+<div class="highlight">
+
+<strong>Token Bucket:</strong>
+Controls the average traffic rate while allowing
+controlled bursts when tokens are available.
+
+</div>
+
+</div>
+
+
+<!-- QUESTION 10 -->
+
+<div class="question">
+
+<div class="question-title">
+10. Spanning Tree for Multicast Routing
+</div>
+
+<div class="question-text">
+
+Apply the concept of spanning tree for multicast routing
+in a computer network. Give a suitable example.
+
+</div>
+
+<div class="answer-title">
+Answer
+</div>
+
+<p>
+Multicast communication allows one source to send data
+to multiple receivers.
+</p>
+
+<div class="diagram">
+
+             R1
+              |
+              R2
+             /  \
+            R4   R3
+                  |
+                  R5
+
+Source → R2
+
+        ↙       ↘
+       R4        R3
+                   |
+                  R5
+
+</div>
+
+<p>
+A multicast distribution tree provides a loop-free path
+between the source and multiple receivers.
+</p>
+
+<h3>Example – University Live Lecture</h3>
+
+<p>
+Suppose a university broadcasts a live lecture from a
+central video server to several student networks.
+</p>
+
+<div class="diagram">
+
+             Video Server
+                   |
+                 Router
+                /      \
+               /        \
+        Student A      Router
+                         |
+                     Student B
+                         |
+                     Student C
+
+</div>
+
+<p>
+Instead of sending separate copies over every possible
+path, the network can use shared links in the multicast
+distribution tree.
+</p>
+
+<h3>Advantages</h3>
+
+<ul>
+
+<li>Reduces duplicate traffic.</li>
+
+<li>Saves bandwidth.</li>
+
+<li>Provides loop-free forwarding.</li>
+
+<li>Efficient for one-to-many communication.</li>
+
+</ul>
+
+<div class="key-point">
+
+<strong>Applications:</strong>
+Live lectures, IPTV, video streaming, online meetings,
+and software distribution.
+
+</div>
+
+</div>
+
+
+<!-- QUICK REVISION -->
+
+<div class="introduction">
+
+<h2>Quick Revision</h2>
+
+<table>
+
+<tr>
+<th>No.</th>
+<th>Topic</th>
+<th>Key Concept</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>TCP Handshake</td>
+<td>SYN → SYN-ACK → ACK</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>TCP Release</td>
+<td>FIN → ACK → FIN → ACK</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>RIP</td>
+<td>Distance Vector + Hop Count</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>Count-to-Infinity</td>
+<td>Routing Loop</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>TCP Congestion</td>
+<td>Slow Start + Congestion Avoidance</td>
+</tr>
+
+<tr>
+<td>6</td>
+<td>Flooding</td>
+<td>Multiple Forwarding Paths</td>
+</tr>
+
+<tr>
+<td>7</td>
+<td>IPv4 ACL</td>
+<td>Permit / Deny Traffic</td>
+</tr>
+
+<tr>
+<td>8</td>
+<td>Silly Window Syndrome</td>
+<td>Avoid Very Small Segments</td>
+</tr>
+
+<tr>
+<td>9</td>
+<td>Token Bucket</td>
+<td>Traffic Rate + Controlled Bursts</td>
+</tr>
+
+<tr>
+<td>10</td>
+<td>Multicast</td>
+<td>Distribution Tree</td>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+
+<footer>
+
+Homework Assignment – 3<br>
+Computer Networks
+
+</footer>
+
+
+<script>
+
+/* Font Size Control */
+
+let fontSize = 16;
+
+function increaseFont() {
+
+    if (fontSize < 24) {
+        fontSize += 1;
+        document.body.style.fontSize = fontSize + "px";
+    }
+
+}
+
+function decreaseFont() {
+
+    if (fontSize > 14) {
+        fontSize -= 1;
+        document.body.style.fontSize = fontSize + "px";
+    }
+
+}
+
+
+/* Dark Mode */
+
+function toggleDarkMode() {
+
+    document.body.classList.toggle("dark-mode");
+
+}
+
+
+/* Keyboard Shortcuts */
+
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "+") {
+        increaseFont();
+    }
+
+    if (event.key === "-") {
+        decreaseFont();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
