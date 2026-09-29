@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Internetworking & Link-State Routing</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f1f5f9;
+    color:#172033;
+    line-height:1.6;
+}
+
+header{
+    background:linear-gradient(135deg,#172554,#2563eb);
+    color:white;
+    text-align:center;
+    padding:30px 20px;
+}
+
+header h1{
+    margin:0;
+    font-size:32px;
+}
+
+header p{
+    margin:7px 0;
+    font-size:17px;
+}
+
+nav{
+    background:#0f172a;
+    padding:10px;
+    text-align:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+nav button{
+    background:transparent;
+    color:white;
+    border:1px solid #64748b;
+    padding:9px 14px;
+    margin:3px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+nav button:hover{
+    background:#2563eb;
+}
+
+.container{
+    max-width:1250px;
+    margin:auto;
+    padding:25px;
+}
+
+section{
+    background:white;
+    margin-bottom:25px;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 4px 15px rgba(0,0,0,.07);
+}
+
+h2{
+    color:#1d4ed8;
+    border-bottom:2px solid #dbeafe;
+    padding-bottom:8px;
+}
+
+h3{
+    color:#334155;
+}
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#f8fafc;
+    padding:18px;
+    border-radius:10px;
+    border-left:5px solid #2563eb;
+}
+
+.highlight{
+    background:#eff6ff;
+    border-left:5px solid #2563eb;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.success{
+    background:#f0fdf4;
+    border-left:5px solid #16a34a;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.warning{
+    background:#fff7ed;
+    border-left:5px solid #f97316;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+.danger{
+    background:#fef2f2;
+    border-left:5px solid #dc2626;
+    padding:15px;
+    margin:15px 0;
+    border-radius:7px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin:15px 0;
+}
+
+th,td{
+    border:1px solid #cbd5e1;
+    padding:10px;
+    text-align:left;
+}
+
+th{
+    background:#1e3a8a;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f8fafc;
+}
+
+.network{
+    position:relative;
+    width:100%;
+    height:500px;
+    background:#f8fafc;
+    border:2px solid #cbd5e1;
+    border-radius:12px;
+    overflow:hidden;
+    margin:20px 0;
+}
+
+.network svg{
+    width:100%;
+    height:100%;
+}
+
+.link{
+    stroke:#94a3b8;
+    stroke-width:5;
+}
+
+.active{
+    stroke:#16a34a;
+    stroke-width:8;
+}
+
+.failed{
+    stroke:#dc2626;
+    stroke-width:9;
+    stroke-dasharray:14 8;
+}
+
+.node{
+    fill:#2563eb;
+    stroke:white;
+    stroke-width:3;
+}
+
+.router{
+    fill:#7c3aed;
+}
+
+.host{
+    fill:#0f766e;
+}
+
+.destination{
+    fill:#16a34a;
+}
+
+.nodeText{
+    fill:white;
+    font-size:15px;
+    font-weight:bold;
+    text-anchor:middle;
+    dominant-baseline:middle;
+}
+
+.packet{
+    fill:#ef4444;
+    stroke:white;
+    stroke-width:2;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin:15px 0;
+}
+
+.controls button{
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.controls button:hover{
+    background:#1d4ed8;
+}
+
+.controls .reset{
+    background:#dc2626;
+}
+
+.controls .green{
+    background:#16a34a;
+}
+
+.status{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:15px;
+    border-radius:8px;
+    font-family:monospace;
+    min-height:55px;
+}
+
+.step{
+    background:#f8fafc;
+    border-left:4px solid #2563eb;
+    padding:12px;
+    margin:8px 0;
+    border-radius:5px;
+}
+
+.badge{
+    display:inline-block;
+    background:#dbeafe;
+    color:#1e40af;
+    padding:5px 10px;
+    border-radius:20px;
+    margin:3px;
+    font-size:13px;
+}
+
+pre{
+    background:#0f172a;
+    color:#e2e8f0;
+    padding:18px;
+    border-radius:8px;
+    overflow:auto;
+}
+
+.quiz{
+    background:#f8fafc;
+    padding:18px;
+    margin:15px 0;
+    border-radius:10px;
+}
+
+.quiz button{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #cbd5e1;
+    background:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.quiz button:hover{
+    background:#eff6ff;
+}
+
+.answer{
+    display:none;
+    padding:10px;
+    margin-top:8px;
+    border-radius:6px;
+}
+
+footer{
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:25px;
+}
+
+@media(max-width:700px){
+
+    header h1{
+        font-size:23px;
+    }
+
+    nav{
+        position:static;
+    }
+
+    .network{
+        height:400px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header>
+
+<h1>Computer Networks</h1>
+
+<p>Internetworking • Link-State Routing • OSPF • SPF</p>
+
+<p>Interactive Faculty Lecture & Student Learning Module</p>
+
+</header>
+
+
+<nav>
+
+<button onclick="goTo('objectives')">Objectives</button>
+<button onclick="goTo('internetworking')">Internetworking</button>
+<button onclick="goTo('devices')">Devices</button>
+<button onclick="goTo('linkstate')">Link State</button>
+<button onclick="goTo('lsa')">LSA</button>
+<button onclick="goTo('spf')">SPF</button>
+<button onclick="goTo('failure')">Failure</button>
+<button onclick="goTo('comparison')">Comparison</button>
+<button onclick="goTo('quiz')">Quiz</button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- OBJECTIVES -->
+
+<section id="objectives">
+
+<h2>1. Learning Objectives</h2>
+
+<div class="card-grid">
+
+<div class="card">
+
+<h3>Internetworking</h3>
+
+<p>
+Understand how multiple independent networks are connected
+to form a larger internetwork.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Routers</h3>
+
+<p>
+Understand how routers connect different IP networks and
+forward packets.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>Link-State Routing</h3>
+
+<p>
+Understand how routers build a view of network topology.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>LSA</h3>
+
+<p>
+Understand how link-state information is advertised and distributed.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>OSPF</h3>
+
+<p>
+Understand OSPF as a link-state routing protocol.
+</p>
+
+</div>
+
+<div class="card">
+
+<h3>SPF</h3>
+
+<p>
+Understand shortest-path computation using Dijkstra's algorithm.
+</p>
+
+</div>
+
+</div>
+
+<div class="highlight">
+
+<strong>Faculty Opening Question:</strong>
+
+"How can several different networks communicate with each other
+as though they form one larger communication system?"
+
+</div>
+
+</section>
+
+
+<!-- INTERNETWORKING -->
+
+<section id="internetworking">
+
+<h2>2. What is Internetworking?</h2>
+
+<div class="highlight">
+
+<strong>Internetworking</strong> is the process of connecting
+multiple networks so that devices in different networks can
+communicate using appropriate networking protocols.
+
+</div>
+
+
+<h3>Simple Example</h3>
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+<!-- Network 1 -->
+
+<rect x="40" y="80"
+width="260"
+height="300"
+rx="20"
+fill="#eff6ff"
+stroke="#2563eb"
+stroke-width="3"/>
+
+<text x="170" y="115"
+text-anchor="middle"
+font-weight="bold">
+
+Network A
+
+</text>
+
+
+<circle class="node host"
+cx="110" cy="190" r="35"/>
+
+<circle class="node host"
+cx="230" cy="190" r="35"/>
+
+<text class="nodeText"
+x="110" y="190">PC1</text>
+
+<text class="nodeText"
+x="230" y="190">PC2</text>
+
+
+<!-- Router -->
+
+<circle class="node router"
+cx="350" cy="250" r="50"/>
+
+<text class="nodeText"
+x="350" y="250">R1</text>
+
+
+<!-- Network 2 -->
+
+<rect x="420" y="80"
+width="260"
+height="300"
+rx="20"
+fill="#f0fdf4"
+stroke="#16a34a"
+stroke-width="3"/>
+
+<text x="550" y="115"
+text-anchor="middle"
+font-weight="bold">
+
+Network B
+
+</text>
+
+
+<circle class="node host"
+cx="500" cy="190" r="35"/>
+
+<circle class="node host"
+cx="620" cy="190" r="35"/>
+
+<text class="nodeText"
+x="500" y="190">PC3</text>
+
+<text class="nodeText"
+x="620" y="190">PC4</text>
+
+
+<!-- Router 2 -->
+
+<circle class="node router"
+cx="730" cy="250" r="50"/>
+
+<text class="nodeText"
+x="730" y="250">R2</text>
+
+
+<!-- Network 3 -->
+
+<rect x="790" y="80"
+width="170"
+height="300"
+rx="20"
+fill="#fff7ed"
+stroke="#f97316"
+stroke-width="3"/>
+
+<text x="875" y="115"
+text-anchor="middle"
+font-weight="bold">
+
+Network C
+
+</text>
+
+<circle class="node host"
+cx="875" cy="220" r="35"/>
+
+<text class="nodeText"
+x="875" y="220">Server</text>
+
+
+<!-- Connections -->
+
+<line class="link"
+x1="300" y1="250"
+x2="350" y2="250"/>
+
+<line class="link"
+x1="400" y1="250"
+x2="680" y2="250"/>
+
+<line class="link"
+x1="780" y1="250"
+x2="790" y2="250"/>
+
+</svg>
+
+</div>
+
+
+<h3>Internetworking Goals</h3>
+
+<div class="card-grid">
+
+<div class="card">
+<strong>Connectivity</strong>
+<p>Allow different networks to communicate.</p>
+</div>
+
+<div class="card">
+<strong>Routing</strong>
+<p>Determine paths between networks.</p>
+</div>
+
+<div class="card">
+<strong>Scalability</strong>
+<p>Support increasingly large network environments.</p>
+</div>
+
+<div class="card">
+<strong>Interoperability</strong>
+<p>Allow different network technologies to work together through common protocols.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- DEVICES -->
+
+<section id="devices">
+
+<h2>3. Internetworking Devices</h2>
+
+<table>
+
+<tr>
+<th>Device</th>
+<th>Main Function</th>
+<th>Typical Layer</th>
+</tr>
+
+<tr>
+<td>Repeater</td>
+<td>Regenerates signals</td>
+<td>Physical</td>
+</tr>
+
+<tr>
+<td>Hub</td>
+<td>Repeats traffic to ports</td>
+<td>Physical</td>
+</tr>
+
+<tr>
+<td>Switch</td>
+<td>Forwards frames using MAC addresses</td>
+<td>Data Link</td>
+</tr>
+
+<tr>
+<td>Router</td>
+<td>Forwards packets between IP networks</td>
+<td>Network</td>
+</tr>
+
+<tr>
+<td>Gateway</td>
+<td>Can provide protocol/application-level interconnection depending on implementation</td>
+<td>Varies</td>
+</tr>
+
+</table>
+
+
+<div class="highlight">
+
+<strong>Key Teaching Point:</strong>
+
+A switch primarily forwards frames within a LAN based on
+MAC addresses, while a router forwards IP packets between networks
+based on routing information.
+
+</div>
+
+</section>
+
+
+<!-- LINK STATE -->
+
+<section id="linkstate">
+
+<h2>4. Link-State Routing</h2>
+
+<div class="highlight">
+
+<strong>Definition:</strong>
+
+In link-state routing, routers build and maintain information
+about the topology of the network within their routing scope.
+
+Each router can use this topology information to calculate
+shortest paths.
+
+</div>
+
+
+<h3>Distance Vector vs Link State</h3>
+
+<table>
+
+<tr>
+<th>Distance Vector</th>
+<th>Link State</th>
+</tr>
+
+<tr>
+<td>Primarily learns route information from neighbors.</td>
+<td>Builds a topology database from link-state information.</td>
+</tr>
+
+<tr>
+<td>Example: RIP</td>
+<td>Example: OSPF</td>
+</tr>
+
+<tr>
+<td>RIP uses hop count.</td>
+<td>OSPF uses cost.</td>
+</tr>
+
+<tr>
+<td>Bellman-Ford family concept.</td>
+<td>Dijkstra / SPF algorithm.</td>
+</tr>
+
+</table>
+
+
+<h3>Link-State Routing Process</h3>
+
+<div class="step">
+<strong>Step 1:</strong>
+Discover neighboring routers.
+</div>
+
+<div class="step">
+<strong>Step 2:</strong>
+Determine local link information.
+</div>
+
+<div class="step">
+<strong>Step 3:</strong>
+Create link-state information.
+</div>
+
+<div class="step">
+<strong>Step 4:</strong>
+Flood the information within the routing scope.
+</div>
+
+<div class="step">
+<strong>Step 5:</strong>
+Build the Link-State Database.
+</div>
+
+<div class="step">
+<strong>Step 6:</strong>
+Run SPF calculation.
+</div>
+
+<div class="step">
+<strong>Step 7:</strong>
+Install selected routes in the routing table.
+</div>
+
+</section>
+
+
+<!-- LSA -->
+
+<section id="lsa">
+
+<h2>5. Link-State Advertisement (LSA)</h2>
+
+<div class="highlight">
+
+An <strong>LSA</strong> carries link-state information used by
+OSPF routers to build a consistent topology database within the
+appropriate area.
+
+</div>
+
+
+<h3>LSA Flooding Animation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+
+<!-- Links -->
+
+<line id="l1"
+class="link"
+x1="180" y1="250"
+x2="400" y2="120"/>
+
+<line id="l2"
+class="link"
+x1="180" y1="250"
+x2="400" y2="380"/>
+
+<line id="l3"
+class="link"
+x1="400" y1="120"
+x2="620" y2="250"/>
+
+<line id="l4"
+class="link"
+x1="400" y1="380"
+x2="620" y2="250"/>
+
+<line id="l5"
+class="link"
+x1="620" y1="250"
+x2="820" y2="250"/>
+
+
+<!-- Nodes -->
+
+<circle class="node router"
+cx="180" cy="250" r="45"/>
+
+<circle class="node router"
+cx="400" cy="120" r="45"/>
+
+<circle class="node router"
+cx="400" cy="380" r="45"/>
+
+<circle class="node router"
+cx="620" cy="250" r="45"/>
+
+<circle class="node destination"
+cx="820" cy="250" r="45"/>
+
+
+<text class="nodeText"
+x="180" y="250">R1</text>
+
+<text class="nodeText"
+x="400" y="120">R2</text>
+
+<text class="nodeText"
+x="400" y="380">R3</text>
+
+<text class="nodeText"
+x="620" y="250">R4</text>
+
+<text class="nodeText"
+x="820" y="250">LAN</text>
+
+
+<!-- LSA Packet -->
+
+<circle id="lsaPacket"
+class="packet"
+cx="180"
+cy="250"
+r="11"/>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startLSA()">
+▶ Flood LSA
+</button>
+
+<button class="reset"
+onclick="resetLSA()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="lsaStatus" class="status">
+
+Ready. Click Flood LSA.
+
+</div>
+
+
+<h3>What is Being Distributed?</h3>
+
+<p>
+
+The information can describe items such as:
+
+</p>
+
+<ul>
+
+<li>Router identity</li>
+<li>Connected links</li>
+<li>Link costs</li>
+<li>Reachability information</li>
+<li>Other information defined by the routing protocol and LSA type</li>
+
+</ul>
+
+
+<div class="success">
+
+<strong>Important:</strong>
+
+Link-state routing is based on a shared topology database,
+not simply on one neighbor telling another router the complete
+best path.
+
+</div>
+
+</section>
+
+
+<!-- LSDB -->
+
+<section>
+
+<h2>6. Link-State Database (LSDB)</h2>
+
+<div class="highlight">
+
+The <strong>LSDB</strong> contains link-state information used
+by routers in an OSPF area to construct their view of the topology.
+
+</div>
+
+
+<table>
+
+<tr>
+<th>Router</th>
+<th>Neighbor</th>
+<th>Link Cost</th>
+</tr>
+
+<tr>
+<td>R1</td>
+<td>R2</td>
+<td>10</td>
+</tr>
+
+<tr>
+<td>R1</td>
+<td>R3</td>
+<td>20</td>
+</tr>
+
+<tr>
+<td>R2</td>
+<td>R4</td>
+<td>10</td>
+</tr>
+
+<tr>
+<td>R3</td>
+<td>R4</td>
+<td>5</td>
+</tr>
+
+<tr>
+<td>R4</td>
+<td>R5</td>
+<td>10</td>
+</tr>
+
+</table>
+
+
+<div class="highlight">
+
+Think of the LSDB as a network map.
+
+<br><br>
+
+<strong>LSDB → Topology Map → SPF Calculation → Routing Table</strong>
+
+</div>
+
+</section>
+
+
+<!-- SPF -->
+
+<section id="spf">
+
+<h2>7. Shortest Path First – Dijkstra Algorithm</h2>
+
+<p>
+
+After obtaining the topology information, an OSPF router can
+run the SPF algorithm to calculate shortest paths.
+
+</p>
+
+
+<h3>Animated SPF Calculation</h3>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+<line id="s1"
+class="link"
+x1="160" y1="250"
+x2="370" y2="120"/>
+
+<line id="s2"
+class="link"
+x1="160" y1="250"
+x2="370" y2="380"/>
+
+<line id="s3"
+class="link"
+x1="370" y1="120"
+x2="600" y2="250"/>
+
+<line id="s4"
+class="link"
+x1="370" y1="380"
+x2="600" y2="250"/>
+
+<line id="s5"
+class="link"
+x1="600" y1="250"
+x2="830" y2="250"/>
+
+
+<circle class="node destination"
+cx="160" cy="250" r="45"/>
+
+<circle class="node router"
+cx="370" cy="120" r="45"/>
+
+<circle class="node router"
+cx="370" cy="380" r="45"/>
+
+<circle class="node router"
+cx="600" cy="250" r="45"/>
+
+<circle class="node router"
+cx="830" cy="250" r="45"/>
+
+
+<text class="nodeText"
+x="160" y="250">A</text>
+
+<text class="nodeText"
+x="370" y="120">B</text>
+
+<text class="nodeText"
+x="370" y="380">C</text>
+
+<text class="nodeText"
+x="600" y="250">D</text>
+
+<text class="nodeText"
+x="830" y="250">E</text>
+
+
+<text x="265" y="160"
+font-weight="bold">2</text>
+
+<text x="265" y="330"
+font-weight="bold">5</text>
+
+<text x="485" y="160"
+font-weight="bold">2</text>
+
+<text x="485" y="330"
+font-weight="bold">1</text>
+
+<text x="710" y="230"
+font-weight="bold">2</text>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button onclick="startSPF()">
+▶ Run SPF
+</button>
+
+<button class="reset"
+onclick="resetSPF()">
+↻ Reset
+</button>
+
+</div>
+
+
+<div id="spfStatus" class="status">
+
+Ready. Click Run SPF.
+
+</div>
+
+
+<div id="spfSteps"></div>
+
+
+<div id="spfResult"
+class="success"
+style="display:none">
+
+<strong>Shortest Path:</strong>
+
+A → B → D → E
+
+<br><br>
+
+<strong>Total Cost:</strong>
+
+6
+
+</div>
+
+</section>
+
+
+<!-- ROUTING TABLE -->
+
+<section>
+
+<h2>8. Routing Table Generation</h2>
+
+<div class="highlight">
+
+After SPF calculation, the router uses the calculated paths
+to determine which routes should be installed in its routing table.
+
+</div>
+
+
+<table>
+
+<tr>
+<th>Destination</th>
+<th>Next Hop</th>
+<th>Cost</th>
+<th>Protocol</th>
+</tr>
+
+<tr>
+<td>Network B</td>
+<td>B</td>
+<td>2</td>
+<td>OSPF</td>
+</tr>
+
+<tr>
+<td>Network D</td>
+<td>B</td>
+<td>4</td>
+<td>OSPF</td>
+</tr>
+
+<tr>
+<td>Network E</td>
+<td>B</td>
+<td>6</td>
+<td>OSPF</td>
+</tr>
+
+</table>
+
+
+<div class="highlight">
+
+<strong>Remember:</strong>
+
+LSDB is not the same thing as the routing table.
+
+<br><br>
+
+<strong>LSDB:</strong> Topology information
+
+<br>
+
+<strong>SPF:</strong> Calculates paths
+
+<br>
+
+<strong>Routing Table:</strong> Selected forwarding routes
+
+</div>
+
+</section>
+
+
+<!-- FAILURE -->
+
+<section id="failure">
+
+<h2>9. Link Failure and Route Recalculation</h2>
+
+<div class="danger">
+
+<strong>Scenario:</strong>
+
+Suppose a link fails.
+
+A link-state routing protocol can distribute updated
+link-state information and recalculate paths.
+
+</div>
+
+
+<div class="network">
+
+<svg viewBox="0 0 1000 500">
+
+<line id="f1"
+class="link"
+x1="180" y1="250"
+x2="400" y2="120"/>
+
+<line id="f2"
+class="link"
+x1="180" y1="250"
+x2="400" y2="380"/>
+
+<line id="f3"
+class="link"
+x1="400" y1="120"
+x2="620" y2="250"/>
+
+<line id="f4"
+class="link"
+x1="400" y1="380"
+x2="620" y2="250"/>
+
+<line id="f5"
+class="link"
+x1="620" y1="250"
+x2="830" y2="250"/>
+
+
+<circle class="node router"
+cx="180" cy="250" r="45"/>
+
+<circle class="node router"
+cx="400" cy="120" r="45"/>
+
+<circle class="node router"
+cx="400" cy="380" r="45"/>
+
+<circle class="node router"
+cx="620" cy="250" r="45"/>
+
+<circle class="node destination"
+cx="830" cy="250" r="45"/>
+
+
+<text class="nodeText"
+x="180" y="250">R1</text>
+
+<text class="nodeText"
+x="400" y="120">R2</text>
+
+<text class="nodeText"
+x="400" y="380">R3</text>
+
+<text class="nodeText"
+x="620" y="250">R4</text>
+
+<text class="nodeText"
+x="830" y="250">LAN</text>
+
+</svg>
+
+</div>
+
+
+<div class="controls">
+
+<button class="green"
+onclick="failLink()">
+
+⚠ Fail Link
+
+</button>
+
+<button onclick="recoverLink()">
+
+↻ Recover
+
+</button>
+
+</div>
+
+
+<div id="failureStatus" class="status">
+
+Network is operating normally.
+
+</div>
+
+</section>
+
+
+<!-- OSPF -->
+
+<section>
+
+<h2>10. OSPF Overview</h2>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>Type</h3>
+<p>Link-State Interior Gateway Protocol.</p>
+</div>
+
+<div class="card">
+<h3>Algorithm</h3>
+<p>Shortest Path First (SPF), based on Dijkstra's algorithm.</p>
+</div>
+
+<div class="card">
+<h3>Metric</h3>
+<p>Cost.</p>
+</div>
+
+<div class="card">
+<h3>Database</h3>
+<p>Link-State Database.</p>
+</div>
+
+<div class="card">
+<h3>Updates</h3>
+<p>Link-state information is distributed according to OSPF operation and flooding scope.</p>
+</div>
+
+<div class="card">
+<h3>Areas</h3>
+<p>OSPF supports hierarchical organization using areas.</p>
+</div>
+
+</div>
+
+
+<h3>Basic OSPF Configuration Example</h3>
+
+<pre>
+Router(config)# router ospf 1
+
+Router(config-router)#
+network 192.168.1.0 0.0.0.255 area 0
+
+Router(config-router)#
+network 10.0.0.0 0.0.0.3 area 0
+</pre>
+
+
+<div class="highlight">
+
+<strong>Interpretation:</strong>
+
+The router process participates in OSPF and advertises/uses
+the specified networks in Area 0 according to OSPF operation.
+
+</div>
+
+</section>
+
+
+<!-- COMPARISON -->
+
+<section id="comparison">
+
+<h2>11. Distance Vector vs Link State</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Distance Vector</th>
+<th>Link State</th>
+</tr>
+
+<tr>
+<td>Example</td>
+<td>RIP</td>
+<td>OSPF</td>
+</tr>
+
+<tr>
+<td>Information</td>
+<td>Distance and direction</td>
+<td>Link-state/topology information</td>
+</tr>
+
+<tr>
+<td>Topology Knowledge</td>
+<td>More limited neighbor-based view</td>
+<td>Topology database within routing scope</td>
+</tr>
+
+<tr>
+<td>Algorithm</td>
+<td>Bellman-Ford family concept</td>
+<td>Dijkstra / SPF</td>
+</tr>
+
+<tr>
+<td>Metric Example</td>
+<td>RIP: Hop Count</td>
+<td>OSPF: Cost</td>
+</tr>
+
+<tr>
+<td>Database</td>
+<td>Routing information</td>
+<td>LSDB</td>
+</tr>
+
+<tr>
+<td>Convergence</td>
+<td>Can be slower depending on protocol</td>
+<td>Generally designed for faster topology convergence</td>
+</tr>
+
+<tr>
+<td>Scalability</td>
+<td>Limited compared with modern large-network IGP designs</td>
+<td>Designed to scale through areas and topology databases</td>
+</tr>
+
+</table>
+
+</section>
+
+
+<!-- FACULTY FLOW -->
+
+<section>
+
+<h2>12. Faculty Teaching Flow</h2>
+
+<div class="card-grid">
+
+<div class="card">
+<h3>5 Minutes</h3>
+<p>Introduce internetworking using multiple campus networks.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Explain router-based interconnection.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Introduce link-state routing.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Run the LSA flooding animation.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Explain LSDB and topology discovery.</p>
+</div>
+
+<div class="card">
+<h3>15 Minutes</h3>
+<p>Run the SPF/Dijkstra animation.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Demonstrate link failure and recalculation.</p>
+</div>
+
+<div class="card">
+<h3>10 Minutes</h3>
+<p>Compare RIP and OSPF.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quiz">
+
+<h2>13. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<h3>Q1. What is internetworking?</h3>
+
+<button onclick="quiz(this,true)">
+A. Connecting multiple networks so they can communicate
+</button>
+
+<button onclick="quiz(this,false)">
+B. Encrypting a file
+</button>
+
+<button onclick="quiz(this,false)">
+C. Creating a MAC address
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q2. Which is a link-state routing protocol?</h3>
+
+<button onclick="quiz(this,false)">
+A. RIP
+</button>
+
+<button onclick="quiz(this,true)">
+B. OSPF
+</button>
+
+<button onclick="quiz(this,false)">
+C. FTP
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q3. What does LSDB represent?</h3>
+
+<button onclick="quiz(this,true)">
+A. Link-State Database
+</button>
+
+<button onclick="quiz(this,false)">
+B. Local Switch Database
+</button>
+
+<button onclick="quiz(this,false)">
+C. LAN Security Database
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q4. Which algorithm is associated with OSPF shortest-path calculation?</h3>
+
+<button onclick="quiz(this,false)">
+A. RSA
+</button>
+
+<button onclick="quiz(this,true)">
+B. Dijkstra
+</button>
+
+<button onclick="quiz(this,false)">
+C. AES
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q5. What is an LSA?</h3>
+
+<button onclick="quiz(this,true)">
+A. Link-State Advertisement
+</button>
+
+<button onclick="quiz(this,false)">
+B. Local Security Address
+</button>
+
+<button onclick="quiz(this,false)">
+C. Logical Switching Address
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q6. What does OSPF normally use as its metric?</h3>
+
+<button onclick="quiz(this,false)">
+A. Hop count
+</button>
+
+<button onclick="quiz(this,true)">
+B. Cost
+</button>
+
+<button onclick="quiz(this,false)">
+C. MAC address
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+
+<div class="quiz">
+
+<h3>Q7. What happens after a significant link-state topology change?</h3>
+
+<button onclick="quiz(this,true)">
+A. Updated link-state information can be distributed and SPF can be recalculated
+</button>
+
+<button onclick="quiz(this,false)">
+B. The router permanently stops routing
+</button>
+
+<button onclick="quiz(this,false)">
+C. The IP address automatically changes
+</button>
+
+<div class="answer"></div>
+
+</div>
+
+</section>
+
+
+<!-- SUMMARY -->
+
+<section>
+
+<h2>14. Quick Revision</h2>
+
+<div class="highlight">
+
+<strong>Internetworking</strong>
+
+→ Connecting multiple networks.
+
+<br><br>
+
+<strong>Router</strong>
+
+→ Connects IP networks and forwards packets.
+
+<br><br>
+
+<strong>Link-State Routing</strong>
+
+→ Routers build topology information.
+
+<br><br>
+
+<strong>LSA</strong>
+
+→ Carries link-state information.
+
+<br><br>
+
+<strong>LSDB</strong>
+
+→ Stores link-state/topology information.
+
+<br><br>
+
+<strong>OSPF</strong>
+
+→ Link-state IGP using SPF.
+
+<br><br>
+
+<strong>Dijkstra</strong>
+
+→ Shortest Path First calculation.
+
+<br><br>
+
+<strong>Routing Table</strong>
+
+→ Selected routes used for packet forwarding.
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+Computer Networks Interactive Lecture<br>
+
+Internetworking • Link-State Routing • OSPF • SPF
+
+</footer>
+
+
+<script>
+
+/* =====================================
+NAVIGATION
+===================================== */
+
+function goTo(id){
+
+    const element=document.getElementById(id);
+
+    if(element){
+
+        element.scrollIntoView({
+            behavior:"smooth",
+            block:"start"
+        });
+
+    }
+
+}
+
+
+/* =====================================
+LSA FLOODING
+===================================== */
+
+let lsaTimer;
+
+function startLSA(){
+
+    resetLSA();
+
+    const status=
+        document.getElementById("lsaStatus");
+
+    status.innerHTML=
+        "R1 creates link-state information about its connected links.";
+
+    setTimeout(function(){
+
+        document.getElementById("l1")
+            .classList.add("active");
+
+        document.getElementById("l2")
+            .classList.add("active");
+
+        status.innerHTML=
+            "LSA is propagated from R1 toward neighboring routers.";
+
+    },1000);
+
+    setTimeout(function(){
+
+        document.getElementById("l3")
+            .classList.add("active");
+
+        document.getElementById("l4")
+            .classList.add("active");
+
+        status.innerHTML=
+            "Neighboring routers propagate the link-state information.";
+
+    },2200);
+
+    setTimeout(function(){
+
+        document.getElementById("l5")
+            .classList.add("active");
+
+        status.innerHTML=
+            "The link-state information reaches the remaining routing domain.";
+
+    },3400);
+
+    setTimeout(function(){
+
+        status.innerHTML=
+            "✓ Routers can use the resulting link-state database for SPF calculation.";
+
+    },4500);
+
+}
+
+
+function resetLSA(){
+
+    document.querySelectorAll(
+        "#l1,#l2,#l3,#l4,#l5"
+    ).forEach(function(line){
+
+        line.classList.remove("active");
+
+    });
+
+    document.getElementById("lsaStatus")
+        .innerHTML=
+        "Ready. Click Flood LSA.";
+
+}
+
+
+/* =====================================
+SPF DIJKSTRA
+===================================== */
+
+function startSPF(){
+
+    resetSPF();
+
+    const status=
+        document.getElementById("spfStatus");
+
+    const steps=
+        document.getElementById("spfSteps");
+
+    const sequence=[
+
+        "Initialize: A = 0; B = ∞; C = ∞; D = ∞; E = ∞.",
+
+        "Visit A. Update B = 2 and C = 5.",
+
+        "B has the smallest tentative distance: visit B.",
+
+        "Through B, D = 4 and E = 9.",
+
+        "D now has the smallest distance: visit D.",
+
+        "Through D, E becomes 6.",
+
+        "E is reached with total cost 6.",
+
+        "Shortest path = A → B → D → E."
+
+    ];
+
+    let i=0;
+
+    const timer=setInterval(function(){
+
+        if(i>=sequence.length){
+
+            clearInterval(timer);
+
+            document.getElementById("spfResult")
+                .style.display="block";
+
+            status.innerHTML=
+                "✓ SPF calculation completed.";
+
+            return;
+
+        }
+
+        const div=
+            document.createElement("div");
+
+        div.className="step";
+
+        div.innerHTML=
+            "<strong>Step "+
+            (i+1)+
+            ":</strong> "+
+            sequence[i];
+
+        steps.appendChild(div);
+
+        if(i===1){
+
+            document.getElementById("s1")
+                .classList.add("active");
+
+            document.getElementById("s2")
+                .classList.add("active");
+
+        }
+
+        if(i===3){
+
+            document.getElementById("s3")
+                .classList.add("active");
+
+        }
+
+        if(i===5){
+
+            document.getElementById("s5")
+                .classList.add("active");
+
+        }
+
+        i++;
+
+    },800);
+
+}
+
+
+function resetSPF(){
+
+    document.getElementById("spfSteps")
+        .innerHTML="";
+
+    document.getElementById("spfResult")
+        .style.display="none";
+
+    document.querySelectorAll(
+        "#s1,#s2,#s3,#s4,#s5"
+    ).forEach(function(line){
+
+        line.classList.remove("active");
+
+    });
+
+    document.getElementById("spfStatus")
+        .innerHTML=
+        "Ready. Click Run SPF.";
+
+}
+
+
+/* =====================================
+LINK FAILURE
+===================================== */
+
+function failLink(){
+
+    document.getElementById("f3")
+        .classList.add("failed");
+
+    document.getElementById("failureStatus")
+        .innerHTML=
+        "⚠ Link R2–R4 failed. Link-state information changes and SPF can calculate an alternate route.";
+
+}
+
+
+function recoverLink(){
+
+    document.getElementById("f3")
+        .classList.remove("failed");
+
+    document.getElementById("failureStatus")
+        .innerHTML=
+        "✓ Link recovered. The topology is available again.";
+
+}
+
+
+/* =====================================
+QUIZ
+===================================== */
+
+function quiz(button,correct){
+
+    const parent=
+        button.parentElement;
+
+    const result=
+        parent.querySelector(".answer");
+
+    result.style.display="block";
+
+    if(correct){
+
+        result.style.background="#dcfce7";
+
+        result.style.color="#166534";
+
+        result.innerHTML=
+            "✓ Correct Answer!";
+
+    }else{
+
+        result.style.background="#fee2e2";
+
+        result.style.color="#991b1b";
+
+        result.innerHTML=
+            "✗ Incorrect. Try again.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
+
