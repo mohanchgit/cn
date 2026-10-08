@@ -293,6 +293,124 @@
             padding: 15px;
         }
     }
+
+/* ===== SUBSECTIONS FOR ACTIVITIES 9–12 ===== */
+.subsections {
+    margin-top: 25px;
+}
+
+.subsection {
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+    border-left: 5px solid #0b72e7;
+    border-radius: 8px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.subsection h3 {
+    background: #eef5ff;
+    color: #0b3d91;
+    padding: 13px 16px;
+    margin: 0;
+    font-size: 17px;
+}
+
+.subsection-content {
+    padding: 15px 18px;
+    line-height: 1.7;
+}
+
+.subsection-content ul {
+    padding-left: 22px;
+    margin: 5px 0;
+}
+
+.subsection-content li {
+    margin-bottom: 6px;
+}
+
+.step {
+    background: #ffffff;
+    border: 1px solid #e1e7ef;
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-radius: 6px;
+}
+
+.step strong {
+    color: #0b3d91;
+}
+
+.command-box {
+    background: #111827;
+    color: #00ff88;
+    padding: 15px;
+    border-radius: 7px;
+    font-family: Consolas, monospace;
+    overflow-x: auto;
+    line-height: 1.8;
+    margin-top: 8px;
+}
+
+.expected {
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+    padding: 12px 15px;
+    border-radius: 5px;
+}
+
+.warning {
+    background: #fff7ed;
+    border-left: 4px solid #f97316;
+    padding: 12px 15px;
+    border-radius: 5px;
+}
+
+
+/* ===== MULTIPLE VIDEO RESOURCES FOR ACTIVITIES 9–11 ===== */
+.video-resources { margin-top: 25px; }
+.video-resource-card {
+    background: #fff;
+    border: 1px solid #dbe4ee;
+    border-left: 5px solid #ff0000;
+    border-radius: 8px;
+    margin: 15px 0;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.video-resource-card h3 { color: #17202a; margin-bottom: 12px; }
+.video-resource-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.video-resource-frame iframe { width: 100%; height: 100%; border: none; }
+.video-resource-placeholder {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #666;
+    background: #f5f7fa;
+    border-radius: 8px;
+    padding: 20px;
+}
+.video-resource-actions { margin-top: 10px; }
+.video-resource-actions a {
+    display: inline-block;
+    padding: 9px 14px;
+    background: #ff0000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.video-resource-actions a:hover { background: #cc0000; }
+
 </style>
 </head>
 
@@ -591,18 +709,170 @@ const activities = [
     title: "RIP and OSPF Routing Configuration",
 
     description:
-    "Configure dynamic routing protocols RIP and OSPF and verify network connectivity using Cisco Packet Tracer.",
+    "Configure dynamic routing protocols RIP and OSPF using Cisco Packet Tracer. Configure routers, verify routing tables and test end-to-end connectivity.",
 
     objectives: [
         "Understand dynamic routing.",
         "Configure RIP.",
         "Configure OSPF.",
         "Verify routing tables.",
-        "Test end-to-end connectivity."
+        "Test end-to-end connectivity.",
+        "Compare RIP and OSPF."
     ],
 
-    youtube:
-    ""
+    subsections: [
+
+        {
+            title: "🎯 9.1 Aim",
+            content: `
+                Configure RIP and OSPF dynamic routing protocols
+                between multiple Cisco routers and verify communication
+                between different networks.
+            `
+        },
+
+        {
+            title: "🌐 9.2 Suggested Topology",
+            content: `
+                <div class="step">
+                    <strong>Devices:</strong> 3 Routers, 3 Switches and 3 PCs.
+                </div>
+
+                <div class="step">
+                    <strong>LAN Networks:</strong><br>
+                    LAN 1: 192.168.1.0/24<br>
+                    LAN 2: 192.168.2.0/24<br>
+                    LAN 3: 192.168.3.0/24
+                </div>
+
+                <div class="step">
+                    <strong>Router Links:</strong><br>
+                    R1–R2: 10.0.12.0/30<br>
+                    R2–R3: 10.0.23.0/30
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 9.3 Part A – Configure RIP",
+            content: `
+                <div class="step">
+                    <strong>Step 1:</strong> Configure IP addresses on router interfaces.
+                </div>
+
+                <div class="step">
+                    <strong>Step 2:</strong> Enable RIPv2 on the router.
+                </div>
+
+                <div class="command-box">
+R1(config)# router rip<br>
+R1(config-router)# version 2<br>
+R1(config-router)# no auto-summary<br>
+R1(config-router)# network 192.168.1.0<br>
+R1(config-router)# network 10.0.12.0
+                </div>
+
+                <div class="step">
+                    <strong>Step 3:</strong> Configure the appropriate connected
+                    networks on R2 and R3.
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 9.4 Part B – Configure OSPF",
+            content: `
+                <div class="step">
+                    <strong>Step 1:</strong> Enable OSPF process 1.
+                </div>
+
+                <div class="command-box">
+R1(config)# router ospf 1<br>
+R1(config-router)# router-id 1.1.1.1<br>
+R1(config-router)# network 192.168.1.0 0.0.0.255 area 0<br>
+R1(config-router)# network 10.0.12.0 0.0.0.3 area 0
+                </div>
+
+                <div class="step">
+                    <strong>Step 2:</strong> Configure OSPF on R2 and R3
+                    with unique router IDs.
+                </div>
+
+                <div class="command-box">
+R2(config)# router ospf 1<br>
+R2(config-router)# router-id 2.2.2.2<br>
+R2(config-router)# network 10.0.12.0 0.0.0.3 area 0<br>
+R2(config-router)# network 10.0.23.0 0.0.0.3 area 0<br>
+R2(config-router)# network 192.168.2.0 0.0.0.255 area 0
+                </div>
+            `
+        },
+
+        {
+            title: "🔍 9.5 Verification Commands",
+            content: `
+                <div class="command-box">
+Router# show ip route<br>
+Router# show ip route rip<br>
+Router# show ip route ospf<br>
+Router# show ip protocols<br>
+Router# show ip ospf neighbor<br>
+Router# show ip ospf interface<br>
+Router# ping 192.168.3.10<br>
+Router# traceroute 192.168.3.10
+                </div>
+
+                <div class="step">
+                    <strong>Important:</strong>
+                    <code>show ip route rip</code> is executed in
+                    Privileged EXEC mode.
+                </div>
+
+                <div class="step">
+                    RIP routes are identified by <strong>R</strong>
+                    in the routing table. OSPF routes are identified
+                    by <strong>O</strong>.
+                </div>
+            `
+        },
+
+        {
+            title: "📊 9.6 RIP vs OSPF",
+            content: `
+                <ul>
+                    <li><strong>RIP:</strong> Uses hop count as its metric.</li>
+                    <li><strong>RIP:</strong> Maximum usable hop count is 15.</li>
+                    <li><strong>RIPv2:</strong> Supports classless routing.</li>
+                    <li><strong>OSPF:</strong> Uses cost as its metric.</li>
+                    <li><strong>OSPF:</strong> Uses areas and Area 0 is the backbone.</li>
+                    <li><strong>OSPF:</strong> Generally converges faster than RIP.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "✅ 9.7 Expected Result",
+            content: `
+                <div class="expected">
+                    Routers dynamically learn remote networks and PCs
+                    in different LANs successfully communicate using ping.
+                </div>
+            `
+        }
+    ],
+
+    videos: [
+        {
+            title: "🎥 9.3 RIP Routing Configuration",
+            url: "https://www.youtube.com/watch?v=n9bA9MGT8fo"
+        },
+        {
+            title: "🎥 9.4 OSPF Routing Configuration",
+            url: "https://www.youtube.com/results?search_query=Cisco+Packet+Tracer+OSPF+Routing+Configuration"
+        }
+    ],
+
+    youtube: ""
 },
 
 {
@@ -610,7 +880,7 @@ const activities = [
     title: "Standard and Extended Access Control Lists",
 
     description:
-    "Configure Standard and Extended ACLs to control traffic between networks and verify the filtering rules.",
+    "Configure Standard and Extended ACLs to control network traffic between different networks and verify the filtering rules.",
 
     objectives: [
         "Understand ACL operation.",
@@ -620,8 +890,159 @@ const activities = [
         "Verify permitted and denied traffic."
     ],
 
-    youtube:
-    ""
+    subsections: [
+
+        {
+            title: "🎯 10.1 Aim",
+            content: `
+                Configure Standard and Extended Access Control Lists
+                to permit or deny network traffic according to
+                source, destination and protocol requirements.
+            `
+        },
+
+        {
+            title: "🌐 10.2 Suggested Topology",
+            content: `
+                <div class="step">
+                    <strong>Devices:</strong>
+                    2 Routers, 2 Switches and multiple PCs.
+                </div>
+
+                <div class="step">
+                    <strong>Example Networks:</strong><br>
+                    Network A: 192.168.1.0/24<br>
+                    Network B: 192.168.2.0/24
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 10.3 Part A – Standard ACL",
+            content: `
+                <div class="step">
+                    <strong>Objective:</strong>
+                    Block traffic from a specific source network.
+                </div>
+
+                <div class="command-box">
+R1(config)# access-list 10 deny 192.168.1.0 0.0.0.255<br>
+R1(config)# access-list 10 permit any
+                </div>
+
+                <div class="step">
+                    Apply the ACL to the required interface:
+                </div>
+
+                <div class="command-box">
+R1(config)# interface g0/0<br>
+R1(config-if)# ip access-group 10 out
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 10.4 Part B – Named Standard ACL",
+            content: `
+                <div class="command-box">
+R1(config)# ip access-list standard BLOCK-LAN<br>
+R1(config-std-nacl)# deny 192.168.1.0 0.0.0.255<br>
+R1(config-std-nacl)# permit any
+                </div>
+
+                <div class="command-box">
+R1(config)# interface g0/0<br>
+R1(config-if)# ip access-group BLOCK-LAN out
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 10.5 Part C – Extended ACL",
+            content: `
+                <div class="step">
+                    <strong>Objective:</strong>
+                    Block HTTP traffic from one network while
+                    allowing other IP traffic.
+                </div>
+
+                <div class="command-box">
+R1(config)# access-list 100 deny tcp 192.168.1.0 0.0.0.255 any eq 80<br>
+R1(config)# access-list 100 permit ip any any
+                </div>
+
+                <div class="step">
+                    Apply the extended ACL close to the source:
+                </div>
+
+                <div class="command-box">
+R1(config)# interface g0/0<br>
+R1(config-if)# ip access-group 100 in
+                </div>
+            `
+        },
+
+        {
+            title: "🔍 10.6 Verification Commands",
+            content: `
+                <div class="command-box">
+Router# show access-lists<br>
+Router# show ip access-lists<br>
+Router# show running-config<br>
+Router# show ip interface g0/0
+                </div>
+
+                <ul>
+                    <li>Test permitted traffic using ping.</li>
+                    <li>Test restricted HTTP or FTP traffic as configured.</li>
+                    <li>Check ACL match counters where supported.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "⚠️ 10.7 Important ACL Rules",
+            content: `
+                <div class="warning">
+                    ACLs are processed from top to bottom.
+                    The first matching statement is applied.
+                    An implicit deny exists at the end of an ACL.
+                </div>
+
+                <ul>
+                    <li>Standard ACLs primarily filter source IP addresses.</li>
+                    <li>Extended ACLs can filter source, destination and protocol.</li>
+                    <li>Rule order is important.</li>
+                    <li>Apply ACLs in the correct direction: <strong>in</strong> or <strong>out</strong>.</li>
+                    <li>Use <strong>permit ip any any</strong> when remaining traffic must be allowed.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "✅ 10.8 Expected Result",
+            content: `
+                <div class="expected">
+                    The specified traffic should be denied while
+                    permitted traffic should successfully reach
+                    the destination.
+                </div>
+            `
+        }
+    ],
+
+    videos: [
+        {
+            title: "🎥 10.3 Standard ACL Configuration",
+            url: "https://www.youtube.com/watch?v=YQLV-EfpMqI"
+        },
+        {
+            title: "🎥 10.5 Extended ACL Configuration",
+            url: "https://www.youtube.com/results?search_query=Cisco+Packet+Tracer+Extended+ACL+Configuration"
+        }
+    ],
+
+    youtube: ""
 },
 
 {
@@ -629,7 +1050,7 @@ const activities = [
     title: "SMTP, FTP, DNS and HTTP Configuration",
 
     description:
-    "Configure application-layer network services using Cisco Packet Tracer Server devices and verify client-server connectivity.",
+    "Configure common application-layer network services using Cisco Packet Tracer Server devices and verify client-server communication.",
 
     objectives: [
         "Configure DNS service.",
@@ -639,8 +1060,208 @@ const activities = [
         "Verify client-server communication."
     ],
 
-    youtube:
-    ""
+    subsections: [
+
+        {
+            title: "🎯 11.1 Aim",
+            content: `
+                Configure DNS, HTTP, FTP and SMTP services using
+                Cisco Packet Tracer Server devices and verify
+                communication from client PCs.
+            `
+        },
+
+        {
+            title: "🌐 11.2 Suggested Topology",
+            content: `
+                <div class="step">
+                    <strong>Devices:</strong>
+                    1 Switch, 1 Server and 2 or more PCs.
+                </div>
+
+                <div class="step">
+                    <strong>Example Network:</strong><br>
+                    Network: 192.168.10.0/24<br>
+                    Server: 192.168.10.10<br>
+                    PC1: 192.168.10.11<br>
+                    PC2: 192.168.10.12
+                </div>
+            `
+        },
+
+        {
+            title: "🌐 11.3 Part A – DNS Configuration",
+            content: `
+                <div class="step">
+                    Open <strong>Server → Services → DNS</strong>.
+                </div>
+
+                <div class="step">
+                    Turn the DNS service <strong>ON</strong>.
+                </div>
+
+                <div class="step">
+                    Add a DNS record:
+                    <strong>www.mohanlab.com → 192.168.10.10</strong>.
+                </div>
+
+                <div class="step">
+                    Configure the DNS server address on the client PC.
+                </div>
+
+                <div class="command-box">
+PC&gt; nslookup www.mohanlab.com
+                </div>
+            `
+        },
+
+        {
+            title: "🌐 11.4 Part B – HTTP Configuration",
+            content: `
+                <div class="step">
+                    Open <strong>Server → Services → HTTP</strong>.
+                </div>
+
+                <div class="step">
+                    Turn HTTP service <strong>ON</strong>.
+                </div>
+
+                <div class="step">
+                    Edit the web page if required.
+                </div>
+
+                <div class="step">
+                    On the client PC select
+                    <strong>Desktop → Web Browser</strong>.
+                </div>
+
+                <div class="command-box">
+http://192.168.10.10
+                </div>
+
+                <div class="step">
+                    Test using the DNS name:
+                </div>
+
+                <div class="command-box">
+http://www.mohanlab.com
+                </div>
+            `
+        },
+
+        {
+            title: "📁 11.5 Part C – FTP Configuration",
+            content: `
+                <div class="step">
+                    Open <strong>Server → Services → FTP</strong>.
+                </div>
+
+                <div class="step">
+                    Turn FTP service <strong>ON</strong>.
+                </div>
+
+                <div class="step">
+                    Create an FTP user with username and password.
+                </div>
+
+                <div class="command-box">
+PC&gt; ftp 192.168.10.10
+                </div>
+
+                <div class="step">
+                    Enter the configured username and password.
+                </div>
+            `
+        },
+
+        {
+            title: "📧 11.6 Part D – SMTP / Email Configuration",
+            content: `
+                <div class="step">
+                    Open <strong>Server → Services → EMAIL</strong>.
+                </div>
+
+                <div class="step">
+                    Enable the email service and configure a domain,
+                    for example <strong>mohanlab.com</strong>.
+                </div>
+
+                <div class="step">
+                    Create users such as
+                    <strong>student1@mohanlab.com</strong> and
+                    <strong>student2@mohanlab.com</strong>.
+                </div>
+
+                <div class="step">
+                    On the PC select <strong>Desktop → Email</strong>
+                    and configure the email account.
+                </div>
+            `
+        },
+
+        {
+            title: "🔍 11.7 Verification",
+            content: `
+                <div class="command-box">
+PC&gt; ping 192.168.10.10<br>
+PC&gt; nslookup www.mohanlab.com<br>
+PC&gt; ftp 192.168.10.10
+                </div>
+
+                <ul>
+                    <li>Open the web browser and test HTTP.</li>
+                    <li>Use FTP to log in to the server.</li>
+                    <li>Send an email between configured users.</li>
+                    <li>Verify DNS name resolution.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "📚 11.8 Protocol Summary",
+            content: `
+                <ul>
+                    <li><strong>DNS:</strong> Resolves domain names to IP addresses.</li>
+                    <li><strong>HTTP:</strong> Provides web-based communication.</li>
+                    <li><strong>FTP:</strong> Transfers files between systems.</li>
+                    <li><strong>SMTP:</strong> Used for sending email.</li>
+                    <li><strong>POP3/IMAP:</strong> Used for receiving email in real-world networks.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "✅ 11.9 Expected Result",
+            content: `
+                <div class="expected">
+                    Client PCs should successfully resolve the DNS name,
+                    access the web server, connect to the FTP server,
+                    and send/receive email using the configured services.
+                </div>
+            `
+        }
+    ],
+
+    videos: [
+        {
+            title: "🎥 11.3 DNS Configuration",
+            url: "https://www.youtube.com/watch?v=G-kFr0Kp-zU"
+        },
+        {
+            title: "🎥 11.4 HTTP Configuration",
+            url: "https://www.youtube.com/results?search_query=Cisco+Packet+Tracer+HTTP+Web+Server+Configuration"
+        },
+        {
+            title: "🎥 11.5 FTP Configuration",
+            url: "https://www.youtube.com/watch?v=vCCBEZxBjQI"
+        },
+        {
+            title: "🎥 11.6 SMTP / Email Configuration",
+            url: "https://www.youtube.com/watch?v=xsao9bEzGso"
+        }
+    ],
+
+    youtube: ""
 },
 
 {
@@ -648,18 +1269,170 @@ const activities = [
     title: "Smart Home Implementation Using Cisco Packet Tracer",
 
     description:
-    "Design and implement a smart home network using IoT devices, wireless connectivity, sensors, actuators and a home gateway.",
+    "Design and implement a smart home network using Cisco Packet Tracer IoT devices, wireless connectivity, sensors, actuators and a home gateway.",
 
     objectives: [
         "Understand IoT networking concepts.",
         "Add smart home devices.",
         "Configure wireless connectivity.",
         "Configure sensors and actuators.",
-        "Create an IoT-based smart home topology."
+        "Create an IoT-based smart home topology.",
+        "Test device communication and automation."
     ],
 
-    youtube:
-    ""
+    subsections: [
+
+        {
+            title: "🎯 12.1 Aim",
+            content: `
+                Design and implement an IoT-based smart home using
+                Cisco Packet Tracer. Connect sensors, actuators and
+                smart devices through a wireless home network.
+            `
+        },
+
+        {
+            title: "🏠 12.2 Suggested Smart Home Topology",
+            content: `
+                <div class="step">
+                    <strong>Network Devices:</strong>
+                    Home Gateway / Wireless Router and optional Switch.
+                </div>
+
+                <div class="step">
+                    <strong>IoT Devices:</strong>
+                    Smart Lamp, Smart Fan, Door, Window, Motion Sensor,
+                    Temperature Sensor and other available IoT devices.
+                </div>
+
+                <div class="step">
+                    <strong>End Devices:</strong>
+                    Smartphone, Tablet or PC for monitoring and control.
+                </div>
+            `
+        },
+
+        {
+            title: "⚙️ 12.3 Part A – Add Smart Home Devices",
+            content: `
+                <div class="step">
+                    Open Cisco Packet Tracer and select the
+                    <strong>IoT / Home</strong> devices.
+                </div>
+
+                <div class="step">
+                    Place a Home Gateway and required smart devices
+                    in the workspace.
+                </div>
+
+                <div class="step">
+                    Add sensors and actuators such as a temperature
+                    sensor, motion detector, lamp and fan.
+                </div>
+            `
+        },
+
+        {
+            title: "📶 12.4 Part B – Configure Wireless Connectivity",
+            content: `
+                <div class="step">
+                    Configure the Home Gateway wireless network
+                    with an SSID.
+                </div>
+
+                <div class="step">
+                    Configure wireless IoT devices to connect to
+                    the Home Gateway.
+                </div>
+
+                <div class="step">
+                    Verify that the devices obtain appropriate
+                    network configuration.
+                </div>
+            `
+        },
+
+        {
+            title: "🔐 12.5 Part C – IoT Registration",
+            content: `
+                <div class="step">
+                    Configure the IoT registration service or
+                    Home Gateway IoT management interface available
+                    in the Packet Tracer version.
+                </div>
+
+                <div class="step">
+                    Register the smart devices with the IoT controller
+                    or Home Gateway.
+                </div>
+
+                <div class="step">
+                    Verify that the devices appear as connected
+                    and manageable.
+                </div>
+            `
+        },
+
+        {
+            title: "🤖 12.6 Part D – Configure Automation",
+            content: `
+                <div class="step">
+                    Create an automation rule such as:
+                    <strong>Motion detected → Turn ON Smart Lamp</strong>.
+                </div>
+
+                <div class="step">
+                    Another example:
+                    <strong>High temperature → Turn ON Smart Fan</strong>.
+                </div>
+
+                <div class="step">
+                    Test the automation by changing the sensor condition.
+                </div>
+            `
+        },
+
+        {
+            title: "🔍 12.7 Verification",
+            content: `
+                <ul>
+                    <li>Verify wireless connectivity.</li>
+                    <li>Verify IoT device registration.</li>
+                    <li>Monitor sensor values.</li>
+                    <li>Control actuators manually.</li>
+                    <li>Test automation rules.</li>
+                    <li>Verify communication between the controller and IoT devices.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "📚 12.8 Key IoT Concepts",
+            content: `
+                <ul>
+                    <li><strong>Sensor:</strong> Collects information from the environment.</li>
+                    <li><strong>Actuator:</strong> Performs an action based on a command or condition.</li>
+                    <li><strong>Gateway:</strong> Provides connectivity and management for IoT devices.</li>
+                    <li><strong>Wireless Network:</strong> Provides communication between IoT devices and the gateway.</li>
+                    <li><strong>Automation:</strong> Performs an action when a defined condition occurs.</li>
+                </ul>
+            `
+        },
+
+        {
+            title: "✅ 12.9 Expected Result",
+            content: `
+                <div class="expected">
+                    All configured IoT devices should connect to the
+                    smart home network, communicate with the gateway,
+                    and respond correctly to manual commands and
+                    configured automation rules.
+                </div>
+            `
+        }
+    ],
+
+    youtube: ""
 }
 
 ];
@@ -707,9 +1480,7 @@ function loadActivity(index) {
     document.getElementById("activityDescription").innerText =
         activity.description;
 
-
-    // OBJECTIVES
-
+    /* OBJECTIVES */
     const objectiveList =
         document.getElementById("objectives");
 
@@ -725,45 +1496,160 @@ function loadActivity(index) {
 
     });
 
-
-    // COMMANDS
-
+    /* SUBSECTIONS - USED BY ACTIVITIES 9–12 */
     const commandsSection =
         document.getElementById("commandsSection");
 
     commandsSection.innerHTML = "";
 
+    if (activity.subsections) {
+
+        const subsectionContainer =
+            document.createElement("div");
+
+        subsectionContainer.className =
+            "subsections";
+
+        activity.subsections.forEach(section => {
+
+            const subsection =
+                document.createElement("div");
+
+            subsection.className =
+                "subsection";
+
+            subsection.innerHTML = `
+                <h3>${section.title}</h3>
+
+                <div class="subsection-content">
+                    ${section.content}
+                </div>
+            `;
+
+            subsectionContainer.appendChild(subsection);
+
+        });
+
+        commandsSection.appendChild(
+            subsectionContainer
+        );
+    }
+
+    /* ORIGINAL COMMAND SUPPORT FOR ACTIVITIES 1–8 */
     if (activity.commands) {
 
-        commandsSection.innerHTML = `
+        commandsSection.innerHTML += `
             <h3>💻 Commands</h3>
 
             <div class="commands">
                 ${activity.commands.join("<br>")}
             </div>
         `;
+    }
+
+    /* MULTIPLE VIDEO RESOURCES FOR ACTIVITIES 9–11 */
+    if (activity.videos && activity.videos.length > 0) {
+
+        const videoResources = document.createElement("div");
+        videoResources.className = "video-resources";
+
+        videoResources.innerHTML = `
+            <h3>🎥 Video Learning Resources</h3>
+            ${activity.videos.map(video => {
+
+                let videoId = "";
+
+                if (video.url.includes("youtu.be/")) {
+                    videoId = video.url
+                        .split("youtu.be/")[1]
+                        .split(/[?&]/)[0];
+                } else if (video.url.includes("watch?v=")) {
+                    videoId = video.url
+                        .split("watch?v=")[1]
+                        .split("&")[0];
+                }
+
+                const frame = videoId
+                    ? `
+                        <div class="video-resource-frame">
+                            <iframe
+                                src="https://www.youtube.com/embed/${videoId}"
+                                title="${video.title}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    `
+                    : `
+                        <div class="video-resource-placeholder">
+                            <div>
+                                <strong>Topic-specific YouTube video</strong>
+                                <p>Use the button below to open the video search.</p>
+                            </div>
+                        </div>
+                    `;
+
+                return `
+                    <div class="video-resource-card">
+                        <h3>${video.title}</h3>
+                        ${frame}
+                        <div class="video-resource-actions">
+                            <a href="${video.url}" target="_blank">
+                                ▶ Watch / Open Video
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+            }).join("")}
+        `;
+
+        commandsSection.appendChild(videoResources);
 
     }
 
+    /* YOUTUBE VIDEO */
+    const youtubeButton =
+        document.getElementById("youtubeButton");
 
-    // YOUTUBE VIDEO - PLAY INSIDE VIDEO LEARNING RESOURCE FRAME
-    const youtubeButton = document.getElementById("youtubeButton");
-    const videoContainer = document.getElementById("videoContainer");
+    const videoContainer =
+        document.getElementById("videoContainer");
 
-    // Reset any previous click handler
     youtubeButton.onclick = null;
 
-    if (activity.youtube && activity.youtube.trim() !== "") {
-        // Convert YouTube watch/youtu.be URL to an embeddable URL
+    const singleVideoSection =
+        document.querySelector(".video-section");
+
+    if (activity.videos && activity.videos.length > 0) {
+        singleVideoSection.style.display = "none";
+    } else {
+        singleVideoSection.style.display = "block";
+    }
+
+    if (activity.youtube &&
+        activity.youtube.trim() !== "") {
+
         let videoId = "";
 
         if (activity.youtube.includes("youtu.be/")) {
-            videoId = activity.youtube.split("youtu.be/")[1].split(/[?&]/)[0];
-        } else if (activity.youtube.includes("watch?v=")) {
-            videoId = activity.youtube.split("watch?v=")[1].split("&")[0];
+
+            videoId =
+                activity.youtube
+                    .split("youtu.be/")[1]
+                    .split(/[?&]/)[0];
+
+        } else if (
+            activity.youtube.includes("watch?v=")
+        ) {
+
+            videoId =
+                activity.youtube
+                    .split("watch?v=")[1]
+                    .split("&")[0];
         }
 
         if (videoId) {
+
             videoContainer.innerHTML = `
                 <iframe
                     src="https://www.youtube.com/embed/${videoId}"
@@ -774,32 +1660,47 @@ function loadActivity(index) {
             `;
         }
 
-        youtubeButton.href = activity.youtube;
+        youtubeButton.href =
+            activity.youtube;
+
         youtubeButton.target = "_blank";
-        youtubeButton.innerText = "▶ Open Video on YouTube";
-        youtubeButton.style.display = "inline-block";
+
+        youtubeButton.innerText =
+            "▶ Open Video on YouTube";
+
+        youtubeButton.style.display =
+            "inline-block";
+
     } else {
+
         videoContainer.innerHTML = `
             <div class="video-placeholder">
                 <div>
                     <h3>🎥 Video Resource</h3>
-                    <p>YouTube video link will be added soon.</p>
+                    <p>
+                        YouTube video link will be added soon.
+                    </p>
                 </div>
             </div>
         `;
 
         youtubeButton.removeAttribute("href");
+
         youtubeButton.removeAttribute("target");
-        youtubeButton.style.display = "inline-block";
-        youtubeButton.innerText = "🎥 Video Link – Coming Soon";
-        youtubeButton.onclick = function(event) {
-            event.preventDefault();
-        };
+
+        youtubeButton.style.display =
+            "inline-block";
+
+        youtubeButton.innerText =
+            "🎥 Video Link – Coming Soon";
+
+        youtubeButton.onclick =
+            function(event) {
+                event.preventDefault();
+            };
     }
 
-
-    // ACTIVE BUTTON
-
+    /* ACTIVE BUTTON */
     const buttons =
         document.querySelectorAll(".lab-btn");
 
@@ -809,14 +1710,11 @@ function loadActivity(index) {
 
     buttons[index].classList.add("active");
 
-
-    // SCROLL TO TOP
-
+    /* SCROLL TO TOP */
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
-
 }
 
 
