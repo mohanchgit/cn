@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TCP Timer Management & Congestion Control</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+    line-height: 1.6;
+}
+
+header {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    font-size: 18px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    margin: 22px 0;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+h2 {
+    color: #12355b;
+    border-bottom: 3px solid #ddd;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #1769aa;
+}
+
+.highlight {
+    background: #eaf4ff;
+    border-left: 5px solid #1769aa;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.success {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #ff9800;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.danger {
+    background: #ffebee;
+    border-left: 5px solid #d32f2f;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.info {
+    background: #f3e5f5;
+    border-left: 5px solid #8e44ad;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #12355b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+button {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    margin: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #0d4f82;
+}
+
+input {
+    width: 110px;
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+}
+
+.diagram {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #eef5fb;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.node {
+    background: #d7eaff;
+    padding: 20px;
+    width: 180px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.arrow {
+    font-size: 35px;
+}
+
+.code {
+    background: #1e1e1e;
+    color: #00ff88;
+    padding: 18px;
+    border-radius: 8px;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+.progress {
+    width: 100%;
+    height: 30px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progressBar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s;
+}
+
+.blue {
+    background: #1769aa;
+}
+
+.green {
+    background: #2e7d32;
+}
+
+.orange {
+    background: #f39c12;
+}
+
+.red {
+    background: #d32f2f;
+}
+
+.cwnd-box {
+    background: #eef5fb;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.cwnd-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1769aa;
+}
+
+.network {
+    position: relative;
+    height: 250px;
+    background: #eef5fb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.host {
+    position: absolute;
+    top: 90px;
+    padding: 20px;
+    background: #d7eaff;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sender {
+    left: 30px;
+}
+
+.receiver {
+    right: 30px;
+}
+
+.packet {
+    position: absolute;
+    top: 105px;
+    left: 190px;
+    padding: 9px 13px;
+    background: #ff9800;
+    color: white;
+    border-radius: 7px;
+    display: none;
+    font-weight: bold;
+}
+
+.timer-box {
+    border: 4px solid #1769aa;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #eef5fb;
+    font-weight: bold;
+}
+
+.quiz {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.answer {
+    display: none;
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.phase {
+    display: inline-block;
+    padding: 12px 18px;
+    margin: 5px;
+    border-radius: 8px;
+    background: #d7eaff;
+    font-weight: bold;
+}
+
+footer {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>TCP Timer Management & Congestion Control</h1>
+
+<p>
+Interactive Computer Networks Learning Module
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================================================= -->
+<!-- SECTION 1 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>1. Why Does TCP Need Timers?</h2>
+
+<p>
+TCP provides reliable delivery. When TCP sends a segment, it needs to
+know whether the segment or its acknowledgment has been lost.
+</p>
+
+<div class="highlight">
+
+<strong>Basic idea:</strong>
+
+<br><br>
+
+TCP sends data → starts a timer → waits for ACK.
+
+<br><br>
+
+If ACK arrives → timer is handled accordingly.
+
+<br>
+
+If the timer expires before sufficient acknowledgment → TCP assumes
+possible loss and may retransmit.
+
+</div>
+
+<pre>
+
+Sender                         Receiver
+
+  | -------- DATA ------------> |
+  |                             |
+  |       START TIMER           |
+  |                             |
+  | <----------- ACK ----------- |
+  |                             |
+  |       ACK RECEIVED          |
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 2 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>2. TCP Retransmission Timer</h2>
+
+<p>
+The retransmission timer is used to detect when an acknowledgment has
+not arrived within an appropriate period.
+</p>
+
+<div class="diagram">
+
+<div class="node">
+Sender<br>
+💻
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Network<br>
+🌐
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Receiver<br>
+🖥️
+</div>
+
+</div>
+
+<p>
+
+After sending a segment, TCP measures network behavior and maintains a
+retransmission timeout value, commonly called <strong>RTO</strong>.
+
+</p>
+
+<div class="success">
+
+If the expected ACK is not received before the relevant timer expires,
+TCP can retransmit the segment.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 3 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>3. RTT – Round Trip Time</h2>
+
+<p>
+<strong>RTT</strong> is approximately the time taken for a segment to
+travel to the receiver and for the corresponding acknowledgment to
+return.
+</p>
+
+<pre>
+
+Sender                         Receiver
+
+  | -------- DATA ------------> |
+  |                             |
+  |                             |
+  | <----------- ACK ----------- |
+  |                             |
+
+<----------- RTT ------------->
+
+</pre>
+
+<div class="highlight">
+
+<strong>RTT = Round Trip Time</strong>
+
+<br><br>
+
+It is an important measurement used when estimating TCP's
+retransmission timeout.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 4 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>4. RTO – Retransmission Timeout</h2>
+
+<p>
+RTO is the amount of time TCP waits before concluding that a
+retransmission may be necessary because the expected acknowledgment
+has not arrived.
+</p>
+
+<div class="warning">
+
+RTO should not simply be a fixed value for every network.
+
+A short RTO may cause unnecessary retransmissions.
+
+A very long RTO may delay recovery from actual packet loss.
+
+</div>
+
+<h3>Conceptual Relationship</h3>
+
+<pre>
+
+Measured RTT
+     ↓
+TCP estimates RTT variation
+     ↓
+Retransmission Timeout (RTO)
+     ↓
+Timer used for loss detection
+
+</pre>
+
+<p class="small">
+Modern TCP implementations use smoothed RTT and RTT variation rather
+than simply setting RTO equal to one RTT measurement.
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 5 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>5. Interactive TCP Timer Simulation</h2>
+
+<p>
+Enter an estimated RTT and RTO. Then simulate sending a segment.
+</p>
+
+<label>
+RTT:
+<input id="rttInput" type="number" value="100" min="1">
+ms
+</label>
+
+<br><br>
+
+<label>
+RTO:
+<input id="rtoInput" type="number" value="300" min="1">
+ms
+</label>
+
+<br><br>
+
+<button onclick="startTimerSimulation()">
+Send Segment
+</button>
+
+<button onclick="ackReceived()">
+Receive ACK
+</button>
+
+<button onclick="resetTimer()">
+Reset
+</button>
+
+<div class="timer-box">
+
+<span id="timerDisplay">
+Timer<br>Stopped
+</span>
+
+</div>
+
+<p id="timerMessage">
+
+Click Send Segment.
+
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 6 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>6. What Happens When a Timeout Occurs?</h2>
+
+<pre>
+
+Sender                         Receiver
+
+  | -------- DATA ------------> |
+  |                             |
+  |        TIMER START          |
+  |                             |
+  |          X                  |
+  |       ACK LOST              |
+  |                             |
+  |      TIMEOUT!               |
+  |                             |
+  | -------- DATA ------------> |
+  |       RETRANSMIT            |
+
+</pre>
+
+<div class="danger">
+
+<strong>Timeout → Possible loss → Retransmission</strong>
+
+</div>
+
+<p>
+After a retransmission timeout, TCP also adjusts its congestion
+behavior. In classic TCP congestion-control algorithms, a timeout is a
+strong indication of congestion and causes the congestion window to be
+reduced significantly.
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 7 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>7. Other TCP Timers</h2>
+
+<table>
+
+<tr>
+<th>Timer</th>
+<th>Purpose</th>
+</tr>
+
+<tr>
+<td>Retransmission Timer</td>
+<td>Detect possible loss when an expected ACK does not arrive.</td>
+</tr>
+
+<tr>
+<td>Persist Timer</td>
+<td>Helps prevent a zero-window deadlock by probing the receiver.</td>
+</tr>
+
+<tr>
+<td>Keepalive Timer</td>
+<td>Can detect an idle peer that may no longer be reachable, when enabled.</td>
+</tr>
+
+<tr>
+<td>TIME-WAIT Timer</td>
+<td>Controls how long a closed TCP connection remains in TIME-WAIT.</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 8 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>8. What is TCP Congestion Control?</h2>
+
+<p>
+TCP congestion control regulates how much data can be outstanding in
+the network so that TCP does not overwhelm the network.
+</p>
+
+<div class="highlight">
+
+<strong>Flow Control:</strong>
+Protects the receiver.
+
+<br><br>
+
+<strong>Congestion Control:</strong>
+Protects the network.
+
+</div>
+
+<p>
+TCP mainly uses two important variables:
+</p>
+
+<ul>
+
+<li><strong>cwnd</strong> – Congestion Window</li>
+
+<li><strong>ssthresh</strong> – Slow-Start Threshold</li>
+
+</ul>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 9 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>9. Congestion Window – cwnd</h2>
+
+<p>
+The <strong>congestion window (cwnd)</strong> limits the amount of data
+TCP can have in flight based on its estimate of network congestion.
+</p>
+
+<div class="cwnd-box">
+
+<p>Current Congestion Window:</p>
+
+<div class="cwnd-value" id="cwndValue">
+1 MSS
+</div>
+
+<div class="progress">
+
+<div id="cwndBar" class="progressBar blue"></div>
+
+</div>
+
+</div>
+
+<div class="success">
+
+Larger cwnd → TCP can have more data in flight.
+
+<br><br>
+
+Smaller cwnd → TCP reduces its sending rate.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 10 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>10. Slow Start</h2>
+
+<p>
+Despite its name, TCP Slow Start can increase the congestion window
+rapidly at the beginning of a connection or after certain congestion
+events.
+</p>
+
+<div class="highlight">
+
+In simplified teaching models:
+
+<strong>cwnd approximately doubles each RTT during Slow Start.</strong>
+
+</div>
+
+<pre>
+
+RTT 1 → 1 MSS
+RTT 2 → 2 MSS
+RTT 3 → 4 MSS
+RTT 4 → 8 MSS
+RTT 5 → 16 MSS
+
+</pre>
+
+<p>
+When cwnd reaches ssthresh, TCP typically transitions to congestion
+avoidance.
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 11 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>11. Congestion Avoidance</h2>
+
+<p>
+During congestion avoidance, TCP increases its congestion window more
+gradually than in Slow Start.
+</p>
+
+<div class="highlight">
+
+A common simplified model is:
+
+<strong>approximately +1 MSS per RTT.</strong>
+
+</div>
+
+<pre>
+
+8 → 9 → 10 → 11 → 12 → 13 ...
+
+</pre>
+
+<p>
+The exact behavior depends on the TCP congestion-control algorithm and
+implementation.
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 12 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>12. TCP Congestion Control Phases</h2>
+
+<div>
+
+<span class="phase">
+Slow Start
+</span>
+
+<span class="phase">
+Congestion Avoidance
+</span>
+
+<span class="phase">
+Fast Retransmit
+</span>
+
+<span class="phase">
+Fast Recovery
+</span>
+
+</div>
+
+<br>
+
+<table>
+
+<tr>
+<th>Phase</th>
+<th>Main Idea</th>
+</tr>
+
+<tr>
+<td>Slow Start</td>
+<td>Rapidly increase cwnd from a small initial value.</td>
+</tr>
+
+<tr>
+<td>Congestion Avoidance</td>
+<td>Increase cwnd more cautiously.</td>
+</tr>
+
+<tr>
+<td>Fast Retransmit</td>
+<td>Retransmit after enough duplicate ACKs indicate likely loss.</td>
+</tr>
+
+<tr>
+<td>Fast Recovery</td>
+<td>Reduce and then cautiously increase cwnd after certain loss signals.</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 13 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>13. Fast Retransmit</h2>
+
+<p>
+TCP can detect a likely missing segment when it receives multiple
+duplicate acknowledgments.
+</p>
+
+<pre>
+
+Sender                         Receiver
+
+  | ---- Segment 1 ----------> |
+  | ---- Segment 2 ----------> |
+  | ---- Segment 3 ----------> |   X LOST
+  | ---- Segment 4 ----------> |
+  |                             |
+  | <------- ACK 3 ------------ |
+  | <------- ACK 3 ------------ |
+  | <------- ACK 3 ------------ |
+
+       Duplicate ACKs
+
+            ↓
+
+       Fast Retransmit
+
+</pre>
+
+<div class="success">
+
+<strong>Key idea:</strong>
+
+Enough duplicate ACKs can indicate that a segment was probably lost,
+allowing retransmission without waiting for the retransmission timer.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 14 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>14. Fast Recovery</h2>
+
+<p>
+Fast Recovery is associated with congestion-control algorithms that
+respond to loss indicated by duplicate ACKs without reducing the
+congestion window as drastically as a timeout.
+</p>
+
+<div class="warning">
+
+A timeout is generally treated as a stronger indication of congestion
+than duplicate ACKs.
+
+</div>
+
+<pre>
+
+Duplicate ACKs
+      ↓
+Fast Retransmit
+      ↓
+Reduce cwnd
+      ↓
+Fast Recovery
+      ↓
+Continue cautiously
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 15 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>15. Timeout vs Duplicate ACKs</h2>
+
+<table>
+
+<tr>
+<th>Event</th>
+<th>Typical Interpretation</th>
+<th>Typical TCP Response</th>
+</tr>
+
+<tr>
+<td>Timeout</td>
+<td>Strong indication of loss/congestion</td>
+<td>Reduce cwnd significantly; restart with Slow Start behavior</td>
+</tr>
+
+<tr>
+<td>Duplicate ACKs</td>
+<td>Likely isolated segment loss</td>
+<td>Fast Retransmit and congestion response</td>
+</tr>
+
+</table>
+
+<div class="danger">
+
+<strong>Remember:</strong>
+
+Timeout → Stronger congestion signal.
+
+<br><br>
+
+Duplicate ACKs → Earlier loss indication.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 16 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>16. Interactive TCP Congestion Window Simulation</h2>
+
+<label>
+
+Initial cwnd:
+
+<input id="initialCwnd"
+type="number"
+value="1"
+min="1">
+
+MSS
+
+</label>
+
+<br><br>
+
+<label>
+
+ssthresh:
+
+<input id="ssthresh"
+type="number"
+value="8"
+min="2">
+
+MSS
+
+</label>
+
+<br><br>
+
+<button onclick="startCongestion()">
+Start
+</button>
+
+<button onclick="simulateDuplicateACK()">
+3 Duplicate ACKs
+</button>
+
+<button onclick="simulateTimeout()">
+Timeout
+</button>
+
+<button onclick="resetCongestion()">
+Reset
+</button>
+
+<div class="cwnd-box">
+
+<p>cwnd:</p>
+
+<div class="cwnd-value"
+id="simCwnd">
+1 MSS
+</div>
+
+<p>ssthresh:</p>
+
+<div class="cwnd-value"
+id="simSsthresh">
+8 MSS
+</div>
+
+<p>
+
+State:
+
+<strong id="tcpState">
+Ready
+</strong>
+
+</p>
+
+</div>
+
+<div class="progress">
+
+<div id="tcpCwndBar"
+class="progressBar green">
+</div>
+
+</div>
+
+<p id="congestionMessage">
+Click Start.
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 17 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>17. TCP Congestion Control Example</h2>
+
+<p>
+Suppose:
+</p>
+
+<pre>
+
+Initial cwnd = 1 MSS
+ssthresh = 8 MSS
+
+</pre>
+
+<table>
+
+<tr>
+<th>RTT</th>
+<th>Phase</th>
+<th>Approx. cwnd</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>Slow Start</td>
+<td>1 → 2</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Slow Start</td>
+<td>2 → 4</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Slow Start</td>
+<td>4 → 8</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>Congestion Avoidance</td>
+<td>8 → 9</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>Congestion Avoidance</td>
+<td>9 → 10</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 18 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>18. Complete TCP Congestion-Control Flow</h2>
+
+<pre>
+
+             TCP CONNECTION
+                    |
+                    ↓
+              Initial cwnd
+                    |
+                    ↓
+              SLOW START
+                    |
+          cwnd reaches ssthresh
+                    |
+                    ↓
+          CONGESTION AVOIDANCE
+                    |
+             Loss detected?
+              /           \
+            NO             YES
+            |               |
+            ↓               ↓
+       Continue       ┌─────┴──────┐
+                      |            |
+                  Duplicate ACK   Timeout
+                      |            |
+                      ↓            ↓
+                Fast Retransmit  Reduce cwnd
+                      |            |
+                      ↓            ↓
+                Fast Recovery   Slow Start
+                      |
+                      ↓
+             Congestion Avoidance
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 19 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>19. Important TCP Terms</h2>
+
+<table>
+
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+
+<tr>
+<td>RTT</td>
+<td>Round Trip Time</td>
+</tr>
+
+<tr>
+<td>RTO</td>
+<td>Retransmission Timeout</td>
+</tr>
+
+<tr>
+<td>cwnd</td>
+<td>Congestion Window</td>
+</tr>
+
+<tr>
+<td>ssthresh</td>
+<td>Slow-Start Threshold</td>
+</tr>
+
+<tr>
+<td>MSS</td>
+<td>Maximum Segment Size</td>
+</tr>
+
+<tr>
+<td>ACK</td>
+<td>Acknowledgment</td>
+</tr>
+
+<tr>
+<td>Duplicate ACK</td>
+<td>Repeated acknowledgment that can indicate a missing segment</td>
+</tr>
+
+<tr>
+<td>Timeout</td>
+<td>Timer expires before the expected acknowledgment arrives</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 20 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>20. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<strong>
+Q1. What does RTT stand for?
+</strong>
+
+<br>
+
+<button onclick="correct('q1')">
+Round Trip Time
+</button>
+
+<button onclick="wrong()">
+Real Transfer Timer
+</button>
+
+<div id="q1" class="answer">
+✅ Correct! RTT means Round Trip Time.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q2. What happens when a TCP retransmission timer expires?
+</strong>
+
+<br>
+
+<button onclick="correct('q2')">
+TCP may retransmit the segment
+</button>
+
+<button onclick="wrong()">
+TCP permanently closes the Internet
+</button>
+
+<div id="q2" class="answer">
+✅ Correct! A timeout can trigger retransmission and congestion-control
+response.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q3. What does cwnd represent?
+</strong>
+
+<br>
+
+<button onclick="correct('q3')">
+Congestion Window
+</button>
+
+<button onclick="wrong()">
+Connection Word
+</button>
+
+<div id="q3" class="answer">
+✅ Correct! cwnd is the TCP congestion window.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q4. What happens during TCP Slow Start?
+</strong>
+
+<br>
+
+<button onclick="correct('q4')">
+cwnd increases rapidly
+</button>
+
+<button onclick="wrong()">
+cwnd always remains zero
+</button>
+
+<div id="q4" class="answer">
+✅ Correct! In the simplified teaching model, cwnd approximately doubles
+each RTT during Slow Start.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q5. What happens after cwnd reaches ssthresh in the classic simplified
+model?
+</strong>
+
+<br>
+
+<button onclick="correct('q5')">
+Congestion Avoidance
+</button>
+
+<button onclick="wrong('q5')">
+DNS lookup
+</button>
+
+<div id="q5" class="answer">
+✅ Correct! TCP normally transitions from Slow Start to Congestion
+Avoidance around ssthresh.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q6. What can multiple duplicate ACKs indicate?
+</strong>
+
+<br>
+
+<button onclick="correct('q6')">
+Possible packet loss
+</button>
+
+<button onclick="wrong()">
+Successful delivery of every packet
+</button>
+
+<div id="q6" class="answer">
+✅ Correct! Multiple duplicate ACKs can indicate that a segment was
+lost.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q7. Which mechanism can retransmit before the RTO expires?
+</strong>
+
+<br>
+
+<button onclick="correct('q7')">
+Fast Retransmit
+</button>
+
+<button onclick="wrong()">
+ARP
+</button>
+
+<div id="q7" class="answer">
+✅ Correct! Fast Retransmit can react to duplicate ACKs without waiting
+for the retransmission timer.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q8. Which generally indicates more severe congestion?
+</strong>
+
+<br>
+
+<button onclick="correct('q8')">
+Retransmission timeout
+</button>
+
+<button onclick="wrong()">
+A single normal ACK
+</button>
+
+<div id="q8" class="answer">
+✅ Correct! A timeout is generally treated as a stronger congestion
+signal than duplicate ACKs.
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- SECTION 21 -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>21. Interview Questions</h2>
+
+<h3>Q1. Why does TCP use a retransmission timer?</h3>
+
+<p>
+To detect possible segment loss when an expected acknowledgment does
+not arrive within the estimated retransmission timeout.
+</p>
+
+
+<h3>Q2. What is RTT?</h3>
+
+<p>
+RTT is the approximate time required for a segment to travel to the
+receiver and for the corresponding acknowledgment to return.
+</p>
+
+
+<h3>Q3. What is RTO?</h3>
+
+<p>
+RTO is the retransmission timeout used by TCP to determine when a
+retransmission may be necessary.
+</p>
+
+
+<h3>Q4. What is cwnd?</h3>
+
+<p>
+cwnd is the congestion window. It limits the amount of unacknowledged
+data TCP can have in flight based on congestion-control state.
+</p>
+
+
+<h3>Q5. What is ssthresh?</h3>
+
+<p>
+ssthresh is the slow-start threshold used to determine when TCP should
+transition from Slow Start toward Congestion Avoidance in the
+traditional model.
+</p>
+
+
+<h3>Q6. What is Slow Start?</h3>
+
+<p>
+Slow Start is a TCP congestion-control phase in which cwnd grows
+rapidly from a small value, approximately doubling each RTT in the
+simplified model.
+</p>
+
+
+<h3>Q7. What is Congestion Avoidance?</h3>
+
+<p>
+Congestion Avoidance increases cwnd more cautiously than Slow Start.
+A common simplified model is approximately one MSS per RTT.
+</p>
+
+
+<h3>Q8. What is Fast Retransmit?</h3>
+
+<p>
+Fast Retransmit allows TCP to retransmit a likely lost segment after
+receiving enough duplicate ACKs, without waiting for the retransmission
+timer to expire.
+</p>
+
+
+<h3>Q9. What is Fast Recovery?</h3>
+
+<p>
+Fast Recovery is a congestion-control response used by relevant TCP
+algorithms after loss indicated by duplicate ACKs, allowing the sender
+to reduce its sending rate without treating the event exactly like a
+retransmission timeout.
+</p>
+
+
+<h3>Q10. What is the easiest way to remember TCP congestion control?</h3>
+
+<div class="success">
+
+<strong>
+Slow Start → Grow quickly
+<br>
+Congestion Avoidance → Grow carefully
+<br>
+Duplicate ACKs → Fast Retransmit
+<br>
+Timeout → Strong reduction
+</strong>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Interactive Computer Networks Learning Module
+
+<br>
+
+TCP Timer Management • RTT • RTO • cwnd • Slow Start • Congestion Avoidance
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   TIMER SIMULATION
+========================================================= */
+
+let timerInterval = null;
+let timerRemaining = 0;
+
+function startTimerSimulation() {
+
+    clearInterval(timerInterval);
+
+    let rtt =
+        Number(document.getElementById("rttInput").value);
+
+    let rto =
+        Number(document.getElementById("rtoInput").value);
+
+    if (rtt <= 0 || rto <= 0) {
+
+        alert("Enter positive RTT and RTO values.");
+
+        return;
+    }
+
+    timerRemaining = rto;
+
+    document.getElementById("timerMessage").innerHTML =
+        "📤 Segment sent. Retransmission timer started.";
+
+    timerInterval = setInterval(function() {
+
+        timerRemaining -= 50;
+
+        if (timerRemaining <= 0) {
+
+            clearInterval(timerInterval);
+
+            document.getElementById("timerDisplay").innerHTML =
+                "TIMEOUT";
+
+            document.getElementById("timerMessage").innerHTML =
+                "⏰ RTO expired. TCP may retransmit the segment and reduce its congestion window.";
+
+            return;
+        }
+
+        document.getElementById("timerDisplay").innerHTML =
+            "RTO<br>" + timerRemaining + " ms";
+
+    }, 50);
+
+}
+
+
+function ackReceived() {
+
+    if (timerInterval !== null) {
+
+        clearInterval(timerInterval);
+
+    }
+
+    document.getElementById("timerDisplay").innerHTML =
+        "ACK<br>Received";
+
+    document.getElementById("timerMessage").innerHTML =
+        "✅ ACK received before timeout. Timer is stopped/handled for the segment.";
+
+}
+
+
+function resetTimer() {
+
+    clearInterval(timerInterval);
+
+    timerInterval = null;
+
+    timerRemaining = 0;
+
+    document.getElementById("timerDisplay").innerHTML =
+        "Timer<br>Stopped";
+
+    document.getElementById("timerMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   CONGESTION CONTROL
+========================================================= */
+
+let congestionTimer = null;
+let currentCwnd = 1;
+let threshold = 8;
+
+function updateCwndDisplay() {
+
+    document.getElementById("simCwnd").innerHTML =
+        currentCwnd.toFixed(1) + " MSS";
+
+    document.getElementById("simSsthresh").innerHTML =
+        threshold.toFixed(1) + " MSS";
+
+    /*
+    The bar is only a visual representation.
+    */
+
+    let percentage =
+        Math.min(currentCwnd * 5, 100);
+
+    document.getElementById("tcpCwndBar").style.width =
+        percentage + "%";
+
+}
+
+
+function startCongestion() {
+
+    clearInterval(congestionTimer);
+
+    currentCwnd =
+        Number(document.getElementById("initialCwnd").value);
+
+    threshold =
+        Number(document.getElementById("ssthresh").value);
+
+    if (currentCwnd <= 0 || threshold <= 0) {
+
+        alert("Enter positive values.");
+
+        return;
+
+    }
+
+    document.getElementById("tcpState").innerHTML =
+        "Slow Start";
+
+    document.getElementById("congestionMessage").innerHTML =
+        "🚀 TCP Slow Start is increasing cwnd.";
+
+    updateCwndDisplay();
+
+
+    congestionTimer = setInterval(function() {
+
+        if (currentCwnd < threshold) {
+
+            /*
+            Simplified teaching model:
+            cwnd approximately doubles per RTT.
+            */
+
+            currentCwnd *= 2;
+
+            if (currentCwnd >= threshold) {
+
+                currentCwnd = threshold;
+
+                document.getElementById("tcpState").innerHTML =
+                    "Congestion Avoidance";
+
+                document.getElementById("congestionMessage").innerHTML =
+                    "🟢 ssthresh reached. TCP now increases cwnd more cautiously.";
+
+            }
+
+        }
+
+        else {
+
+            /*
+            Simplified additive increase:
+            +1 MSS per RTT.
+            */
+
+            currentCwnd += 1;
+
+            document.getElementById("tcpState").innerHTML =
+                "Congestion Avoidance";
+
+            document.getElementById("congestionMessage").innerHTML =
+                "📈 Congestion Avoidance: cwnd increases gradually.";
+
+        }
+
+        updateCwndDisplay();
+
+    }, 1000);
+
+}
+
+
+function simulateDuplicateACK() {
+
+    clearInterval(congestionTimer);
+
+    threshold =
+        Math.max(currentCwnd / 2, 2);
+
+    currentCwnd =
+        threshold;
+
+    document.getElementById("tcpState").innerHTML =
+        "Fast Retransmit / Recovery";
+
+    document.getElementById("congestionMessage").innerHTML =
+        "⚠️ Multiple duplicate ACKs detected. TCP performs Fast Retransmit and reduces cwnd.";
+
+    updateCwndDisplay();
+
+}
+
+
+function simulateTimeout() {
+
+    clearInterval(congestionTimer);
+
+    threshold =
+        Math.max(currentCwnd / 2, 2);
+
+    /*
+    Simplified traditional model:
+    cwnd reduced to a small initial value.
+    */
+
+    currentCwnd = 1;
+
+    document.getElementById("tcpState").innerHTML =
+        "Timeout → Slow Start";
+
+    document.getElementById("congestionMessage").innerHTML =
+        "⏰ Timeout detected. ssthresh is reduced and cwnd returns to a small value before Slow Start.";
+
+    updateCwndDisplay();
+
+}
+
+
+function resetCongestion() {
+
+    clearInterval(congestionTimer);
+
+    currentCwnd = 1;
+
+    threshold = 8;
+
+    document.getElementById("tcpState").innerHTML =
+        "Ready";
+
+    document.getElementById("congestionMessage").innerHTML =
+        "Simulation reset.";
+
+    updateCwndDisplay();
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function correct(id) {
+
+    document.getElementById(id).style.display =
+        "block";
+
+}
+
+
+function wrong() {
+
+    alert("❌ Incorrect. Try again!");
+
+}
+
+
+/* Initial display */
+
+updateCwndDisplay();
+
+</script>
+
+</body>
+</html>
