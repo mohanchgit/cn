@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Transport Layer – Flow Control, Crash Recovery & UDP</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+    line-height: 1.6;
+}
+
+header {
+    background: #12355b;
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    margin: 20px 0;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+h2 {
+    color: #12355b;
+    border-bottom: 3px solid #ddd;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #1769aa;
+}
+
+.highlight {
+    background: #eaf4ff;
+    border-left: 5px solid #1769aa;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #ff9800;
+    padding: 15px;
+}
+
+.success {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 15px;
+}
+
+.danger {
+    background: #ffebee;
+    border-left: 5px solid #d32f2f;
+    padding: 15px;
+}
+
+.code {
+    background: #1e1e1e;
+    color: #00ff88;
+    padding: 18px;
+    border-radius: 8px;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #12355b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+button {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    margin: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #0d4f82;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    width: 120px;
+}
+
+.diagram {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    background: #eef5fb;
+    border-radius: 10px;
+}
+
+.machine {
+    background: #d8ebff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    width: 180px;
+}
+
+.arrow {
+    font-size: 35px;
+    font-weight: bold;
+}
+
+#flowArea {
+    position: relative;
+    height: 260px;
+    background: #eef5fb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.sender {
+    position: absolute;
+    left: 30px;
+    top: 80px;
+    background: #d7eaff;
+    padding: 20px;
+    width: 150px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.receiver {
+    position: absolute;
+    right: 30px;
+    top: 80px;
+    background: #d7eaff;
+    padding: 20px;
+    width: 150px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.packet {
+    position: absolute;
+    left: 190px;
+    top: 110px;
+    background: #ff9800;
+    color: white;
+    padding: 10px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.progress {
+    background: #ddd;
+    border-radius: 10px;
+    height: 25px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progressBar {
+    height: 100%;
+    width: 0%;
+    background: #2e7d32;
+    transition: width 0.5s;
+}
+
+.udpBox {
+    background: #f3e5f5;
+    border: 2px solid #8e44ad;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.quiz {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.answer {
+    display: none;
+    padding: 12px;
+    margin-top: 10px;
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+}
+
+footer {
+    text-align: center;
+    background: #12355b;
+    color: white;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.small {
+    color: #555;
+    font-size: 14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Transport Layer Concepts</h1>
+
+<p>
+Flow Control • Crash Recovery • UDP
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ====================================================== -->
+<!-- FLOW CONTROL -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>1. What is Flow Control?</h2>
+
+<p>
+<strong>Flow control</strong> is a mechanism used to prevent a fast sender
+from sending data faster than the receiver can process.
+</p>
+
+<div class="highlight">
+
+<strong>Simple idea:</strong>
+
+<br><br>
+
+Fast Sender → 🚗🚗🚗🚗🚗🚗
+
+<br>
+
+Slow Receiver → 🚶
+
+<br><br>
+
+Without flow control, the receiver's buffer can become full.
+
+</div>
+
+
+<h3>Real-Life Example</h3>
+
+<p>
+
+Imagine filling a water bottle.
+
+</p>
+
+<div class="diagram">
+
+<div class="machine">
+🚰<br>
+Fast Water Flow
+</div>
+
+<div class="arrow">
+→
+</div>
+
+<div class="machine">
+🍼<br>
+Small Bottle
+</div>
+
+</div>
+
+<p>
+
+If the tap is opened too much, the bottle may overflow.
+
+Similarly, if a sender transmits too quickly, the receiver's buffer
+may overflow.
+
+</p>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- FLOW CONTROL TCP -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>2. TCP Flow Control</h2>
+
+<p>
+
+TCP uses a mechanism called the
+
+<strong>Receive Window (rwnd)</strong>
+
+to implement flow control.
+
+</p>
+
+<div class="code">
+
+Receiver Window = 5000 bytes
+
+Sender can send approximately 5000 bytes
+before needing additional acknowledgment/window information.
+
+</div>
+
+
+<h3>Basic Concept</h3>
+
+<pre>
+
+Sender                         Receiver
+
+   |                               |
+   | ---- Data ------------------> |
+   |                               |
+   | <--- ACK + Window = 5000 ---- |
+   |                               |
+   | ---- Data ------------------> |
+   |                               |
+   
+</pre>
+
+
+<div class="success">
+
+<strong>Important:</strong>
+
+The receiver tells the sender how much additional data it can accept.
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- INTERACTIVE FLOW CONTROL -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>3. Interactive Flow Control Simulation</h2>
+
+<p>
+
+Adjust the sender speed and receiver processing speed.
+
+</p>
+
+<label>
+
+Sender Speed:
+
+<input type="number" id="senderSpeed" value="80">
+
+units/sec
+
+</label>
+
+<br><br>
+
+<label>
+
+Receiver Speed:
+
+<input type="number" id="receiverSpeed" value="40">
+
+units/sec
+
+</label>
+
+<br><br>
+
+<button onclick="startFlow()">Start Simulation</button>
+
+<button onclick="resetFlow()">Reset</button>
+
+
+<div id="flowArea">
+
+<div class="sender">
+
+💻<br>
+SENDER
+
+</div>
+
+<div class="receiver">
+
+🖥️<br>
+RECEIVER
+
+</div>
+
+<div id="flowPacket" class="packet">
+
+DATA
+
+</div>
+
+</div>
+
+
+<p id="flowMessage">
+
+Click Start Simulation.
+
+</p>
+
+
+<div class="progress">
+
+<div id="bufferBar" class="progressBar"></div>
+
+</div>
+
+<p>
+
+Receiver Buffer Usage:
+
+<strong id="bufferValue">0%</strong>
+
+</p>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- FLOW CONTROL VS CONGESTION -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>4. Flow Control vs Congestion Control</h2>
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>Flow Control</th>
+
+<th>Congestion Control</th>
+
+</tr>
+
+<tr>
+
+<td>Protects</td>
+
+<td>Receiver</td>
+
+<td>Network</td>
+
+</tr>
+
+<tr>
+
+<td>Problem</td>
+
+<td>Fast sender / slow receiver</td>
+
+<td>Too much network traffic</td>
+
+</tr>
+
+<tr>
+
+<td>Example</td>
+
+<td>Receiver buffer becoming full</td>
+
+<td>Routers becoming overloaded</td>
+
+</tr>
+
+<tr>
+
+<td>TCP</td>
+
+<td>Receive Window</td>
+
+<td>Congestion Window</td>
+
+</tr>
+
+</table>
+
+
+<div class="important">
+
+<strong>Remember:</strong>
+
+<br><br>
+
+Flow Control → "Can the receiver handle this?"
+
+<br>
+
+Congestion Control → "Can the network handle this?"
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- CRASH RECOVERY -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>5. Crash Recovery</h2>
+
+<p>
+
+A system crash can occur because of:
+
+</p>
+
+<ul>
+
+<li>Power failure</li>
+
+<li>Operating system failure</li>
+
+<li>Hardware failure</li>
+
+<li>Network failure</li>
+
+<li>Application crash</li>
+
+</ul>
+
+
+<div class="danger">
+
+When a computer crashes during communication,
+the sender and receiver may lose information about the current
+communication state.
+
+</div>
+
+
+<h3>Example</h3>
+
+<pre>
+
+Sender                         Receiver
+
+   |                               |
+   | ---- DATA ------------------> |
+   |                               |
+   | <--------- ACK -------------- |
+   |                               |
+   |                               X
+   |                         💥 CRASH
+   |
+   | ---- DATA ------------------> |
+
+</pre>
+
+<p>
+
+After the crash, the system may need to determine:
+
+</p>
+
+<ul>
+
+<li>Which data was successfully received?</li>
+
+<li>Which data was lost?</li>
+
+<li>Should data be retransmitted?</li>
+
+<li>Is the connection still valid?</li>
+
+</ul>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- CRASH RECOVERY METHODS -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>6. Techniques Related to Crash Recovery</h2>
+
+<table>
+
+<tr>
+
+<th>Technique</th>
+
+<th>Purpose</th>
+
+</tr>
+
+<tr>
+
+<td>Sequence Numbers</td>
+
+<td>Identify data and detect duplicates</td>
+
+</tr>
+
+<tr>
+
+<td>Acknowledgments</td>
+
+<td>Confirm successful reception</td>
+
+</tr>
+
+<tr>
+
+<td>Timeout</td>
+
+<td>Detect possible lost data</td>
+
+</tr>
+
+<tr>
+
+<td>Retransmission</td>
+
+<td>Send lost data again</td>
+
+</tr>
+
+<tr>
+
+<td>Connection Re-establishment</td>
+
+<td>Create a new connection when necessary</td>
+
+</tr>
+
+<tr>
+
+<td>Checksums</td>
+
+<td>Detect corrupted data</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- CRASH SIMULATION -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>7. Interactive Crash Recovery Simulation</h2>
+
+<p>
+
+Observe what happens when the receiver crashes during data transfer.
+
+</p>
+
+<div id="crashArea"
+style="
+position:relative;
+height:250px;
+background:#eef5fb;
+border-radius:12px;
+overflow:hidden;
+">
+
+<div
+style="
+position:absolute;
+left:30px;
+top:90px;
+background:#d7eaff;
+padding:20px;
+border-radius:10px;
+font-weight:bold;
+">
+
+💻 SENDER
+
+</div>
+
+
+<div
+id="crashReceiver"
+style="
+position:absolute;
+right:30px;
+top:90px;
+background:#d7eaff;
+padding:20px;
+border-radius:10px;
+font-weight:bold;
+">
+
+🖥️ RECEIVER
+
+</div>
+
+
+<div
+id="crashPacket"
+style="
+position:absolute;
+left:180px;
+top:120px;
+background:#ff9800;
+color:white;
+padding:10px;
+border-radius:7px;
+display:none;
+">
+
+DATA
+
+</div>
+
+</div>
+
+
+<button onclick="startCrash()">
+
+Start Transmission
+
+</button>
+
+<button onclick="resetCrash()">
+
+Reset
+
+</button>
+
+
+<p id="crashMessage">
+
+Click Start Transmission.
+
+</p>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- UDP -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>8. What is UDP?</h2>
+
+<p>
+
+<strong>UDP</strong> stands for
+
+<strong>User Datagram Protocol</strong>.
+
+</p>
+
+<p>
+
+UDP is a
+
+<strong>connectionless transport-layer protocol</strong>.
+
+</p>
+
+
+<div class="udpBox">
+
+<h3>UDP</h3>
+
+<p>
+
+Fast • Simple • Low Overhead • Connectionless
+
+</p>
+
+</div>
+
+
+<div class="highlight">
+
+UDP sends independent datagrams without establishing a TCP-style
+connection first.
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- UDP HEADER -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>9. UDP Header</h2>
+
+<p>
+
+The UDP header is only
+
+<strong>8 bytes</strong>.
+
+</p>
+
+<table>
+
+<tr>
+
+<th>Field</th>
+
+<th>Size</th>
+
+<th>Purpose</th>
+
+</tr>
+
+<tr>
+
+<td>Source Port</td>
+
+<td>16 bits</td>
+
+<td>Identifies sending process</td>
+
+</tr>
+
+<tr>
+
+<td>Destination Port</td>
+
+<td>16 bits</td>
+
+<td>Identifies receiving process</td>
+
+</tr>
+
+<tr>
+
+<td>Length</td>
+
+<td>16 bits</td>
+
+<td>Total UDP datagram length</td>
+
+</tr>
+
+<tr>
+
+<td>Checksum</td>
+
+<td>16 bits</td>
+
+<td>Error detection</td>
+
+</tr>
+
+</table>
+
+
+<div class="code">
+
+UDP Header = 8 Bytes
+
++-----------------------+
+| Source Port  | 16 bit |
++-----------------------+
+| Destination  | 16 bit |
++-----------------------+
+| Length        | 16 bit |
++-----------------------+
+| Checksum      | 16 bit |
++-----------------------+
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- UDP CHARACTERISTICS -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>10. Characteristics of UDP</h2>
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>UDP</th>
+
+</tr>
+
+<tr>
+
+<td>Connection</td>
+
+<td>Connectionless</td>
+
+</tr>
+
+<tr>
+
+<td>Reliability</td>
+
+<td>Not guaranteed by UDP</td>
+
+</tr>
+
+<tr>
+
+<td>Ordering</td>
+
+<td>Not guaranteed</td>
+
+</tr>
+
+<tr>
+
+<td>Retransmission</td>
+
+<td>Not provided by UDP itself</td>
+
+</tr>
+
+<tr>
+
+<td>Flow Control</td>
+
+<td>Not provided by UDP itself</td>
+
+</tr>
+
+<tr>
+
+<td>Congestion Control</td>
+
+<td>Not provided by UDP itself</td>
+
+</tr>
+
+<tr>
+
+<td>Header Size</td>
+
+<td>8 bytes</td>
+
+</tr>
+
+<tr>
+
+<td>Speed / Overhead</td>
+
+<td>Low overhead</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- UDP USE CASES -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>11. Where is UDP Used?</h2>
+
+<div class="concept">
+
+<strong>DNS</strong>
+
+<br>
+
+DNS commonly uses UDP for ordinary queries because the exchange can be
+small and connection setup would add unnecessary overhead.
+
+</div>
+
+
+<div class="concept">
+
+<strong>DHCP</strong>
+
+<br>
+
+DHCP uses UDP because a host may need network configuration before it
+has a normal IP-based connection.
+
+</div>
+
+
+<div class="concept">
+
+<strong>VoIP</strong>
+
+<br>
+
+Voice applications often prefer low delay rather than retransmitting
+old voice packets.
+
+</div>
+
+
+<div class="concept">
+
+<strong>Online Gaming</strong>
+
+<br>
+
+Games may prefer low latency and can tolerate some packet loss depending
+on the game.
+
+</div>
+
+
+<div class="concept">
+
+<strong>Video / Live Streaming</strong>
+
+<br>
+
+Real-time applications may prioritize continuous delivery and low delay.
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- TCP UDP -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>12. TCP vs UDP – Interview Comparison</h2>
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>TCP</th>
+
+<th>UDP</th>
+
+</tr>
+
+<tr>
+
+<td>Connection</td>
+
+<td>Connection-oriented</td>
+
+<td>Connectionless</td>
+
+</tr>
+
+<tr>
+
+<td>Handshake</td>
+
+<td>Three-way handshake</td>
+
+<td>No TCP-style handshake</td>
+
+</tr>
+
+<tr>
+
+<td>Reliability</td>
+
+<td>Reliable delivery mechanisms</td>
+
+<td>No delivery guarantee by UDP</td>
+
+</tr>
+
+<tr>
+
+<td>Ordering</td>
+
+<td>Ordered byte stream</td>
+
+<td>No ordering guarantee</td>
+
+</tr>
+
+<tr>
+
+<td>Flow Control</td>
+
+<td>Yes</td>
+
+<td>No</td>
+
+</tr>
+
+<tr>
+
+<td>Congestion Control</td>
+
+<td>Yes</td>
+
+<td>No built-in TCP-style congestion control</td>
+
+</tr>
+
+<tr>
+
+<td>Header</td>
+
+<td>Minimum 20 bytes</td>
+
+<td>8 bytes</td>
+
+</tr>
+
+<tr>
+
+<td>Overhead</td>
+
+<td>Higher</td>
+
+<td>Lower</td>
+
+</tr>
+
+<tr>
+
+<td>Typical Uses</td>
+
+<td>Web, SSH, FTP</td>
+
+<td>DNS, DHCP, VoIP, real-time applications</td>
+
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- UDP SIMULATION -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>13. Interactive UDP Simulation</h2>
+
+<p>
+
+UDP does not establish a TCP-style connection before sending each
+datagram.
+
+</p>
+
+<button onclick="sendUDP()">
+
+Send UDP Datagram
+
+</button>
+
+<button onclick="resetUDP()">
+
+Reset
+
+</button>
+
+
+<div id="udpSimulation"
+style="
+height:220px;
+background:#eef5fb;
+border-radius:12px;
+position:relative;
+margin-top:20px;
+overflow:hidden;
+">
+
+<div
+style="
+position:absolute;
+left:30px;
+top:80px;
+background:#d7eaff;
+padding:20px;
+border-radius:10px;
+font-weight:bold;
+">
+
+💻 CLIENT
+
+</div>
+
+
+<div
+style="
+position:absolute;
+right:30px;
+top:80px;
+background:#d7eaff;
+padding:20px;
+border-radius:10px;
+font-weight:bold;
+">
+
+🖥️ SERVER
+
+</div>
+
+
+<div
+id="udpPacket"
+style="
+position:absolute;
+left:190px;
+top:100px;
+background:#8e44ad;
+color:white;
+padding:10px;
+border-radius:7px;
+display:none;
+">
+
+UDP
+
+</div>
+
+</div>
+
+<p id="udpMessage">
+
+Click Send UDP Datagram.
+
+</p>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- IMPORTANT DIFFERENCE -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>14. Important Concept</h2>
+
+<div class="success">
+
+<strong>TCP:</strong>
+
+"I will establish a connection, maintain state, acknowledge data,
+retransmit when necessary, and provide ordered reliable delivery."
+
+</div>
+
+<br>
+
+<div class="warning">
+
+<strong>UDP:</strong>
+
+"I will send the datagram with minimal transport overhead.
+Delivery, ordering, and retransmission are not guaranteed by UDP itself."
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- QUIZ -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>15. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<strong>
+Q1. What is the main purpose of flow control?
+</strong>
+
+<br>
+
+<button onclick="correct('q1')">
+Prevent receiver overload
+</button>
+
+<button onclick="wrong()">
+Increase IP address size
+</button>
+
+<button onclick="wrong()">
+Encrypt packets
+</button>
+
+<div id="q1" class="answer">
+
+✅ Correct!
+
+Flow control prevents a fast sender from overwhelming a receiver.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q2. Which TCP mechanism tells the sender how much data the receiver
+can currently accept?
+</strong>
+
+<br>
+
+<button onclick="correct('q2')">
+Receive Window
+</button>
+
+<button onclick="wrong()">
+MAC Address
+</button>
+
+<button onclick="wrong()">
+DNS
+</button>
+
+<div id="q2" class="answer">
+
+✅ Correct!
+
+TCP uses the receive window for flow control.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q3. What does UDP stand for?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+Universal Data Protocol
+</button>
+
+<button onclick="correct('q3')">
+User Datagram Protocol
+</button>
+
+<button onclick="wrong()">
+Unified Delivery Protocol
+</button>
+
+<div id="q3" class="answer">
+
+✅ Correct!
+
+UDP = User Datagram Protocol.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q4. What is the UDP header size?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+20 bytes
+</button>
+
+<button onclick="correct('q4')">
+8 bytes
+</button>
+
+<button onclick="wrong()">
+64 bytes
+</button>
+
+<div id="q4" class="answer">
+
+✅ Correct!
+
+The UDP header is 8 bytes.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q5. Does UDP guarantee packet delivery?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+Yes
+</button>
+
+<button onclick="correct('q5')">
+No
+</button>
+
+<div id="q5" class="answer">
+
+✅ Correct!
+
+UDP itself does not guarantee delivery.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q6. Which protects the receiver?
+</strong>
+
+<br>
+
+<button onclick="correct('q6')">
+Flow Control
+</button>
+
+<button onclick="wrong()">
+Congestion Control
+</button>
+
+<div id="q6" class="answer">
+
+✅ Correct!
+
+Flow control protects the receiver from being overwhelmed.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q7. Which protocol has lower transport-layer overhead?
+</strong>
+
+<br>
+
+<button onclick="correct('q7')">
+UDP
+</button>
+
+<button onclick="wrong()">
+TCP
+</button>
+
+<div id="q7" class="answer">
+
+✅ Correct!
+
+UDP has a smaller header and fewer built-in transport mechanisms.
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- INTERVIEW QUESTIONS -->
+<!-- ====================================================== -->
+
+<div class="card">
+
+<h2>16. Interview Quick Revision</h2>
+
+<h3>1. What is flow control?</h3>
+
+<p>
+Flow control regulates the sender's transmission rate so that the
+receiver is not overwhelmed.
+</p>
+
+
+<h3>2. What is the difference between flow control and congestion control?</h3>
+
+<p>
+
+Flow control protects the receiver, while congestion control manages
+traffic to reduce network congestion.
+
+</p>
+
+
+<h3>3. What is crash recovery?</h3>
+
+<p>
+
+Crash recovery deals with restoring or re-establishing communication
+after a system or connection failure.
+
+</p>
+
+
+<h3>4. How can TCP detect lost data?</h3>
+
+<p>
+
+TCP uses mechanisms including sequence numbers, acknowledgments and
+timers/timeouts to detect possible loss and trigger retransmission.
+
+</p>
+
+
+<h3>5. What is UDP?</h3>
+
+<p>
+
+UDP is a connectionless transport-layer protocol that provides
+datagram delivery with low protocol overhead.
+
+</p>
+
+
+<h3>6. What is the size of the UDP header?</h3>
+
+<p>
+
+The UDP header is 8 bytes.
+
+</p>
+
+
+<h3>7. Does UDP provide flow control?</h3>
+
+<p>
+
+UDP itself does not provide TCP-style flow control.
+
+</p>
+
+
+<h3>8. Does UDP provide retransmission?</h3>
+
+<p>
+
+UDP itself does not provide retransmission. If an application needs
+reliability, it can implement appropriate mechanisms at a higher layer.
+
+</p>
+
+
+<h3>9. Why is UDP used for real-time applications?</h3>
+
+<p>
+
+Many real-time applications prioritize low delay and may prefer to
+avoid the retransmission and connection-management overhead associated
+with TCP.
+
+</p>
+
+
+<h3>10. Give examples of UDP applications.</h3>
+
+<p>
+
+DNS, DHCP, VoIP, online gaming and many real-time media applications
+can use UDP.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Transport Layer Interactive Learning Module
+
+<br>
+
+Flow Control • Crash Recovery • UDP
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   FLOW CONTROL SIMULATION
+========================================================= */
+
+let flowTimer;
+let buffer = 0;
+
+function startFlow() {
+
+    clearInterval(flowTimer);
+
+    let senderSpeed =
+        Number(document.getElementById("senderSpeed").value);
+
+    let receiverSpeed =
+        Number(document.getElementById("receiverSpeed").value);
+
+    buffer = 0;
+
+    document.getElementById("flowMessage").innerHTML =
+        "Simulation running...";
+
+    flowTimer = setInterval(function() {
+
+        /*
+        Convert speeds into simple simulation units.
+        */
+
+        let senderAmount = senderSpeed / 20;
+        let receiverAmount = receiverSpeed / 20;
+
+        buffer += senderAmount;
+        buffer -= receiverAmount;
+
+        if (buffer < 0)
+            buffer = 0;
+
+        if (buffer > 100)
+            buffer = 100;
+
+        document.getElementById("bufferBar").style.width =
+            buffer + "%";
+
+        document.getElementById("bufferValue").innerHTML =
+            Math.round(buffer) + "%";
+
+
+        if (buffer >= 90) {
+
+            document.getElementById("flowMessage").innerHTML =
+                "⚠️ Receiver buffer is almost full. Flow control is required.";
+
+        }
+
+        else if (buffer <= 10) {
+
+            document.getElementById("flowMessage").innerHTML =
+                "✅ Receiver can comfortably process the incoming data.";
+
+        }
+
+        else {
+
+            document.getElementById("flowMessage").innerHTML =
+                "📦 Data is being received and processed.";
+
+        }
+
+    }, 500);
+
+}
+
+
+function resetFlow() {
+
+    clearInterval(flowTimer);
+
+    buffer = 0;
+
+    document.getElementById("bufferBar").style.width =
+        "0%";
+
+    document.getElementById("bufferValue").innerHTML =
+        "0%";
+
+    document.getElementById("flowMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   CRASH RECOVERY SIMULATION
+========================================================= */
+
+function startCrash() {
+
+    const packet =
+        document.getElementById("crashPacket");
+
+    const receiver =
+        document.getElementById("crashReceiver");
+
+    const message =
+        document.getElementById("crashMessage");
+
+    packet.style.display = "block";
+
+    packet.style.left = "180px";
+
+    message.innerHTML =
+        "📤 Sender is transmitting DATA...";
+
+    let position = 180;
+
+    let timer = setInterval(function() {
+
+        position += 5;
+
+        packet.style.left =
+            position + "px";
+
+
+        /*
+        Simulate crash around the middle.
+        */
+
+        if (position > 500 && position < 530) {
+
+            receiver.innerHTML =
+                "💥 RECEIVER<br>CRASHED";
+
+            receiver.style.background =
+                "#ffcdd2";
+
+            message.innerHTML =
+                "💥 Receiver crashed! Sender does not receive the expected ACK.";
+
+        }
+
+
+        if (position > 850) {
+
+            clearInterval(timer);
+
+            message.innerHTML =
+                "⏱️ Timeout occurs → Sender may retransmit data after determining that delivery was not confirmed.";
+
+        }
+
+    }, 30);
+
+}
+
+
+function resetCrash() {
+
+    document.getElementById("crashPacket").style.display =
+        "none";
+
+    document.getElementById("crashPacket").style.left =
+        "180px";
+
+    document.getElementById("crashReceiver").innerHTML =
+        "🖥️ RECEIVER";
+
+    document.getElementById("crashReceiver").style.background =
+        "#d7eaff";
+
+    document.getElementById("crashMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   UDP SIMULATION
+========================================================= */
+
+function sendUDP() {
+
+    const packet =
+        document.getElementById("udpPacket");
+
+    const message =
+        document.getElementById("udpMessage");
+
+    packet.style.display = "block";
+
+    packet.style.left = "190px";
+
+    message.innerHTML =
+        "📤 UDP datagram is sent without a TCP-style connection setup.";
+
+    let position = 190;
+
+    let timer = setInterval(function() {
+
+        position += 5;
+
+        packet.style.left =
+            position + "px";
+
+        if (position > 850) {
+
+            clearInterval(timer);
+
+            message.innerHTML =
+                "📥 Server received the UDP datagram. UDP itself does not send a delivery acknowledgment.";
+
+        }
+
+    }, 30);
+
+}
+
+
+function resetUDP() {
+
+    document.getElementById("udpPacket").style.display =
+        "none";
+
+    document.getElementById("udpPacket").style.left =
+        "190px";
+
+    document.getElementById("udpMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function correct(id) {
+
+    document.getElementById(id).style.display =
+        "block";
+
+}
+
+function wrong() {
+
+    alert("❌ Incorrect. Please try again.");
+
+}
+
+</script>
+
+</body>
+</html>
