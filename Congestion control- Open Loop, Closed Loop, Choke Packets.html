@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Congestion Control – Open Loop, Closed Loop & Choke Packets</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+    line-height: 1.6;
+}
+
+header {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    margin: 22px 0;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+h2 {
+    color: #12355b;
+    border-bottom: 3px solid #ddd;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #1769aa;
+}
+
+.highlight {
+    background: #eaf4ff;
+    border-left: 5px solid #1769aa;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #ff9800;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.success {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.danger {
+    background: #ffebee;
+    border-left: 5px solid #d32f2f;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.info {
+    background: #f3e5f5;
+    border-left: 5px solid #8e44ad;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #12355b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+button {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    margin: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #0d4f82;
+}
+
+select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+}
+
+.diagram {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #eef5fb;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.node {
+    background: #d7eaff;
+    padding: 20px;
+    width: 180px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.arrow {
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.network {
+    position: relative;
+    height: 300px;
+    background: #eef5fb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.router {
+    position: absolute;
+    background: #d7eaff;
+    padding: 18px;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+}
+
+#router1 {
+    left: 80px;
+    top: 110px;
+}
+
+#router2 {
+    left: 420px;
+    top: 110px;
+}
+
+#router3 {
+    right: 80px;
+    top: 110px;
+}
+
+.host {
+    position: absolute;
+    background: #fff;
+    border: 2px solid #1769aa;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+#host1 {
+    left: 20px;
+    top: 30px;
+}
+
+#host2 {
+    left: 20px;
+    bottom: 30px;
+}
+
+#host3 {
+    right: 20px;
+    top: 30px;
+}
+
+.packet {
+    position: absolute;
+    background: #ff9800;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 7px;
+    font-weight: bold;
+    display: none;
+}
+
+.choke {
+    background: #d32f2f;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.progress {
+    background: #ddd;
+    border-radius: 10px;
+    height: 25px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progressBar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s;
+}
+
+.green {
+    background: #2e7d32;
+}
+
+.red {
+    background: #d32f2f;
+}
+
+.blue {
+    background: #1769aa;
+}
+
+.quiz {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.answer {
+    display: none;
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.code {
+    background: #1e1e1e;
+    color: #00ff88;
+    padding: 18px;
+    border-radius: 8px;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+footer {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Congestion Control</h1>
+
+<p>
+Open Loop • Closed Loop • Choke Packets
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================================================= -->
+<!-- INTRODUCTION -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>1. What is Network Congestion?</h2>
+
+<p>
+<strong>Congestion</strong> occurs when the amount of traffic entering a
+network becomes greater than the network's ability to handle it.
+</p>
+
+<div class="highlight">
+
+<strong>Simple Example:</strong>
+
+<br><br>
+
+Imagine a road.
+
+<br><br>
+
+🚗 🚗 🚗 🚗 🚗 🚗 🚗 🚗 🚗
+
+<br>
+
+If too many vehicles enter the road, traffic slows down.
+
+<br><br>
+
+A computer network behaves similarly.
+
+</div>
+
+
+<h3>Network Congestion</h3>
+
+<ul>
+
+<li>Too many packets enter the network.</li>
+
+<li>Routers may have limited buffer space.</li>
+
+<li>Queues become longer.</li>
+
+<li>Packet delay increases.</li>
+
+<li>Packets may be dropped.</li>
+
+<li>Retransmissions may increase traffic further.</li>
+
+</ul>
+
+<div class="danger">
+
+<strong>Important:</strong>
+
+Congestion is a network-wide problem, whereas flow control primarily
+protects a receiver from a fast sender.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CONGESTION EFFECTS -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>2. Effects of Congestion</h2>
+
+<table>
+
+<tr>
+<th>Effect</th>
+<th>What Happens?</th>
+</tr>
+
+<tr>
+<td>Delay</td>
+<td>Packets wait longer in queues.</td>
+</tr>
+
+<tr>
+<td>Packet Loss</td>
+<td>Router buffers may overflow.</td>
+</tr>
+
+<tr>
+<td>Reduced Throughput</td>
+<td>Less useful data is delivered per unit time.</td>
+</tr>
+
+<tr>
+<td>Retransmissions</td>
+<td>Lost packets may be transmitted again.</td>
+</tr>
+
+<tr>
+<td>More Congestion</td>
+<td>Retransmissions can add additional traffic.</td>
+</tr>
+
+</table>
+
+<div class="warning">
+
+<strong>Congestion Collapse:</strong>
+
+In severe cases, increasing offered traffic can result in very little
+useful throughput because the network spends much of its capacity
+handling overloaded traffic and retransmissions.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CONGESTION CONTROL -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>3. What is Congestion Control?</h2>
+
+<p>
+
+<strong>Congestion control</strong> consists of techniques used to
+prevent or reduce excessive traffic in a network.
+
+</p>
+
+<div class="success">
+
+<strong>Main Goal:</strong>
+
+Keep the network operating efficiently without allowing traffic to
+overload network resources.
+
+</div>
+
+
+<div class="diagram">
+
+<div class="node">
+Sender<br>
+💻
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Network<br>
+🌐
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Receiver<br>
+🖥️
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- TWO APPROACHES -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>4. Two Approaches to Congestion Control</h2>
+
+<table>
+
+<tr>
+<th>Approach</th>
+<th>Basic Idea</th>
+</tr>
+
+<tr>
+<td>Open-Loop Congestion Control</td>
+<td>Try to prevent congestion before it occurs.</td>
+</tr>
+
+<tr>
+<td>Closed-Loop Congestion Control</td>
+<td>Detect congestion and react to it.</td>
+</tr>
+
+</table>
+
+<div class="highlight">
+
+<strong>Memory Trick:</strong>
+
+<br><br>
+
+Open Loop = <strong>Prevent</strong>
+
+<br>
+
+Closed Loop = <strong>Detect + React</strong>
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- OPEN LOOP -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>5. Open-Loop Congestion Control</h2>
+
+<p>
+
+Open-loop congestion control attempts to prevent congestion
+<strong>before it happens</strong>.
+
+</p>
+
+<div class="info">
+
+There is no need to wait for the network to become congested before
+taking preventive action.
+
+</div>
+
+
+<h3>Examples of Open-Loop Techniques</h3>
+
+<ul>
+
+<li>Retransmission policy</li>
+
+<li>Window policy</li>
+
+<li>Acknowledgment policy</li>
+
+<li>Discarding policy</li>
+
+<li>Admission policy</li>
+
+</ul>
+
+
+<table>
+
+<tr>
+<th>Technique</th>
+<th>Idea</th>
+</tr>
+
+<tr>
+<td>Retransmission Policy</td>
+<td>Avoid unnecessary retransmissions.</td>
+</tr>
+
+<tr>
+<td>Window Policy</td>
+<td>Control how many packets can be outstanding.</td>
+</tr>
+
+<tr>
+<td>Acknowledgment Policy</td>
+<td>Avoid excessive acknowledgments where appropriate.</td>
+</tr>
+
+<tr>
+<td>Discarding Policy</td>
+<td>Discard less important traffic when necessary.</td>
+</tr>
+
+<tr>
+<td>Admission Policy</td>
+<td>Do not allow new traffic when resources are insufficient.</td>
+</tr>
+
+</table>
+
+
+<h3>Open-Loop Concept</h3>
+
+<pre>
+
+        PREVENTION
+
+Sender
+   |
+   |  Controlled Traffic
+   ↓
+Network
+   |
+   ↓
+Receiver
+
+No need to wait for congestion
+to become severe.
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- OPEN LOOP SIMULATION -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>6. Open-Loop Simulation</h2>
+
+<p>
+
+This simulation demonstrates the idea of preventing congestion by
+limiting the number of packets injected into the network.
+
+</p>
+
+<label>
+
+Traffic Rate:
+
+<select id="trafficRate">
+
+<option value="20">Low</option>
+<option value="50" selected>Medium</option>
+<option value="90">High</option>
+
+</select>
+
+</label>
+
+<br><br>
+
+<button onclick="openLoopSimulation()">
+
+Start Open-Loop Control
+
+</button>
+
+<button onclick="resetOpenLoop()">
+
+Reset
+
+</button>
+
+
+<div class="progress">
+
+<div id="openBar"
+class="progressBar blue">
+</div>
+
+</div>
+
+
+<p id="openMessage">
+
+Select a traffic level and start the simulation.
+
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CLOSED LOOP -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>7. Closed-Loop Congestion Control</h2>
+
+<p>
+
+Closed-loop congestion control allows the network or endpoints to
+<strong>detect congestion</strong> and then take corrective action.
+
+</p>
+
+<div class="highlight">
+
+<strong>Closed Loop = Feedback</strong>
+
+<br><br>
+
+Send Traffic → Network → Detect Congestion → Feedback → Reduce Traffic
+
+</div>
+
+
+<h3>Three Basic Steps</h3>
+
+<ol>
+
+<li>Monitor the network.</li>
+
+<li>Detect congestion.</li>
+
+<li>Take corrective action.</li>
+
+</ol>
+
+
+<h3>Examples</h3>
+
+<ul>
+
+<li>Backpressure</li>
+
+<li>Choke packets</li>
+
+<li>Implicit signaling</li>
+
+<li>Explicit signaling</li>
+
+</ul>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CLOSED LOOP DIAGRAM -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>8. Closed-Loop Feedback</h2>
+
+<pre>
+
+        DATA
+Sender ---------> Router ---------> Receiver
+                    |
+                    |
+              Congestion detected
+                    |
+                    ↓
+                FEEDBACK
+                    |
+                    ↓
+                  Sender
+
+Sender reduces traffic
+        ↓
+Congestion decreases
+
+</pre>
+
+<div class="success">
+
+The important difference is the
+
+<strong>feedback mechanism</strong>.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CHOKE PACKET -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>9. What is a Choke Packet?</h2>
+
+<p>
+
+A <strong>choke packet</strong> is a control message generated by a
+router when it detects congestion.
+
+</p>
+
+<div class="danger">
+
+The router sends the choke message back toward the source and asks the
+source to reduce its transmission rate.
+
+</div>
+
+
+<h3>Simple Example</h3>
+
+<pre>
+
+Sender              Router              Receiver
+
+  |                   |                    |
+  | ---- DATA ------> |                    |
+  | ---- DATA ------> |                    |
+  | ---- DATA ------> |                    |
+  | ---- DATA ------> |                    |
+  |                   |                    |
+  |                   | CONGESTION!       |
+  |                   |                    |
+  | <--- CHOKE -------|                    |
+  |                   |                    |
+  | REDUCE RATE       |                    |
+  |                   |                    |
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CHOKE SIMULATION -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>10. Interactive Choke Packet Simulation</h2>
+
+<p>
+
+Click the button to simulate a router detecting congestion and sending
+a choke packet back to the sender.
+
+</p>
+
+<div id="chokeNetwork"
+class="network">
+
+<div id="host1" class="host">
+💻 Sender
+</div>
+
+<div id="host2" class="host">
+💻 Sender 2
+</div>
+
+<div id="host3" class="host">
+🖥️ Receiver
+</div>
+
+<div id="router1" class="router">
+R1
+</div>
+
+<div id="router2" class="router">
+R2
+</div>
+
+<div id="router3" class="router">
+R3
+</div>
+
+<div id="chokePacket"
+class="packet">
+CHOKE
+</div>
+
+</div>
+
+<button onclick="startChoke()">
+
+Generate Choke Packet
+
+</button>
+
+<button onclick="resetChoke()">
+
+Reset
+
+</button>
+
+<p id="chokeMessage">
+
+Click Generate Choke Packet.
+
+</p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- CHOKE PROCESS -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>11. Choke Packet – Step-by-Step</h2>
+
+<table>
+
+<tr>
+<th>Step</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>Sender sends packets.</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Router receives heavy traffic.</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Router detects congestion.</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>Router generates a choke packet.</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>Choke packet travels toward the source.</td>
+</tr>
+
+<tr>
+<td>6</td>
+<td>Source receives the congestion notification.</td>
+</tr>
+
+<tr>
+<td>7</td>
+<td>Source reduces its transmission rate.</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- BACKPRESSURE -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>12. Backpressure</h2>
+
+<p>
+
+<strong>Backpressure</strong> is another closed-loop congestion control
+technique.
+
+</p>
+
+<p>
+
+When a router becomes congested, it can signal the previous router to
+slow down. That router can then signal the previous router, and so on.
+
+</p>
+
+<pre>
+
+R1 → R2 → R3 → R4
+
+        R3 congested
+             ↑
+             |
+        Slow down R2
+             ↑
+             |
+        Slow down R1
+
+</pre>
+
+<div class="highlight">
+
+<strong>Key Idea:</strong>
+
+Backpressure moves congestion information backward toward the source.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- IMPLICIT SIGNALING -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>13. Implicit Signaling</h2>
+
+<p>
+
+In implicit signaling, the sender does not receive a special congestion
+message.
+
+Instead, it infers congestion from network behavior.
+
+</p>
+
+<h3>Possible Indicators</h3>
+
+<ul>
+
+<li>Increased delay</li>
+
+<li>Packet loss</li>
+
+<li>Timeouts</li>
+
+<li>Duplicate acknowledgments</li>
+
+</ul>
+
+<div class="info">
+
+TCP congestion control can use signals such as packet loss, duplicate
+ACKs, and increasing RTT to infer network conditions.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- EXPLICIT SIGNALING -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>14. Explicit Signaling</h2>
+
+<p>
+
+In explicit signaling, a network device explicitly communicates
+congestion information to the sender or receiver.
+
+</p>
+
+<div class="highlight">
+
+<strong>Example:</strong>
+
+A router can mark packets or generate a control message to indicate
+congestion.
+
+</div>
+
+<table>
+
+<tr>
+<th>Signaling</th>
+<th>Meaning</th>
+</tr>
+
+<tr>
+<td>Implicit</td>
+<td>Sender infers congestion.</td>
+</tr>
+
+<tr>
+<td>Explicit</td>
+<td>Network explicitly indicates congestion.</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- OPEN VS CLOSED -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>15. Open Loop vs Closed Loop</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Open Loop</th>
+<th>Closed Loop</th>
+</tr>
+
+<tr>
+<td>Approach</td>
+<td>Prevention</td>
+<td>Feedback and correction</td>
+</tr>
+
+<tr>
+<td>Congestion Detection</td>
+<td>Not dependent on feedback</td>
+<td>Yes</td>
+</tr>
+
+<tr>
+<td>Feedback</td>
+<td>Generally not required</td>
+<td>Required</td>
+</tr>
+
+<tr>
+<td>Timing</td>
+<td>Before congestion</td>
+<td>After/during detection of congestion</td>
+</tr>
+
+<tr>
+<td>Examples</td>
+<td>Admission policy, discard policy</td>
+<td>Choke packets, backpressure</td>
+</tr>
+
+</table>
+
+
+<div class="success">
+
+<strong>Remember:</strong>
+
+<br><br>
+
+OPEN LOOP → Prevent
+
+<br>
+
+CLOSED LOOP → Detect → Inform → Correct
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- FLOW VS CONGESTION -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>16. Flow Control vs Congestion Control</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Flow Control</th>
+<th>Congestion Control</th>
+</tr>
+
+<tr>
+<td>Main Concern</td>
+<td>Receiver capacity</td>
+<td>Network capacity</td>
+</tr>
+
+<tr>
+<td>Protects</td>
+<td>Receiver</td>
+<td>Network</td>
+</tr>
+
+<tr>
+<td>Example Problem</td>
+<td>Fast sender + slow receiver</td>
+<td>Too many packets in network</td>
+</tr>
+
+<tr>
+<td>TCP Example</td>
+<td>Receive Window</td>
+<td>Congestion Window</td>
+</tr>
+
+</table>
+
+<div class="warning">
+
+<strong>Very Important Interview Question:</strong>
+
+Flow control and congestion control are NOT the same.
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- COMPLETE CONGESTION PROCESS -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>17. Complete Congestion-Control Process</h2>
+
+<pre>
+
+          APPLICATION
+               |
+               ↓
+        Generate Traffic
+               |
+               ↓
+          NETWORK
+               |
+       ┌───────┴────────┐
+       |                |
+       ↓                ↓
+   No Congestion     Congestion
+       |                |
+       ↓                ↓
+ Continue          Detect Problem
+                        |
+                        ↓
+                  Feedback
+                        |
+             ┌──────────┴─────────┐
+             |                    |
+             ↓                    ↓
+       Choke Packet          Other Signal
+             |                    |
+             └──────────┬─────────┘
+                        ↓
+                 Sender Reduces
+                    Traffic
+                        |
+                        ↓
+               Congestion Falls
+
+</pre>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- QUIZ -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>18. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<strong>
+Q1. What is congestion?
+</strong>
+
+<br>
+
+<button onclick="correct('q1')">
+Too much traffic for available network resources
+</button>
+
+<button onclick="wrong()">
+A type of encryption
+</button>
+
+<div id="q1" class="answer">
+
+✅ Correct!
+
+Congestion occurs when offered traffic exceeds available network
+capacity/resources.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q2. What is the main idea of open-loop congestion control?
+</strong>
+
+<br>
+
+<button onclick="correct('q2')">
+Prevent congestion
+</button>
+
+<button onclick="wrong()">
+Wait until the network completely fails
+</button>
+
+<div id="q2" class="answer">
+
+✅ Correct!
+
+Open-loop techniques aim to prevent congestion before it occurs.
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q3. What is the main idea of closed-loop congestion control?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+Ignore congestion
+</button>
+
+<button onclick="correct('q3')">
+Detect congestion and react using feedback
+</button>
+
+<div id="q3" class="answer">
+
+✅ Correct!
+
+Closed-loop control detects congestion and uses feedback to take
+corrective action.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q4. What is a choke packet?
+</strong>
+
+<br>
+
+<button onclick="correct('q4')">
+A congestion notification sent toward the source
+</button>
+
+<button onclick="wrong()">
+A normal data packet
+</button>
+
+<div id="q4" class="answer">
+
+✅ Correct!
+
+A choke packet is a control message used to tell a source to reduce
+its transmission rate.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q5. Which protects the network?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+Flow Control
+</button>
+
+<button onclick="correct('q5')">
+Congestion Control
+</button>
+
+<div id="q5" class="answer">
+
+✅ Correct!
+
+Congestion control protects network resources from excessive traffic.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q6. Which technique sends congestion information backward?
+</strong>
+
+<br>
+
+<button onclick="correct('q6')">
+Backpressure
+</button>
+
+<button onclick="wrong()">
+DNS
+</button>
+
+<div id="q6" class="answer">
+
+✅ Correct!
+
+Backpressure propagates congestion information toward the source.
+
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q7. Which signaling does not require an explicit congestion message?
+</strong>
+
+<br>
+
+<button onclick="correct('q7')">
+Implicit signaling
+</button>
+
+<button onclick="wrong()">
+Explicit signaling
+</button>
+
+<div id="q7" class="answer">
+
+✅ Correct!
+
+With implicit signaling, the sender infers congestion from observations
+such as loss, delay, or timeouts.
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- INTERVIEW QUESTIONS -->
+<!-- ================================================= -->
+
+<div class="card">
+
+<h2>19. Interview Questions & Answers</h2>
+
+<h3>Q1. What is congestion control?</h3>
+
+<p>
+Congestion control is the set of techniques used to prevent or reduce
+network congestion by regulating traffic entering the network.
+</p>
+
+
+<h3>Q2. What is open-loop congestion control?</h3>
+
+<p>
+Open-loop congestion control attempts to prevent congestion before it
+occurs. It generally does not rely on congestion feedback to initiate
+the preventive policy.
+</p>
+
+
+<h3>Q3. What is closed-loop congestion control?</h3>
+
+<p>
+Closed-loop congestion control detects congestion and uses feedback to
+take corrective action.
+</p>
+
+
+<h3>Q4. What is a choke packet?</h3>
+
+<p>
+A choke packet is a congestion-control message generated by a router
+to inform the source that it should reduce its transmission rate.
+</p>
+
+
+<h3>Q5. What is backpressure?</h3>
+
+<p>
+Backpressure propagates congestion information backward through the
+network so upstream devices reduce their traffic.
+</p>
+
+
+<h3>Q6. What is implicit signaling?</h3>
+
+<p>
+The sender infers congestion from network behavior such as packet loss,
+delay, duplicate ACKs, or timeouts.
+</p>
+
+
+<h3>Q7. What is explicit signaling?</h3>
+
+<p>
+A network device explicitly communicates congestion information to
+endpoints, for example by marking packets or using a control message.
+</p>
+
+
+<h3>Q8. What is the difference between flow control and congestion control?</h3>
+
+<p>
+Flow control prevents a sender from overwhelming a receiver, while
+congestion control regulates traffic to avoid overwhelming the network.
+</p>
+
+
+<h3>Q9. What is the easiest way to remember Open Loop and Closed Loop?</h3>
+
+<div class="success">
+
+OPEN LOOP = <strong>Prevent</strong>
+
+<br><br>
+
+CLOSED LOOP = <strong>Detect → Feedback → Correct</strong>
+
+</div>
+
+
+<h3>Q10. What happens after a choke packet reaches the source?</h3>
+
+<p>
+The source is expected to reduce its transmission rate to help relieve
+the congestion.
+</p>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Interactive Computer Networks Learning Module
+
+<br>
+
+Congestion Control • Open Loop • Closed Loop • Choke Packets
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   OPEN LOOP SIMULATION
+========================================================= */
+
+function openLoopSimulation() {
+
+    let rate =
+        Number(document.getElementById("trafficRate").value);
+
+    let bar =
+        document.getElementById("openBar");
+
+    let message =
+        document.getElementById("openMessage");
+
+    bar.style.width = "0%";
+
+    /*
+    Open-loop control limits the traffic before congestion
+    becomes severe.
+    */
+
+    let current = 0;
+
+    let timer = setInterval(function() {
+
+        current += 5;
+
+        if (current > rate) {
+
+            clearInterval(timer);
+
+            if (rate >= 90) {
+
+                message.innerHTML =
+                    "⚠️ High traffic detected. Preventive policy limits traffic before the network becomes severely overloaded.";
+
+            } else if (rate >= 50) {
+
+                message.innerHTML =
+                    "🟢 Medium traffic. Preventive control keeps traffic within an acceptable range.";
+
+            } else {
+
+                message.innerHTML =
+                    "✅ Low traffic. The network remains comfortably within capacity.";
+
+            }
+
+        }
+
+        bar.style.width =
+            current + "%";
+
+    }, 100);
+
+}
+
+
+function resetOpenLoop() {
+
+    document.getElementById("openBar").style.width =
+        "0%";
+
+    document.getElementById("openMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   CHOKE PACKET SIMULATION
+========================================================= */
+
+function startChoke() {
+
+    const packet =
+        document.getElementById("chokePacket");
+
+    const message =
+        document.getElementById("chokeMessage");
+
+    packet.style.display = "block";
+
+    packet.style.left = "420px";
+
+    packet.style.top = "115px";
+
+    message.innerHTML =
+        "🚨 Router R2 has detected congestion.";
+
+    let position = 420;
+
+    let timer = setInterval(function() {
+
+        position -= 7;
+
+        packet.style.left =
+            position + "px";
+
+        if (position < 90) {
+
+            clearInterval(timer);
+
+            message.innerHTML =
+                "📢 CHOKE PACKET reached the sender. The sender should reduce its transmission rate.";
+
+        }
+
+    }, 30);
+
+}
+
+
+function resetChoke() {
+
+    const packet =
+        document.getElementById("chokePacket");
+
+    packet.style.display = "none";
+
+    packet.style.left = "420px";
+
+    document.getElementById("chokeMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function correct(id) {
+
+    document.getElementById(id).style.display =
+        "block";
+
+}
+
+
+function wrong() {
+
+    alert("❌ Incorrect. Try again!");
+
+}
+
+</script>
+
+</body>
+</html>
