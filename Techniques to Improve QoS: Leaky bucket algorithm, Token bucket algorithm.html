@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QoS – Leaky Bucket and Token Bucket Algorithms</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+    line-height: 1.6;
+}
+
+header {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header p {
+    margin: 8px 0 0;
+    font-size: 18px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    margin: 22px 0;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+h2 {
+    color: #12355b;
+    border-bottom: 3px solid #ddd;
+    padding-bottom: 8px;
+}
+
+h3 {
+    color: #1769aa;
+}
+
+.highlight {
+    background: #eaf4ff;
+    border-left: 5px solid #1769aa;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.success {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.warning {
+    background: #fff3cd;
+    border-left: 5px solid #ff9800;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.danger {
+    background: #ffebee;
+    border-left: 5px solid #d32f2f;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.info {
+    background: #f3e5f5;
+    border-left: 5px solid #8e44ad;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #12355b;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+button {
+    background: #1769aa;
+    color: white;
+    border: none;
+    padding: 11px 18px;
+    margin: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background: #0d4f82;
+}
+
+input {
+    width: 90px;
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+}
+
+select {
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+}
+
+.diagram {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #eef5fb;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.node {
+    background: #d7eaff;
+    padding: 20px;
+    width: 190px;
+    text-align: center;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.arrow {
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.code {
+    background: #1e1e1e;
+    color: #00ff88;
+    padding: 18px;
+    border-radius: 8px;
+    font-family: monospace;
+    overflow-x: auto;
+}
+
+.bucket-container {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.bucket-wrapper {
+    text-align: center;
+}
+
+.bucket {
+    position: relative;
+    width: 230px;
+    height: 300px;
+    border: 5px solid #555;
+    border-top: none;
+    border-radius: 0 0 25px 25px;
+    background: linear-gradient(
+        to top,
+        #d9f0ff 0%,
+        #eef8ff 100%
+    );
+    overflow: hidden;
+}
+
+.water {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%;
+    background: #4aa3df;
+    transition: height 0.5s;
+}
+
+.tokens {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%;
+    background: #f6c343;
+    transition: height 0.5s;
+}
+
+.bucket-label {
+    position: absolute;
+    width: 100%;
+    top: 45%;
+    text-align: center;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.output {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.progress {
+    width: 100%;
+    height: 25px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s;
+}
+
+.blue {
+    background: #1769aa;
+}
+
+.green {
+    background: #2e7d32;
+}
+
+.orange {
+    background: #f39c12;
+}
+
+.red {
+    background: #d32f2f;
+}
+
+.quiz {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+.answer {
+    display: none;
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+footer {
+    background: #12355b;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Techniques to Improve QoS</h1>
+
+<p>
+Leaky Bucket Algorithm • Token Bucket Algorithm
+</p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ===================================================== -->
+<!-- QOS -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>1. What is QoS?</h2>
+
+<p>
+<strong>QoS (Quality of Service)</strong> refers to techniques used to
+provide predictable and controlled network performance for different
+types of traffic.
+</p>
+
+<div class="highlight">
+
+QoS can help manage:
+
+<ul>
+<li>Bandwidth</li>
+<li>Delay</li>
+<li>Jitter</li>
+<li>Packet loss</li>
+<li>Traffic priority</li>
+</ul>
+
+</div>
+
+<h3>Why is QoS Important?</h3>
+
+<p>
+Different applications have different requirements.
+</p>
+
+<table>
+
+<tr>
+<th>Application</th>
+<th>Important Requirement</th>
+</tr>
+
+<tr>
+<td>Voice / VoIP</td>
+<td>Low delay and low jitter</td>
+</tr>
+
+<tr>
+<td>Video Conferencing</td>
+<td>Low delay, sufficient bandwidth</td>
+</tr>
+
+<tr>
+<td>Online Gaming</td>
+<td>Low latency</td>
+</tr>
+
+<tr>
+<td>Email</td>
+<td>Reliability is generally more important than very low delay</td>
+</tr>
+
+<tr>
+<td>File Transfer</td>
+<td>High throughput and reliability</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TRAFFIC SHAPING -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>2. Traffic Shaping</h2>
+
+<p>
+<strong>Traffic shaping</strong> controls the rate at which packets
+are transmitted into the network.
+</p>
+
+<div class="diagram">
+
+<div class="node">
+Burst Traffic<br>
+📦📦📦📦📦📦
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Traffic Shaper<br>
+🪣
+</div>
+
+<div class="arrow">→</div>
+
+<div class="node">
+Smooth Traffic<br>
+📦 → 📦 → 📦
+</div>
+
+</div>
+
+<div class="success">
+
+<strong>Main idea:</strong>
+
+Traffic shaping smooths bursts and helps prevent excessive traffic
+from entering the network at once.
+
+</div>
+
+<p>
+Two important traffic-shaping algorithms are:
+</p>
+
+<ul>
+<li><strong>Leaky Bucket</strong></li>
+<li><strong>Token Bucket</strong></li>
+</ul>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- LEAKY BUCKET -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>3. Leaky Bucket Algorithm</h2>
+
+<p>
+The <strong>Leaky Bucket</strong> algorithm controls traffic by allowing
+packets to leave at a relatively fixed rate.
+</p>
+
+<div class="highlight">
+
+Think about a bucket with a small hole at the bottom.
+
+<br><br>
+
+Water may enter quickly, but water leaves through the hole at a
+controlled rate.
+
+</div>
+
+
+<h3>Real-Life Example</h3>
+
+<pre>
+
+Incoming Water
+     ↓
+  💧💧💧💧
+ ┌─────────┐
+ │         │
+ │ BUCKET  │
+ │         │
+ └────┬────┘
+      ↓
+   Controlled
+     Flow
+      ↓
+     💧
+     💧
+     💧
+
+</pre>
+
+
+<h3>Network Interpretation</h3>
+
+<pre>
+
+Burst Packets
+📦📦📦📦📦📦
+      ↓
+┌─────────────┐
+│ LEAKY       │
+│ BUCKET      │
+│             │
+└──────┬──────┘
+       ↓
+📦 → 📦 → 📦 → 📦
+Controlled Rate
+
+</pre>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- LEAKY BUCKET CHARACTERISTICS -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>4. How Leaky Bucket Works</h2>
+
+<ol>
+
+<li>Packets enter the bucket.</li>
+
+<li>The bucket has a fixed capacity.</li>
+
+<li>Packets leave at a controlled rate.</li>
+
+<li>If packets arrive faster than the bucket can accommodate, the
+bucket can become full.</li>
+
+<li>Additional packets may be discarded if the buffer is full.</li>
+
+</ol>
+
+
+<table>
+
+<tr>
+<th>Property</th>
+<th>Leaky Bucket</th>
+</tr>
+
+<tr>
+<td>Output Rate</td>
+<td>Approximately constant</td>
+</tr>
+
+<tr>
+<td>Burst Handling</td>
+<td>Buffers bursts, then smooths output</td>
+</tr>
+
+<tr>
+<td>Bucket Overflow</td>
+<td>Packets may be discarded</td>
+</tr>
+
+<tr>
+<td>Traffic Pattern</td>
+<td>Smooth / controlled</td>
+</tr>
+
+</table>
+
+
+<div class="warning">
+
+<strong>Important:</strong>
+
+The classic leaky bucket algorithm produces a controlled output rate
+and does not normally allow accumulated bursts to be released faster
+than the configured leak rate.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- LEAKY BUCKET SIMULATION -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>5. Interactive Leaky Bucket Simulation</h2>
+
+<p>
+Adjust the incoming packet rate and bucket leak rate.
+</p>
+
+<label>
+
+Incoming Packets / Second:
+
+<input id="leakyInput" type="number" value="8" min="1">
+
+</label>
+
+<br><br>
+
+<label>
+
+Leak Rate / Second:
+
+<input id="leakyOutput" type="number" value="3" min="1">
+
+</label>
+
+<br><br>
+
+<label>
+
+Bucket Capacity:
+
+<input id="leakyCapacity" type="number" value="10" min="1">
+
+</label>
+
+<br><br>
+
+<button onclick="startLeakyBucket()">
+Start
+</button>
+
+<button onclick="stopLeakyBucket()">
+Stop
+</button>
+
+<button onclick="resetLeakyBucket()">
+Reset
+</button>
+
+
+<div class="bucket-container">
+
+<div class="bucket-wrapper">
+
+<div class="bucket">
+
+<div id="leakyWater" class="water"></div>
+
+<div class="bucket-label">
+LEAKY<br>
+BUCKET
+</div>
+
+</div>
+
+<p>
+Packets in Bucket:
+<strong id="leakyCount">0</strong>
+</p>
+
+</div>
+
+</div>
+
+
+<div class="progress">
+
+<div id="leakyBar" class="progress-bar blue"></div>
+
+</div>
+
+<p id="leakyMessage">
+Click Start to begin the simulation.
+</p>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOKEN BUCKET -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>6. Token Bucket Algorithm</h2>
+
+<p>
+The <strong>Token Bucket</strong> algorithm works differently from the
+Leaky Bucket.
+</p>
+
+<div class="highlight">
+
+Tokens are generated at a specified rate and stored in the bucket up
+to a maximum capacity.
+
+A packet can be transmitted when sufficient tokens are available.
+
+</div>
+
+
+<h3>Simple Example</h3>
+
+<pre>
+
+        Tokens
+       💰 💰 💰
+          ↓
+     ┌───────────┐
+     │   TOKEN   │
+     │   BUCKET  │
+     └─────┬─────┘
+           │
+       Packet needs
+       a token
+           ↓
+         📦
+           ↓
+       NETWORK
+
+</pre>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOKEN BUCKET WORKING -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>7. How Token Bucket Works</h2>
+
+<ol>
+
+<li>Tokens are generated at a configured rate.</li>
+
+<li>Tokens accumulate in the bucket.</li>
+
+<li>The bucket has a maximum token capacity.</li>
+
+<li>A packet consumes one or more tokens depending on the configured
+model / packet size.</li>
+
+<li>If enough tokens exist, the packet can be transmitted.</li>
+
+<li>If insufficient tokens exist, the packet waits or is handled
+according to the implementation/policy.</li>
+
+</ol>
+
+
+<div class="success">
+
+<strong>Major Advantage:</strong>
+
+Token Bucket can allow controlled bursts when tokens have accumulated.
+
+</div>
+
+
+<table>
+
+<tr>
+<th>Property</th>
+<th>Token Bucket</th>
+</tr>
+
+<tr>
+<td>Token Generation</td>
+<td>At a configured rate</td>
+</tr>
+
+<tr>
+<td>Bucket Capacity</td>
+<td>Maximum number of tokens</td>
+</tr>
+
+<tr>
+<td>Burst Traffic</td>
+<td>Can be allowed if tokens have accumulated</td>
+</tr>
+
+<tr>
+<td>Rate Control</td>
+<td>Controlled by token availability</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOKEN BUCKET SIMULATION -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>8. Interactive Token Bucket Simulation</h2>
+
+<label>
+
+Token Generation Rate:
+
+<input id="tokenRate" type="number" value="4" min="1">
+
+tokens/sec
+
+</label>
+
+<br><br>
+
+<label>
+
+Bucket Capacity:
+
+<input id="tokenCapacity" type="number" value="10" min="1">
+
+tokens
+
+</label>
+
+<br><br>
+
+<label>
+
+Incoming Packets:
+
+<input id="packetRate" type="number" value="7" min="1">
+
+packets/sec
+
+</label>
+
+<br><br>
+
+<button onclick="startTokenBucket()">
+Start
+</button>
+
+<button onclick="stopTokenBucket()">
+Stop
+</button>
+
+<button onclick="resetTokenBucket()">
+Reset
+</button>
+
+
+<div class="bucket-container">
+
+<div class="bucket-wrapper">
+
+<div class="bucket">
+
+<div id="tokenWater" class="tokens"></div>
+
+<div class="bucket-label">
+TOKEN<br>
+BUCKET
+</div>
+
+</div>
+
+<p>
+Tokens:
+<strong id="tokenCount">0</strong>
+</p>
+
+</div>
+
+</div>
+
+
+<div class="progress">
+
+<div id="tokenBar" class="progress-bar orange"></div>
+
+</div>
+
+<p id="tokenMessage">
+Click Start to begin.
+</p>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- LEAKY VS TOKEN -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>9. Leaky Bucket vs Token Bucket</h2>
+
+<table>
+
+<tr>
+<th>Feature</th>
+<th>Leaky Bucket</th>
+<th>Token Bucket</th>
+</tr>
+
+<tr>
+<td>Basic Idea</td>
+<td>Packets leave at a controlled rate</td>
+<td>Packets transmit when tokens are available</td>
+</tr>
+
+<tr>
+<td>Output</td>
+<td>Approximately smooth / fixed</td>
+<td>Average rate controlled, bursts possible</td>
+</tr>
+
+<tr>
+<td>Burst Traffic</td>
+<td>Generally smoothed</td>
+<td>Can allow bursts if tokens are available</td>
+</tr>
+
+<tr>
+<td>Bucket Contains</td>
+<td>Packets / queued traffic</td>
+<td>Tokens</td>
+</tr>
+
+<tr>
+<td>Overflow</td>
+<td>Packets may be dropped when queue is full</td>
+<td>Excess tokens are discarded when bucket is full</td>
+</tr>
+
+<tr>
+<td>Best Mental Model</td>
+<td>Water leaking through a hole</td>
+<td>Coins/tokens granting permission to send</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SIMPLE EXAMPLE -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>10. Easy Example: Leaky Bucket</h2>
+
+<div class="info">
+
+Suppose:
+
+<br><br>
+
+Bucket capacity = <strong>10 packets</strong>
+
+<br>
+
+Leak rate = <strong>2 packets/second</strong>
+
+<br>
+
+Incoming burst = <strong>8 packets</strong>
+
+</div>
+
+<p>
+
+The 8 packets enter the bucket, but they do not all leave
+simultaneously.
+
+They are transmitted at approximately:
+
+</p>
+
+<pre>
+
+Time 0 → 2 packets
+Time 1 → 2 packets
+Time 2 → 2 packets
+Time 3 → 2 packets
+
+</pre>
+
+<div class="success">
+
+The burst is converted into a smoother output stream.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- TOKEN EXAMPLE -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>11. Easy Example: Token Bucket</h2>
+
+<div class="info">
+
+Suppose:
+
+<br><br>
+
+Token generation rate = <strong>2 tokens/second</strong>
+
+<br>
+
+Bucket capacity = <strong>10 tokens</strong>
+
+<br>
+
+Packets need 1 token each.
+
+</div>
+
+<p>
+
+If the bucket has accumulated 8 tokens, a short burst of up to
+8 packets can potentially be transmitted immediately, subject to the
+implementation and other network limits.
+
+</p>
+
+<pre>
+
+Token Bucket
+
+💰 💰 💰 💰 💰 💰 💰 💰
+
+        ↓
+
+📦 📦 📦 📦 📦 📦 📦 📦
+
+       SEND BURST
+
+</pre>
+
+<div class="highlight">
+
+<strong>Key Point:</strong>
+
+Token Bucket controls the long-term average rate while allowing bursts
+when tokens have accumulated.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- VISUAL COMPARISON -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>12. Visual Understanding</h2>
+
+<table>
+
+<tr>
+<th>Incoming Traffic</th>
+<th>Leaky Bucket Output</th>
+<th>Token Bucket Output</th>
+</tr>
+
+<tr>
+<td>
+📦📦📦📦📦📦📦
+</td>
+
+<td>
+📦 → 📦 → 📦 → 📦
+</td>
+
+<td>
+📦📦📦 → 📦📦 → 📦
+</td>
+
+</tr>
+
+<tr>
+<td>Burst</td>
+<td>Smooths the burst</td>
+<td>Can permit a burst if tokens exist</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- QOS -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>13. How These Algorithms Improve QoS</h2>
+
+<ul>
+
+<li>Reduce sudden traffic bursts.</li>
+
+<li>Control the average traffic rate.</li>
+
+<li>Reduce the probability of congestion.</li>
+
+<li>Help manage available bandwidth.</li>
+
+<li>Improve predictability of network traffic.</li>
+
+<li>Help protect network resources from excessive bursts.</li>
+
+</ul>
+
+
+<div class="success">
+
+<strong>Important:</strong>
+
+Leaky Bucket and Token Bucket are primarily traffic
+<strong>shaping/policing mechanisms</strong>. They are components of
+QoS, but QoS as a whole also includes scheduling, classification,
+queuing, priority handling and other mechanisms.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- REAL LIFE -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>14. Real-Life Analogy</h2>
+
+<table>
+
+<tr>
+<th>Algorithm</th>
+<th>Real-Life Example</th>
+</tr>
+
+<tr>
+<td>Leaky Bucket</td>
+<td>Water tank with a small outlet</td>
+</tr>
+
+<tr>
+<td>Token Bucket</td>
+<td>People entering a cinema using admission tokens</td>
+</tr>
+
+</table>
+
+
+<h3>Leaky Bucket</h3>
+
+<p>
+
+Even if many people arrive together, the system releases them at a
+controlled rate.
+
+</p>
+
+
+<h3>Token Bucket</h3>
+
+<p>
+
+People can enter quickly when enough admission tokens are available.
+
+</p>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INTERVIEW QUESTIONS -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>15. Interview Questions</h2>
+
+<h3>Q1. What is QoS?</h3>
+
+<p>
+QoS is a collection of techniques used to manage network traffic and
+provide predictable service characteristics such as bandwidth, delay,
+jitter and packet-loss performance.
+</p>
+
+
+<h3>Q2. What is traffic shaping?</h3>
+
+<p>
+Traffic shaping controls the rate at which packets are transmitted,
+often smoothing bursts before traffic enters the network.
+</p>
+
+
+<h3>Q3. What is the Leaky Bucket algorithm?</h3>
+
+<p>
+Leaky Bucket is a traffic-shaping algorithm that queues incoming
+packets and releases them at a controlled rate.
+</p>
+
+
+<h3>Q4. What happens if the Leaky Bucket becomes full?</h3>
+
+<p>
+Depending on the implementation, additional packets may be discarded
+when the bucket/queue has no available space.
+</p>
+
+
+<h3>Q5. What is the Token Bucket algorithm?</h3>
+
+<p>
+Token Bucket generates tokens at a configured rate. Packets can be
+transmitted when sufficient tokens are available.
+</p>
+
+
+<h3>Q6. What is the major advantage of Token Bucket?</h3>
+
+<p>
+It can allow controlled bursts when tokens have accumulated while
+maintaining a controlled long-term average rate.
+</p>
+
+
+<h3>Q7. Which algorithm is better for smoothing traffic?</h3>
+
+<p>
+Leaky Bucket is commonly associated with producing a smoother,
+controlled output rate.
+</p>
+
+
+<h3>Q8. Which algorithm allows bursts?</h3>
+
+<p>
+Token Bucket can allow bursts when enough tokens have accumulated.
+</p>
+
+
+<h3>Q9. What does a token represent?</h3>
+
+<p>
+A token represents permission to transmit a unit of traffic under the
+configured token-bucket model.
+</p>
+
+
+<h3>Q10. What is the easiest way to remember them?</h3>
+
+<div class="highlight">
+
+<strong>Leaky Bucket:</strong>
+
+<br>
+Packets go out at a controlled rate.
+
+<br><br>
+
+<strong>Token Bucket:</strong>
+
+<br>
+Tokens give permission to send.
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- QUIZ -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>16. Interactive Quiz</h2>
+
+
+<div class="quiz">
+
+<strong>
+Q1. Which algorithm is represented by water leaking through a hole?
+</strong>
+
+<br>
+
+<button onclick="correct('q1')">
+Leaky Bucket
+</button>
+
+<button onclick="wrong()">
+Token Bucket
+</button>
+
+<div id="q1" class="answer">
+✅ Correct! Leaky Bucket is based on the idea of a controlled leak rate.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q2. What does the Token Bucket store?
+</strong>
+
+<br>
+
+<button onclick="wrong()">
+Only IP addresses
+</button>
+
+<button onclick="correct('q2')">
+Tokens
+</button>
+
+<div id="q2" class="answer">
+✅ Correct! Tokens accumulate in the token bucket.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q3. Which algorithm can permit bursts when tokens have accumulated?
+</strong>
+
+<br>
+
+<button onclick="correct('q3')">
+Token Bucket
+</button>
+
+<button onclick="wrong()">
+Leaky Bucket
+</button>
+
+<div id="q3" class="answer">
+✅ Correct! Token Bucket can permit controlled bursts when enough tokens
+are available.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q4. What happens when a Leaky Bucket queue is full?
+</strong>
+
+<br>
+
+<button onclick="correct('q4')">
+Additional packets may be discarded
+</button>
+
+<button onclick="wrong()">
+All packets automatically become faster
+</button>
+
+<div id="q4" class="answer">
+✅ Correct! When the queue is full, additional packets may be dropped
+according to the implementation.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q5. What is the primary purpose of traffic shaping?
+</strong>
+
+<br>
+
+<button onclick="correct('q5')">
+Control and smooth traffic entering the network
+</button>
+
+<button onclick="wrong()">
+Increase the physical cable length
+</button>
+
+<div id="q5" class="answer">
+✅ Correct! Traffic shaping controls packet transmission patterns and
+helps manage bursts.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q6. Which algorithm is easier to remember as "permission to send"?
+</strong>
+
+<br>
+
+<button onclick="correct('q6')">
+Token Bucket
+</button>
+
+<button onclick="wrong()">
+Leaky Bucket
+</button>
+
+<div id="q6" class="answer">
+✅ Correct! Tokens represent permission to transmit under the model.
+</div>
+
+</div>
+
+
+<div class="quiz">
+
+<strong>
+Q7. Which algorithm is commonly associated with a relatively smooth
+output rate?
+</strong>
+
+<br>
+
+<button onclick="correct('q7')">
+Leaky Bucket
+</button>
+
+<button onclick="wrong()">
+Token Bucket
+</button>
+
+<div id="q7" class="answer">
+✅ Correct! The classic Leaky Bucket produces a controlled output rate.
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FINAL SUMMARY -->
+<!-- ===================================================== -->
+
+<div class="card">
+
+<h2>17. Final Revision</h2>
+
+<table>
+
+<tr>
+<th>Concept</th>
+<th>Remember This</th>
+</tr>
+
+<tr>
+<td>QoS</td>
+<td>Manage network performance and traffic characteristics</td>
+</tr>
+
+<tr>
+<td>Traffic Shaping</td>
+<td>Control packet transmission pattern</td>
+</tr>
+
+<tr>
+<td>Leaky Bucket</td>
+<td>Packets leave at a controlled rate</td>
+</tr>
+
+<tr>
+<td>Token Bucket</td>
+<td>Tokens provide permission to transmit</td>
+</tr>
+
+<tr>
+<td>Leaky Bucket Burst</td>
+<td>Generally smooths bursts</td>
+</tr>
+
+<tr>
+<td>Token Bucket Burst</td>
+<td>Can permit bursts when tokens are available</td>
+</tr>
+
+</table>
+
+
+<div class="success">
+
+<h3>⭐ Best Interview Memory Trick</h3>
+
+<p>
+
+<strong>LEAKY BUCKET → "Water leaks at a fixed rate."</strong>
+
+</p>
+
+<p>
+
+<strong>TOKEN BUCKET → "Tokens accumulate; tokens allow transmission."</strong>
+
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+Interactive Computer Networks Learning Module
+
+<br>
+
+QoS • Leaky Bucket • Token Bucket
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   LEAKY BUCKET SIMULATION
+========================================================= */
+
+let leakyTimer = null;
+let leakyPackets = 0;
+
+function startLeakyBucket() {
+
+    stopLeakyBucket();
+
+    let inputRate =
+        Number(document.getElementById("leakyInput").value);
+
+    let leakRate =
+        Number(document.getElementById("leakyOutput").value);
+
+    let capacity =
+        Number(document.getElementById("leakyCapacity").value);
+
+    if (inputRate <= 0 || leakRate <= 0 || capacity <= 0) {
+
+        alert("Please enter positive values.");
+
+        return;
+
+    }
+
+    leakyPackets = 0;
+
+    leakyTimer = setInterval(function() {
+
+        /*
+        Packets enter the bucket.
+        */
+
+        leakyPackets += inputRate / 5;
+
+        /*
+        Bucket cannot exceed capacity.
+        */
+
+        if (leakyPackets > capacity) {
+
+            leakyPackets = capacity;
+
+            document.getElementById("leakyMessage").innerHTML =
+                "⚠️ Bucket is full. Additional incoming packets may be discarded.";
+
+        }
+
+        /*
+        Packets leave at the leak rate.
+        */
+
+        leakyPackets -= leakRate / 5;
+
+        if (leakyPackets < 0)
+            leakyPackets = 0;
+
+
+        let percentage =
+            (leakyPackets / capacity) * 100;
+
+        document.getElementById("leakyWater").style.height =
+            percentage + "%";
+
+        document.getElementById("leakyBar").style.width =
+            percentage + "%";
+
+        document.getElementById("leakyCount").innerHTML =
+            Math.round(leakyPackets);
+
+
+        if (leakyPackets < capacity * 0.5) {
+
+            document.getElementById("leakyMessage").innerHTML =
+                "🟢 Bucket has available space. Packets are leaving at the configured leak rate.";
+
+        }
+
+        if (leakyPackets >= capacity * 0.8) {
+
+            document.getElementById("leakyMessage").innerHTML =
+                "⚠️ Bucket is becoming full. Incoming traffic is higher than the configured leak rate.";
+
+        }
+
+    }, 1000);
+
+}
+
+
+function stopLeakyBucket() {
+
+    if (leakyTimer !== null) {
+
+        clearInterval(leakyTimer);
+
+        leakyTimer = null;
+
+    }
+
+}
+
+
+function resetLeakyBucket() {
+
+    stopLeakyBucket();
+
+    leakyPackets = 0;
+
+    document.getElementById("leakyWater").style.height =
+        "0%";
+
+    document.getElementById("leakyBar").style.width =
+        "0%";
+
+    document.getElementById("leakyCount").innerHTML =
+        "0";
+
+    document.getElementById("leakyMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   TOKEN BUCKET SIMULATION
+========================================================= */
+
+let tokenTimer = null;
+let tokens = 0;
+
+function startTokenBucket() {
+
+    stopTokenBucket();
+
+    let tokenRate =
+        Number(document.getElementById("tokenRate").value);
+
+    let capacity =
+        Number(document.getElementById("tokenCapacity").value);
+
+    let packetRate =
+        Number(document.getElementById("packetRate").value);
+
+    if (tokenRate <= 0 ||
+        capacity <= 0 ||
+        packetRate <= 0) {
+
+        alert("Please enter positive values.");
+
+        return;
+
+    }
+
+    /*
+    Start with an empty bucket.
+    */
+
+    tokens = 0;
+
+    tokenTimer = setInterval(function() {
+
+        /*
+        Generate tokens.
+        */
+
+        tokens += tokenRate / 2;
+
+        /*
+        Token bucket cannot exceed capacity.
+        */
+
+        if (tokens > capacity)
+            tokens = capacity;
+
+
+        /*
+        Packets consume tokens.
+        One token represents permission
+        to send one packet in this simplified model.
+        */
+
+        let packetsAttempted =
+            packetRate / 2;
+
+        if (tokens >= packetsAttempted) {
+
+            tokens -= packetsAttempted;
+
+            document.getElementById("tokenMessage").innerHTML =
+                "🟢 Enough tokens are available. Packets can be transmitted.";
+
+        }
+
+        else {
+
+            let sentPackets =
+                Math.floor(tokens);
+
+            tokens -= sentPackets;
+
+            document.getElementById("tokenMessage").innerHTML =
+                "⚠️ Not enough tokens for all packets. Some packets must wait or be handled by the configured policy.";
+
+        }
+
+
+        let percentage =
+            (tokens / capacity) * 100;
+
+        document.getElementById("tokenWater").style.height =
+            percentage + "%";
+
+        document.getElementById("tokenBar").style.width =
+            percentage + "%";
+
+        document.getElementById("tokenCount").innerHTML =
+            Math.floor(tokens);
+
+    }, 500);
+
+}
+
+
+function stopTokenBucket() {
+
+    if (tokenTimer !== null) {
+
+        clearInterval(tokenTimer);
+
+        tokenTimer = null;
+
+    }
+
+}
+
+
+function resetTokenBucket() {
+
+    stopTokenBucket();
+
+    tokens = 0;
+
+    document.getElementById("tokenWater").style.height =
+        "0%";
+
+    document.getElementById("tokenBar").style.width =
+        "0%";
+
+    document.getElementById("tokenCount").innerHTML =
+        "0";
+
+    document.getElementById("tokenMessage").innerHTML =
+        "Simulation reset.";
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function correct(id) {
+
+    document.getElementById(id).style.display =
+        "block";
+
+}
+
+
+function wrong() {
+
+    alert("❌ Incorrect. Try again!");
+
+}
+
+</script>
+
+</body>
+</html>
