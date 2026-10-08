@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process-to-Process Delivery | Transport Layer</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f4f7fb;
+        color: #222;
+    }
+
+    header {
+        background: #12355b;
+        color: white;
+        padding: 25px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .card {
+        background: white;
+        margin: 20px 0;
+        padding: 22px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+        color: #12355b;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 8px;
+    }
+
+    h3 {
+        color: #1769aa;
+    }
+
+    .highlight {
+        background: #eaf4ff;
+        padding: 15px;
+        border-left: 5px solid #1769aa;
+        margin: 15px 0;
+    }
+
+    .important {
+        background: #fff4d6;
+        padding: 15px;
+        border-left: 5px solid #e0a000;
+    }
+
+    .layer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 8px;
+        background: #eef2f7;
+    }
+
+    .device {
+        width: 22%;
+        text-align: center;
+        padding: 15px;
+        background: #dceeff;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .arrow {
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background: #12355b;
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background: #f5f5f5;
+    }
+
+    button {
+        background: #1769aa;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+    }
+
+    button:hover {
+        background: #0d4f82;
+    }
+
+    .port-box {
+        display: inline-block;
+        background: #e6f7ec;
+        border: 2px solid #2e8b57;
+        padding: 15px;
+        margin: 8px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .quiz {
+        background: #f9f9f9;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .answer {
+        display: none;
+        background: #e8f5e9;
+        padding: 12px;
+        margin-top: 8px;
+        border-left: 5px solid #2e8b57;
+    }
+
+    #packetArea {
+        position: relative;
+        height: 220px;
+        background: #eef5fb;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    .computer {
+        position: absolute;
+        top: 70px;
+        width: 150px;
+        padding: 20px 10px;
+        background: #d7eaff;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    #sender {
+        left: 30px;
+    }
+
+    #receiver {
+        right: 30px;
+    }
+
+    #packet {
+        position: absolute;
+        top: 90px;
+        left: 180px;
+        background: #ff9800;
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        display: none;
+    }
+
+    .concept {
+        background: #f0f8ff;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 8px 0;
+    }
+
+    footer {
+        text-align: center;
+        background: #12355b;
+        color: white;
+        padding: 20px;
+        margin-top: 30px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Process-to-Process Delivery</h1>
+    <p>Transport Layer | Ports | Transport Protocols</p>
+</header>
+
+<div class="container">
+
+<!-- INTRODUCTION -->
+
+<div class="card">
+<h2>1. What is Process-to-Process Delivery?</h2>
+
+<p>
+Process-to-process delivery is the responsibility of the
+<strong>Transport Layer</strong> to deliver data from a specific
+application process on the source computer to the correct application
+process on the destination computer.
+</p>
+
+<div class="highlight">
+<strong>Simple idea:</strong><br>
+IP address identifies the <strong>computer</strong>.<br>
+Port number identifies the <strong>application/process</strong>.
+</div>
+
+<h3>Example</h3>
+
+<p>
+Suppose your computer accesses a web server:
+</p>
+
+<pre>
+Client Computer
+IP: 192.168.1.10
+Port: 50000
+       |
+       | Internet
+       ↓
+Web Server
+IP: 142.250.195.14
+Port: 443
+</pre>
+
+<p>
+The IP addresses identify the two computers, while port numbers identify
+the communicating processes.
+</p>
+</div>
+
+
+<!-- NETWORK LAYERS -->
+
+<div class="card">
+<h2>2. Host-to-Host vs Process-to-Process</h2>
+
+<div class="layer">
+<div class="device">
+Application A<br>
+Process
+</div>
+
+<div class="arrow">→</div>
+
+<div class="device">
+Application B<br>
+Process
+</div>
+</div>
+
+<p>
+The Transport Layer provides communication between these application
+processes.
+</p>
+
+<table>
+<tr>
+<th>Layer</th>
+<th>Main Responsibility</th>
+<th>Addressing</th>
+</tr>
+
+<tr>
+<td>Application</td>
+<td>Provides network services to users</td>
+<td>Application-specific</td>
+</tr>
+
+<tr>
+<td>Transport</td>
+<td>Process-to-process delivery</td>
+<td>Port Number</td>
+</tr>
+
+<tr>
+<td>Network</td>
+<td>Host-to-host delivery</td>
+<td>IP Address</td>
+</tr>
+
+<tr>
+<td>Data Link</td>
+<td>Node-to-node delivery</td>
+<td>MAC Address</td>
+</tr>
+</table>
+
+</div>
+
+
+<!-- PORTS -->
+
+<div class="card">
+<h2>3. What is a Port?</h2>
+
+<p>
+A <strong>port number</strong> is a logical number used by the Transport
+Layer to identify a specific application or process.
+</p>
+
+<div class="highlight">
+IP Address → Identifies the host<br>
+Port Number → Identifies the process
+</div>
+
+<h3>Port Number Range</h3>
+
+<table>
+<tr>
+<th>Range</th>
+<th>Name</th>
+<th>Purpose</th>
+</tr>
+
+<tr>
+<td>0 – 1023</td>
+<td>Well-known ports</td>
+<td>Common standard services</td>
+</tr>
+
+<tr>
+<td>1024 – 49151</td>
+<td>Registered ports</td>
+<td>Applications and services</td>
+</tr>
+
+<tr>
+<td>49152 – 65535</td>
+<td>Dynamic / Private</td>
+<td>Temporary client ports</td>
+</tr>
+</table>
+
+<h3>Common Ports</h3>
+
+<div class="port-box">
+HTTP<br>
+<strong>80</strong>
+</div>
+
+<div class="port-box">
+HTTPS<br>
+<strong>443</strong>
+</div>
+
+<div class="port-box">
+FTP<br>
+<strong>21</strong>
+</div>
+
+<div class="port-box">
+SSH<br>
+<strong>22</strong>
+</div>
+
+<div class="port-box">
+DNS<br>
+<strong>53</strong>
+</div>
+
+<div class="port-box">
+SMTP<br>
+<strong>25</strong>
+</div>
+
+<div class="port-box">
+DHCP Server<br>
+<strong>67</strong>
+</div>
+
+<div class="port-box">
+DHCP Client<br>
+<strong>68</strong>
+</div>
+
+</div>
+
+
+<!-- SOCKET -->
+
+<div class="card">
+<h2>4. What is a Socket?</h2>
+
+<p>
+A socket represents an endpoint of network communication.
+It is commonly associated with an IP address and port number.
+</p>
+
+<div class="highlight">
+<strong>Socket = IP Address + Port Number</strong>
+</div>
+
+<h3>Example</h3>
+
+<pre>
+Client Socket
+192.168.1.10 : 50000
+
+        ↓
+
+Server Socket
+142.250.195.14 : 443
+</pre>
+
+<p>
+A TCP connection is uniquely identified by a combination of:
+</p>
+
+<pre>
+Source IP
+Source Port
+Destination IP
+Destination Port
+Protocol
+</pre>
+
+</div>
+
+
+<!-- MULTIPLEXING -->
+
+<div class="card">
+<h2>5. Multiplexing and Demultiplexing</h2>
+
+<h3>Multiplexing</h3>
+
+<p>
+Multiple applications on a host can send data through the Transport
+Layer. The Transport Layer combines these data streams for delivery.
+</p>
+
+<div class="concept">
+Browser → Port 50001
+</div>
+
+<div class="concept">
+Email → Port 50002
+</div>
+
+<div class="concept">
+Video Application → Port 50003
+</div>
+
+<p>
+All of them can use the same network connection.
+</p>
+
+<h3>Demultiplexing</h3>
+
+<p>
+When data reaches the destination, the Transport Layer examines the
+destination port and delivers the data to the correct application.
+</p>
+
+<div class="highlight">
+<strong>Multiplexing:</strong> Many processes → Transport Layer<br><br>
+<strong>Demultiplexing:</strong> Transport Layer → Correct process
+</div>
+
+</div>
+
+
+<!-- TRANSPORT PROTOCOL ELEMENTS -->
+
+<div class="card">
+<h2>6. Elements of Transport Protocols</h2>
+
+<p>
+Important elements of transport protocols include:
+</p>
+
+<table>
+<tr>
+<th>Element</th>
+<th>Purpose</th>
+</tr>
+
+<tr>
+<td>Addressing</td>
+<td>Identifies source and destination processes using ports</td>
+</tr>
+
+<tr>
+<td>Multiplexing</td>
+<td>Allows multiple processes to use the transport service</td>
+</tr>
+
+<tr>
+<td>Demultiplexing</td>
+<td>Delivers received data to the correct process</td>
+</tr>
+
+<tr>
+<td>Segmentation</td>
+<td>Breaks application data into smaller units</td>
+</tr>
+
+<tr>
+<td>Reassembly</td>
+<td>Combines segments back into the original data</td>
+</tr>
+
+<tr>
+<td>Connection Management</td>
+<td>Establishes and terminates connections</td>
+</tr>
+
+<tr>
+<td>Flow Control</td>
+<td>Prevents a fast sender from overwhelming a slow receiver</td>
+</tr>
+
+<tr>
+<td>Error Control</td>
+<td>Detects and handles lost or corrupted data</td>
+</tr>
+
+<tr>
+<td>Congestion Control</td>
+<td>Controls traffic when the network becomes congested</td>
+</tr>
+
+<tr>
+<td>Ordered Delivery</td>
+<td>Ensures data arrives in the correct order</td>
+</tr>
+
+</table>
+</div>
+
+
+<!-- TCP UDP -->
+
+<div class="card">
+<h2>7. TCP vs UDP</h2>
+
+<table>
+<tr>
+<th>Feature</th>
+<th>TCP</th>
+<th>UDP</th>
+</tr>
+
+<tr>
+<td>Connection</td>
+<td>Connection-oriented</td>
+<td>Connectionless</td>
+</tr>
+
+<tr>
+<td>Reliability</td>
+<td>Reliable</td>
+<td>No guarantee</td>
+</tr>
+
+<tr>
+<td>Ordering</td>
+<td>Maintains order</td>
+<td>No ordering guarantee</td>
+</tr>
+
+<tr>
+<td>Flow Control</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>Congestion Control</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+
+<tr>
+<td>Speed</td>
+<td>More overhead</td>
+<td>Lower overhead</td>
+</tr>
+
+<tr>
+<td>Header</td>
+<td>Minimum 20 bytes</td>
+<td>8 bytes</td>
+</tr>
+
+<tr>
+<td>Examples</td>
+<td>HTTPS, SSH, FTP</td>
+<td>DNS, streaming, VoIP</td>
+</tr>
+
+</table>
+</div>
+
+
+<!-- TCP HEADER -->
+
+<div class="card">
+<h2>8. Important TCP Header Fields</h2>
+
+<table>
+<tr>
+<th>Field</th>
+<th>Purpose</th>
+</tr>
+
+<tr>
+<td>Source Port</td>
+<td>Identifies sending process</td>
+</tr>
+
+<tr>
+<td>Destination Port</td>
+<td>Identifies receiving process</td>
+</tr>
+
+<tr>
+<td>Sequence Number</td>
+<td>Identifies position of data</td>
+</tr>
+
+<tr>
+<td>Acknowledgment Number</td>
+<td>Indicates next byte expected</td>
+</tr>
+
+<tr>
+<td>Flags</td>
+<td>Controls TCP connection behavior</td>
+</tr>
+
+<tr>
+<td>Window Size</td>
+<td>Used for flow control</td>
+</tr>
+
+<tr>
+<td>Checksum</td>
+<td>Detects errors</td>
+</tr>
+
+<tr>
+<td>Urgent Pointer</td>
+<td>Indicates urgent data when applicable</td>
+</tr>
+
+</table>
+
+<h3>Important TCP Flags</h3>
+
+<div class="concept">
+<strong>SYN:</strong> Start or synchronize a TCP connection
+</div>
+
+<div class="concept">
+<strong>ACK:</strong> Acknowledgment
+</div>
+
+<div class="concept">
+<strong>FIN:</strong> Graceful connection termination
+</div>
+
+<div class="concept">
+<strong>RST:</strong> Reset the connection
+</div>
+
+<div class="concept">
+<strong>PSH:</strong> Push data to the application
+</div>
+
+<div class="concept">
+<strong>URG:</strong> Urgent pointer is valid
+</div>
+
+</div>
+
+
+<!-- FLOW CONTROL -->
+
+<div class="card">
+<h2>9. Flow Control</h2>
+
+<p>
+Flow control prevents a fast sender from sending more data than the
+receiver can handle.
+</p>
+
+<div class="highlight">
+Example:<br>
+Sender = 1 Gbps<br>
+Receiver = 100 Mbps<br><br>
+
+Without flow control, the receiver's buffer may overflow.
+</div>
+
+<p>
+TCP uses the <strong>Receive Window (rwnd)</strong> to implement flow
+control.
+</p>
+
+</div>
+
+
+<!-- ERROR CONTROL -->
+
+<div class="card">
+<h2>10. Error Control</h2>
+
+<p>
+Error control ensures that data is delivered correctly despite packet
+loss or corruption.
+</p>
+
+<ul>
+<li>Checksum</li>
+<li>Sequence numbers</li>
+<li>Acknowledgments</li>
+<li>Retransmission</li>
+<li>Timeout mechanism</li>
+</ul>
+
+<div class="highlight">
+If a segment is lost, TCP can retransmit the missing data.
+</div>
+
+</div>
+
+
+<!-- CONGESTION CONTROL -->
+
+<div class="card">
+<h2>11. Congestion Control</h2>
+
+<p>
+Congestion occurs when too much traffic is present in the network.
+</p>
+
+<p>
+TCP uses mechanisms such as:
+</p>
+
+<ul>
+<li>Slow Start</li>
+<li>Congestion Avoidance</li>
+<li>Fast Retransmit</li>
+<li>Fast Recovery</li>
+</ul>
+
+<div class="important">
+<strong>Flow Control:</strong> Protects the receiver.<br>
+<strong>Congestion Control:</strong> Protects the network.
+</div>
+
+</div>
+
+
+<!-- PACKET SIMULATION -->
+
+<div class="card">
+<h2>12. Interactive Process-to-Process Delivery</h2>
+
+<p>
+Click the button to simulate how an application communicates with
+another application using IP addresses and ports.
+</p>
+
+<div id="packetArea">
+
+<div class="computer" id="sender">
+💻 Client<br>
+192.168.1.10<br>
+Port 50000
+</div>
+
+<div id="packet">
+📦 DATA
+</div>
+
+<div class="computer" id="receiver">
+🖥️ Server<br>
+142.250.195.14<br>
+Port 443
+</div>
+
+</div>
+
+<button onclick="startPacket()">Send Data</button>
+<button onclick="resetPacket()">Reset</button>
+
+<p id="simulationText">
+Click "Send Data" to start the simulation.
+</p>
+
+</div>
+
+
+<!-- CONNECTION -->
+
+<div class="card">
+<h2>13. TCP Three-Way Handshake</h2>
+
+<div class="highlight">
+TCP establishes a connection using three steps.
+</div>
+
+<table>
+<tr>
+<th>Step</th>
+<th>Sender</th>
+<th>Receiver</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>SYN →</td>
+<td>Waiting</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>← SYN + ACK</td>
+<td>Accepts request</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>ACK →</td>
+<td>Connection established</td>
+</tr>
+</table>
+
+<pre>
+Client                         Server
+
+  | -------- SYN ------------> |
+  | <------ SYN + ACK -------- |
+  | -------- ACK ------------> |
+  |                            |
+  |   TCP CONNECTION READY     |
+</pre>
+
+</div>
+
+
+<!-- DATA FLOW -->
+
+<div class="card">
+<h2>14. Complete Data Flow</h2>
+
+<pre>
+Application
+     |
+     | Application Data
+     ↓
+Transport Layer
+     |
+     | Segment
+     | Source Port
+     | Destination Port
+     ↓
+Network Layer
+     |
+     | Packet
+     | Source IP
+     | Destination IP
+     ↓
+Data Link Layer
+     |
+     | Frame
+     | Source MAC
+     | Destination MAC
+     ↓
+Physical Layer
+     |
+     | Bits
+     ↓
+Network
+</pre>
+
+<div class="highlight">
+<strong>Remember:</strong><br>
+MAC → Device-to-device<br>
+IP → Host-to-host<br>
+Port → Process-to-process
+</div>
+
+</div>
+
+
+<!-- QUIZ -->
+
+<div class="card">
+<h2>15. Interactive Quiz</h2>
+
+<div class="quiz">
+<strong>Q1. Which layer provides process-to-process delivery?</strong><br>
+
+<button onclick="showAnswer('a1')">Transport Layer</button>
+<button onclick="wrongAnswer()">Network Layer</button>
+
+<div id="a1" class="answer">
+✅ Correct! The Transport Layer provides process-to-process delivery.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q2. What identifies an application process?</strong><br>
+
+<button onclick="wrongAnswer()">MAC Address</button>
+<button onclick="showAnswer('a2')">Port Number</button>
+<button onclick="wrongAnswer()">IP Address</button>
+
+<div id="a2" class="answer">
+✅ Correct! A port number identifies the application/process.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q3. What is the default HTTPS port?</strong><br>
+
+<button onclick="wrongAnswer()">80</button>
+<button onclick="showAnswer('a3')">443</button>
+<button onclick="wrongAnswer()">22</button>
+
+<div id="a3" class="answer">
+✅ Correct! HTTPS normally uses TCP port 443.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q4. Which protocol provides reliable delivery?</strong><br>
+
+<button onclick="showAnswer('a4')">TCP</button>
+<button onclick="wrongAnswer()">UDP</button>
+
+<div id="a4" class="answer">
+✅ Correct! TCP provides reliable, ordered byte-stream delivery.
+</div>
+</div>
+
+
+<div class="quiz">
+<strong>Q5. Which mechanism protects the receiver from a fast sender?</strong><br>
+
+<button onclick="showAnswer('a5')">Flow Control</button>
+<button onclick="wrongAnswer()">Congestion Control</button>
+
+<div id="a5" class="answer">
+✅ Correct! Flow control protects the receiver.
+</div>
+</div>
+
+</div>
+
+
+<!-- INTERVIEW -->
+
+<div class="card">
+<h2>16. Interview Questions – Quick Revision</h2>
+
+<h3>Q1. What is process-to-process delivery?</h3>
+<p>
+It is the delivery of data from a specific process on the source host
+to the corresponding process on the destination host using port numbers.
+</p>
+
+<h3>Q2. Why are port numbers required?</h3>
+<p>
+Because a computer can run multiple network applications simultaneously.
+Port numbers identify the correct application/process.
+</p>
+
+<h3>Q3. What is the difference between IP address and port?</h3>
+<p>
+An IP address identifies the host, while a port number identifies the
+process/application running on that host.
+</p>
+
+<h3>Q4. What is multiplexing?</h3>
+<p>
+Multiplexing allows multiple application processes to send data through
+the same transport layer.
+</p>
+
+<h3>Q5. What is demultiplexing?</h3>
+<p>
+Demultiplexing delivers received transport-layer data to the correct
+application using port information.
+</p>
+
+<h3>Q6. What is a socket?</h3>
+<p>
+A socket is an endpoint of communication commonly represented as an
+IP address and port number.
+</p>
+
+<h3>Q7. TCP or UDP – which is faster?</h3>
+<p>
+UDP generally has lower protocol overhead and can be faster for
+applications where reliability is handled by the application or where
+low latency is more important.
+</p>
+
+<h3>Q8. What is flow control?</h3>
+<p>
+Flow control prevents a sender from overwhelming the receiver.
+</p>
+
+<h3>Q9. What is congestion control?</h3>
+<p>
+Congestion control manages the sending rate to reduce network
+congestion.
+</p>
+
+<h3>Q10. What is segmentation?</h3>
+<p>
+Segmentation divides application data into smaller transport-layer
+units for transmission.
+</p>
+
+</div>
+
+</div>
+
+<footer>
+Transport Layer Learning Module | Process-to-Process Delivery
+</footer>
+
+
+<script>
+
+function showAnswer(id) {
+    document.getElementById(id).style.display = "block";
+}
+
+function wrongAnswer() {
+    alert("❌ Incorrect. Try again!");
+}
+
+
+// Packet Animation
+
+function startPacket() {
+
+    const packet = document.getElementById("packet");
+    const text = document.getElementById("simulationText");
+
+    packet.style.display = "block";
+    packet.style.left = "180px";
+
+    text.innerHTML =
+        "Step 1: Application creates data → Transport Layer adds source and destination ports.";
+
+    let position = 180;
+
+    const animation = setInterval(function() {
+
+        position += 5;
+
+        packet.style.left = position + "px";
+
+        if (position > 850) {
+
+            clearInterval(animation);
+
+            text.innerHTML =
+                "Step 2: Server receives the segment → Transport Layer checks destination port 443 → HTTPS process receives the data.";
+
+        }
+
+    }, 30);
+}
+
+
+function resetPacket() {
+
+    const packet = document.getElementById("packet");
+
+    packet.style.display = "none";
+    packet.style.left = "180px";
+
+    document.getElementById("simulationText").innerHTML =
+        'Click "Send Data" to start the simulation.';
+}
+
+</script>
+
+</body>
+</html>
