@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computer Networks – Interactive Study Notes</title>
+<style>
+:root{--navy:#12345a;--blue:#1769aa;--teal:#087f8c;--ink:#203047;--muted:#5d6b7d;--bg:#f3f6fa;--card:#fff;--line:#dce4ed;--gold:#f4b942}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,#102c4d,#1769aa);color:white;padding:34px 20px}
+.hero{max-width:1100px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:.78rem;opacity:.85}
+h1{margin:5px 0 8px;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.15}.hero p{max-width:760px;margin:0;color:#e5eff9}
+main{max-width:1100px;margin:24px auto;padding:0 16px 50px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+input[type=search]{flex:1;min-width:220px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem}
+button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:white;font-weight:700}
+button.secondary{background:#e5edf6;color:var(--navy)}button:hover{filter:brightness(.95)}
+.progress-wrap{background:#e1e9f2;border-radius:20px;height:8px;overflow:hidden;margin:8px 0 18px}.progress{height:100%;width:0;background:var(--teal);transition:width .2s}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:13px;margin:12px 0;box-shadow:0 2px 8px #17395b0a;overflow:hidden}
+.topic summary{list-style:none;cursor:pointer;padding:17px 18px;font-weight:700;color:var(--navy);display:flex;gap:12px;align-items:center}
+.topic summary::-webkit-details-marker{display:none}.num{background:#e8f2fb;color:var(--blue);border-radius:8px;padding:3px 9px;font-size:.9rem}
+.topic summary:after{content:"＋";margin-left:auto;color:var(--blue);font-size:1.25rem}.topic[open] summary:after{content:"−"}
+.content{padding:0 20px 22px;border-top:1px solid #edf1f5}.content h3{color:var(--teal);margin:18px 0 6px;font-size:1.05rem}
+.content p{margin:7px 0}.content ul,.content ol{padding-left:22px}.content li{margin:4px 0}
+.callout{background:#eef7fb;border-left:4px solid var(--teal);padding:11px 14px;border-radius:6px;margin:12px 0}
+.warn{background:#fff8e8;border-left-color:var(--gold)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.94rem;display:block;overflow-x:auto}th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;min-width:115px}th{background:#eaf1f8;color:var(--navy)}
+.diagram{background:#f7f9fc;border:1px dashed #aabbd0;padding:13px;border-radius:9px;margin:12px 0;text-align:center;font-weight:700;color:#23496d}
+.flow{display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap}.node{padding:8px 11px;border:1px solid #a8bfd5;border-radius:8px;background:white;font-size:.9rem}.arrow{color:var(--teal);font-size:1.2rem}
+.quiz{margin-top:28px;background:white;border:1px solid var(--line);padding:20px;border-radius:13px}.quiz h2{margin-top:0;color:var(--navy)}.q{padding:12px 0;border-top:1px solid var(--line)}.q label{display:block;margin:5px 0;cursor:pointer}.feedback{font-weight:700;margin-top:8px}.small{color:var(--muted);font-size:.9rem}
+footer{text-align:center;padding:22px;color:var(--muted);font-size:.88rem}
+@media(max-width:600px){header{padding:27px 16px}.content{padding:0 14px 18px}.topic summary{padding:14px}.flow{flex-direction:column}.arrow{transform:rotate(90deg)}}
+@media print{body{background:white}.toolbar,.quiz button{display:none}.topic{break-inside:avoid}.topic:not([open]) .content{display:block}.topic summary:after{display:none}}
+</style>
+</head>
+<body>
+<header><div class="hero">
+<div class="eyebrow">Interactive learning notes</div>
+<h1>Computer Networks – 10 Important Questions</h1>
+<p>Easy explanations, comparison tables, process diagrams and a short self-test. Open each topic, study the examples, and use the search box to find a keyword.</p>
+</div></header>
+<main>
+<div class="toolbar">
+<input id="search" type="search" placeholder="Search topics or keywords…">
+<button class="secondary" id="expand">Expand all</button>
+<button class="secondary" id="collapse">Collapse all</button>
+<button onclick="window.print()">Print / Save PDF</button>
+</div>
+<div class="small" id="count">10 topics</div><div class="progress-wrap"><div class="progress" id="progress"></div></div>
+
+<details class="topic" open><summary><span class="num">01</span> Handoff in cellular networks: hard and soft handoff</summary><div class="content">
+<h3>What is a handoff?</h3><p>A <b>handoff</b> (handover) is the process of transferring an active mobile call or data connection from one cell/base station to another as a user moves, or when radio conditions change. The aim is to keep the connection working with little or no interruption.</p>
+<div class="diagram"><div class="flow"><span class="node">Mobile in Cell A</span><span class="arrow">→</span><span class="node">Handoff decision</span><span class="arrow">→</span><span class="node">Cell B</span></div></div>
+<h3>Hard handoff – break before make</h3><p>The mobile disconnects from the old base station before establishing the new radio link. At a particular instant, it is connected to only one base station. It is common in GSM and many LTE handover procedures.</p>
+<p><b>Example:</b> A person travelling by car leaves Cell A. The phone releases its connection to Cell A and then connects to Cell B. A very short interruption may occur.</p>
+<h3>Soft handoff – make before break</h3><p>The mobile establishes a connection with the new base station before releasing the old one. For a short period, it can communicate with more than one base station. This is associated particularly with CDMA systems.</p>
+<p><b>Example:</b> A CDMA user near the boundary of two cells is served by both base stations during the transition; the weaker/old link is removed after the new link is reliable.</p>
+<table><tr><th>Feature</th><th>Hard handoff</th><th>Soft handoff</th></tr><tr><td>Method</td><td>Break before make</td><td>Make before break</td></tr><tr><td>Simultaneous links</td><td>Normally one</td><td>More than one temporarily</td></tr><tr><td>Interruption</td><td>Possible brief break</td><td>Usually smoother</td></tr><tr><td>Complexity</td><td>Simpler</td><td>More coordination/resources</td></tr><tr><td>Typical example</td><td>GSM</td><td>CDMA</td></tr></table>
+<div class="callout"><b>Remember:</b> Hard = disconnect then connect. Soft = connect the new link, then disconnect the old link.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">02</span> MIME: RFC 822-style headers and media types</summary><div class="content">
+<h3>Why MIME?</h3><p>Traditional Internet email was designed mainly for ASCII text. <b>MIME (Multipurpose Internet Mail Extensions)</b> extends email so it can carry attachments, images, audio, video and non-ASCII text.</p>
+<h3>Illustrative email headers</h3>
+<pre class="diagram" style="text-align:left;white-space:pre-wrap">From: sender@example.com
+To: learner@example.com
+Date: Fri, 13 Nov 2026 10:00:00 +0530
+Subject: Network notes
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="PART"
+
+--PART
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+
+Please find the notes attached.
+
+--PART
+Content-Type: application/pdf
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="notes.pdf"
+
+[encoded attachment data]
+--PART--</pre>
+<p>The first four lines are common message headers from the RFC 822 message format (now updated by RFC 5322). MIME adds MIME-specific headers such as MIME-Version, Content-Type and Content-Transfer-Encoding.</p>
+<h3>Important MIME headers</h3>
+<table><tr><th>Header</th><th>Purpose</th></tr><tr><td>MIME-Version</td><td>Indicates the MIME version, commonly 1.0.</td></tr><tr><td>Content-Type</td><td>Specifies the media type and optional parameters such as charset or boundary.</td></tr><tr><td>Content-Transfer-Encoding</td><td>Describes encoding used for safe email transport, e.g. 7bit, 8bit, binary, quoted-printable, base64.</td></tr><tr><td>Content-ID</td><td>Provides an identifier for a body part, useful for inline content.</td></tr><tr><td>Content-Description</td><td>Human-readable description of the body part.</td></tr><tr><td>Content-Disposition</td><td>Indicates inline display or attachment; commonly includes a filename.</td></tr></table>
+<h3>Common MIME media types and subtypes</h3><p>A media type has the form <b>type/subtype</b>. The following are common examples; MIME's registered subtype list is much larger and continues to evolve.</p>
+<table><tr><th>Top-level type</th><th>Example subtypes</th><th>Typical content</th></tr><tr><td>text</td><td>plain, html, css, csv</td><td>Text, web pages, stylesheets</td></tr><tr><td>image</td><td>jpeg, png, gif, webp</td><td>Pictures and graphics</td></tr><tr><td>audio</td><td>mpeg, wav, ogg</td><td>Sound recordings</td></tr><tr><td>video</td><td>mp4, mpeg, webm</td><td>Video clips</td></tr><tr><td>application</td><td>pdf, json, zip, octet-stream</td><td>Documents, data, software files</td></tr><tr><td>multipart</td><td>mixed, alternative, related, form-data</td><td>Several body parts in one message</td></tr><tr><td>message</td><td>rfc822, partial, external-body</td><td>Encapsulated or referenced email messages</td></tr></table>
+<div class="callout"><b>Exam point:</b> RFC 2045 defines MIME message format, headers and transfer encodings; media-type definitions are specified mainly in RFC 2046. Do not confuse the RFC number with the complete list of all registered subtypes.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">03</span> Advantages and limitations of wireless communication</summary><div class="content">
+<p>Wireless communication transfers information through electromagnetic waves instead of a physical cable.</p>
+<table><tr><th>Advantages</th><th>Limitations</th></tr><tr><td>Mobility: users can move while connected.</td><td>Coverage is limited by distance, obstacles and access-point power.</td></tr><tr><td>Easy deployment: less cabling is needed.</td><td>Interference from other devices and networks can reduce quality.</td></tr><tr><td>Flexible expansion: devices can be added more easily.</td><td>Shared radio medium can cause congestion and variable speed.</td></tr><tr><td>Useful in difficult locations where cables are costly.</td><td>Radio signals may be intercepted; strong security is essential.</td></tr><tr><td>Supports mobile, temporary and IoT applications.</td><td>Signal strength can change due to walls, weather and movement.</td></tr><tr><td>Can reduce installation and relocation effort.</td><td>Battery-powered devices need energy for radio transmission.</td></tr></table>
+<div class="callout"><b>Example:</b> Wi-Fi lets students use laptops anywhere in a classroom. However, a concrete wall and many simultaneous users may reduce speed. A wired Ethernet link is usually more predictable for a fixed desktop or server.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">04</span> Radio waves, microwaves and infrared waves</summary><div class="content">
+<p>All three are electromagnetic waves. Frequency and wavelength are related by <b>c = f × λ</b>, where c is approximately 3 × 10<sup>8</sup> m/s in vacuum, f is frequency in hertz and λ is wavelength in metres. Higher frequency means shorter wavelength.</p>
+<table><tr><th>Wave band (approximate)</th><th>Frequency</th><th>Wavelength</th><th>Examples / uses</th></tr><tr><td>Radio waves</td><td>3 kHz–300 MHz (broad conventional range)</td><td>100 km–1 m</td><td>AM/FM broadcasting, some navigation and communication systems</td></tr><tr><td>Microwaves</td><td>300 MHz–300 GHz</td><td>1 m–1 mm</td><td>Wi-Fi (2.4/5/6 GHz), radar, satellite links, cellular systems, microwave links</td></tr><tr><td>Infrared</td><td>About 300 GHz–400 THz</td><td>About 1 mm–750 nm</td><td>TV remote controls, short-range device links, thermal imaging, fibre-optic systems use near-infrared light</td></tr></table>
+<div class="diagram"><div class="flow"><span class="node">Radio: longer wavelength</span><span class="arrow">→</span><span class="node">Microwave: shorter</span><span class="arrow">→</span><span class="node">Infrared: much shorter</span></div></div>
+<div class="callout warn"><b>Note:</b> Band boundaries are approximate and conventions can overlap. Infrared is often treated separately from radio in communication textbooks, although it is also electromagnetic radiation.</div>
+<h3>Simple example</h3><ul><li>FM radio can cover a broad area from a broadcast tower.</li><li>A microwave Wi-Fi signal connects a laptop to a nearby access point.</li><li>An infrared remote sends a short-range signal to a television, usually requiring a reasonably clear path.</li></ul>
+</div></details>
+
+<details class="topic"><summary><span class="num">05</span> GSM architecture and major components</summary><div class="content">
+<p><b>GSM (Global System for Mobile Communications)</b> is a 2G digital cellular system. Its architecture is commonly grouped into the Mobile Station, Base Station Subsystem, Network and Switching Subsystem, and Operations Support Subsystem.</p>
+<div class="diagram"><div class="flow"><span class="node">Mobile Station (MS)</span><span class="arrow">↔</span><span class="node">BTS</span><span class="arrow">↔</span><span class="node">BSC</span><span class="arrow">↔</span><span class="node">MSC / GMSC</span><span class="arrow">↔</span><span class="node">PSTN / other networks</span></div><p style="margin:8px 0 0">HLR · VLR · AuC · EIR support the switching network; OSS monitors and manages the system.</p></div>
+<table><tr><th>Component</th><th>Function in simple words</th></tr><tr><td>MS (Mobile Station)</td><td>User's handset plus SIM; accesses the cellular network.</td></tr><tr><td>BTS (Base Transceiver Station)</td><td>Radio equipment that communicates with mobile phones in a cell.</td></tr><tr><td>BSC (Base Station Controller)</td><td>Controls multiple BTSs, radio-channel allocation and many handover functions.</td></tr><tr><td>MSC (Mobile Switching Centre)</td><td>Switches calls, manages mobility and connects to other networks.</td></tr><tr><td>GMSC (Gateway MSC)</td><td>Gateway between the GSM network and external telephone networks.</td></tr><tr><td>HLR (Home Location Register)</td><td>Main subscriber database: service profile and home records.</td></tr><tr><td>VLR (Visitor Location Register)</td><td>Temporary subscriber and location information for an MSC area.</td></tr><tr><td>AuC (Authentication Centre)</td><td>Stores security information and supports SIM authentication.</td></tr><tr><td>EIR (Equipment Identity Register)</td><td>Checks device identity (IMEI), including barred devices.</td></tr><tr><td>OSS / OMC</td><td>Operations, maintenance, monitoring and network management.</td></tr></table>
+<div class="callout"><b>Call example:</b> A phone sends a call request to its BTS. The BSC manages radio resources, and the MSC routes the call. Subscriber and authentication databases help verify the user and provide service.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">06</span> How a browser accesses a web page: WWW and HTTP</summary><div class="content">
+<p>The <b>World Wide Web (WWW)</b> is a system of linked resources identified by URLs and accessed over the Internet. <b>HTTP</b> is the application-layer protocol used for request-and-response communication between a client and a web server. HTTPS is HTTP protected by TLS.</p>
+<div class="diagram"><div class="flow"><span class="node">1. Enter URL</span><span class="arrow">→</span><span class="node">2. DNS lookup</span><span class="arrow">→</span><span class="node">3. Connect</span><span class="arrow">→</span><span class="node">4. HTTP request</span><span class="arrow">→</span><span class="node">5. Response</span><span class="arrow">→</span><span class="node">6. Render page</span></div></div>
+<ol><li><b>User enters a URL:</b> e.g. https://www.example.com/index.html. The browser identifies the scheme, host and resource path.</li><li><b>DNS resolution:</b> The browser/OS resolver finds the server's IP address, possibly using cached information.</li><li><b>Connection setup:</b> The browser establishes a transport connection (commonly TCP for HTTP/1.1 or HTTP/2; HTTP/3 uses QUIC over UDP). For HTTPS, TLS security is established.</li><li><b>HTTP request:</b> The browser sends a request such as GET /index.html with headers describing the host and accepted formats.</li><li><b>Server processing:</b> The server or application processes the request and locates or generates the requested resource.</li><li><b>HTTP response:</b> The server returns a status code (e.g. 200 OK, 404 Not Found), response headers and a body such as HTML.</li><li><b>Browser rendering:</b> The browser parses HTML, fetches linked CSS, JavaScript, images and fonts, builds the page layout, runs scripts and displays the page.</li></ol>
+<h3>Illustrative HTTP exchange</h3>
+<pre class="diagram" style="text-align:left;white-space:pre-wrap">GET /index.html HTTP/1.1
+Host: www.example.com
+Accept: text/html
+
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+
+&lt;html&gt;...page content...&lt;/html&gt;</pre>
+<div class="callout"><b>Remember:</b> DNS finds the server's address; TCP/QUIC provides transport; TLS protects HTTPS; HTTP defines the web request and response; HTML/CSS/JavaScript build the visible page.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">07</span> Ad hoc wireless networks: MANET, VANET, WSN and WRSN</summary><div class="content">
+<p>An <b>ad hoc network</b> is formed by wireless nodes without depending on a fixed infrastructure such as a conventional access point or base station for every communication. Nodes may communicate directly or forward packets for other nodes.</p>
+<div class="diagram"><div class="flow"><span class="node">Node A</span><span class="arrow">↔</span><span class="node">Node B (relay)</span><span class="arrow">↔</span><span class="node">Node C</span></div><p style="margin:6px 0 0">If A cannot reach C directly, B can forward the packet.</p></div>
+<table><tr><th>Network</th><th>Architecture / example</th><th>Features</th><th>Challenges</th></tr><tr><td>MANET – Mobile Ad hoc Network</td><td>Mobile phones/laptops/vehicles form a changing multi-hop network.</td><td>No fixed infrastructure; self-organising; dynamic routes.</td><td>Rapid topology changes, routing overhead, security, limited battery and bandwidth.</td></tr><tr><td>VANET – Vehicular Ad hoc Network</td><td>Vehicles communicate with vehicles (V2V) and roadside units (V2I).</td><td>High mobility; supports safety alerts and traffic information.</td><td>Very fast topology changes, reliable low-latency delivery, handover and privacy.</td></tr><tr><td>WSN – Wireless Sensor Network</td><td>Many sensor nodes send readings to a sink/base station.</td><td>Small, low-cost nodes; sensing; often energy-aware and multi-hop.</td><td>Limited battery, processing and memory; coverage; node failures; security.</td></tr><tr><td>WRSN – Wireless Rechargeable Sensor Network</td><td>WSN nodes plus wireless energy-transfer/recharging facilities, often mobile chargers.</td><td>Extends sensor lifetime and can replenish node batteries.</td><td>Charging scheduling, energy-transfer efficiency, charger travel time and fairness.</td></tr></table>
+<h3>Typical architecture</h3><ul><li><b>Sensor / mobile nodes:</b> sense data and communicate over wireless links.</li><li><b>Routing layer:</b> chooses paths, sometimes through intermediate nodes.</li><li><b>Sink / gateway:</b> gathers information and forwards it to an application or Internet.</li><li><b>Management / security:</b> handles energy, mobility, authentication and network monitoring.</li></ul>
+<div class="callout"><b>Example:</b> In a forest WSN, temperature sensors send readings through neighbouring sensors to a gateway. In a WRSN, a mobile charging unit periodically visits low-energy sensors.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">08</span> DNS lookup: recursive, iterative and non-recursive queries</summary><div class="content">
+<p>DNS translates a domain name such as <b>www.example.com</b> into records such as an IP address. The three terms describe how much work the queried DNS server is expected to do and whether it already knows the answer.</p>
+<h3>1. Recursive query</h3><p>The client asks a DNS resolver to return a final answer or an error. The resolver takes responsibility for finding the answer by querying other DNS servers as needed.</p>
+<div class="diagram"><div class="flow"><span class="node">Client</span><span class="arrow">→</span><span class="node">Recursive resolver</span><span class="arrow">⇢</span><span class="node">Root / TLD / authoritative DNS</span></div><p>Final answer returns from resolver to client.</p></div>
+<h3>2. Iterative query</h3><p>The queried DNS server returns the best information it has, often a referral to another server. The requester then contacts that server and continues until it obtains the answer.</p>
+<div class="diagram"><div class="flow"><span class="node">Resolver</span><span class="arrow">→</span><span class="node">Root: referral</span><span class="arrow">→</span><span class="node">TLD: referral</span><span class="arrow">→</span><span class="node">Authoritative: answer</span></div></div>
+<h3>3. Non-recursive query</h3><p>The server responds using information it already has, such as a cached record or authoritative data. It does not go and query other servers to complete the lookup. The response may be the requested record or a referral, depending on the server and query.</p>
+<table><tr><th>Query type</th><th>Who does further lookup?</th><th>Typical response</th></tr><tr><td>Recursive</td><td>The queried resolver</td><td>Final answer or failure</td></tr><tr><td>Iterative</td><td>The requester follows referrals</td><td>Best available answer/referral</td></tr><tr><td>Non-recursive</td><td>No additional lookup by that server</td><td>Cached/authoritative answer or referral</td></tr></table>
+<div class="callout warn"><b>Important distinction:</b> A common real-world sequence is a laptop making a recursive request to its configured resolver, while that resolver makes iterative queries to root, TLD and authoritative servers. A cached answer can make the resolver's response immediate.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">09</span> Wi-Fi versus Bluetooth</summary><div class="content">
+<p>Both are short-range wireless technologies, but they are designed for different purposes. Wi-Fi is generally used for network access and higher throughput; Bluetooth is designed for convenient device-to-device connections with low energy options.</p>
+<table><tr><th>Factor</th><th>Wi-Fi</th><th>Bluetooth</th></tr><tr><td>Standards</td><td>IEEE 802.11 family</td><td>Bluetooth SIG specifications (not IEEE 802.11)</td></tr><tr><td>Architecture</td><td>Commonly infrastructure mode: stations connect through an access point; also supports Wi-Fi Direct and mesh variants.</td><td>Central/peripheral roles in BLE; classic Bluetooth commonly forms piconets, with scatternet support in the specification.</td></tr><tr><td>Frequency</td><td>Common bands: 2.4, 5 and 6 GHz, depending on region and device.</td><td>2.4 GHz ISM band.</td></tr><tr><td>Range</td><td>Often tens of metres indoors; varies widely with AP, band, walls and power.</td><td>Often around 10 m for common devices; class and environment can make it shorter or longer.</td></tr><tr><td>Data rate</td><td>From tens/hundreds of Mbps to multi-Gbps theoretical PHY rates in modern standards.</td><td>Lower in general; varies by Bluetooth version and mode. BLE prioritises low-power data exchange.</td></tr><tr><td>Power use</td><td>Usually higher than BLE for continuous high-throughput networking.</td><td>BLE is designed for very low power; classic Bluetooth power varies by profile and use.</td></tr><tr><td>Applications</td><td>Internet access, video streaming, file transfer, office LANs.</td><td>Headphones, keyboards, watches, sensors, beacons and peripherals.</td></tr></table>
+<div class="callout"><b>Example:</b> A laptop uses Wi-Fi to connect to the university network and Bluetooth to connect to wireless earbuds or a mouse.</div>
+</div></details>
+
+<details class="topic"><summary><span class="num">10</span> Design a Wi-Fi LAN for a three-floor organisation with 150 employees</summary><div class="content">
+<h3>1. Requirements and assumptions</h3><p>Assume 150 employees are distributed evenly (about 50 per floor), with laptops and phones, cloud applications, video meetings, printers and guest access. The design below is a starting proposal; a physical site survey and capacity test are needed before final AP placement.</p>
+<h3>2. Suggested logical and physical design</h3>
+<div class="diagram"><div class="flow"><span class="node">Internet / ISP</span><span class="arrow">↔</span><span class="node">Firewall / Router</span><span class="arrow">↔</span><span class="node">Core PoE Switch</span></div><p>Fibre or high-speed Ethernet uplinks to each floor's access switch</p><div class="flow"><span class="node">Floor 1 switch → 2–3 APs</span><span class="node">Floor 2 switch → 2–3 APs</span><span class="node">Floor 3 switch → 2–3 APs</span></div><p>Employee, guest and IoT devices connect wirelessly to the APs.</p></div>
+<ul><li><b>Access points:</b> Start planning around 2–3 centrally placed Wi-Fi 6/6E APs per floor (6–9 total). This is an initial estimate, not a guaranteed capacity figure. Final quantity depends on floor area, walls, device count, traffic and RF survey.</li><li><b>Backhaul:</b> Connect APs to managed PoE switches using Cat6/Cat6A Ethernet; use fibre or high-speed uplinks between floors where appropriate.</li><li><b>SSID and security:</b> Provide an employee SSID with WPA2-Enterprise/WPA3-Enterprise and 802.1X authentication; isolate guest Wi-Fi from internal resources; use a separate IoT network where needed.</li><li><b>VLANs:</b> Example VLANs: Staff, Guest, IoT/Printers and Network Management. Apply firewall rules and access-control policies between them.</li><li><b>Addressing:</b> Use DHCP scopes for each VLAN/subnet; reserve addresses for infrastructure such as printers and management interfaces.</li><li><b>Capacity:</b> Estimate concurrent users and devices, not just employee headcount. A person may have a laptop and phone active at the same time.</li><li><b>Resilience:</b> Use centrally managed APs, monitor AP health, provide UPS for network switches and consider redundant uplinks/core equipment.</li></ul>
+<h3>3. Factors affecting Wi-Fi performance</h3>
+<table><tr><th>Factor</th><th>Effect</th><th>Improvement</th></tr><tr><td>Distance and obstacles</td><td>Walls, floors and metal weaken signals.</td><td>Survey and place APs for suitable coverage; avoid hidden AP locations.</td></tr><tr><td>Interference</td><td>Neighbouring Wi-Fi, Bluetooth and other RF sources cause contention.</td><td>Plan channels; use 5/6 GHz where supported; use 2.4 GHz selectively.</td></tr><tr><td>Channel width and reuse</td><td>Wide channels can raise peak rate but reduce available non-overlapping channel choices.</td><td>Choose channel width based on density and interference; coordinate AP channels.</td></tr><tr><td>Number of active clients</td><td>Clients share airtime; busy APs increase delay.</td><td>Distribute clients across APs; add capacity based on measured demand.</td></tr><tr><td>Signal quality (RSSI/SNR)</td><td>Weak signal and noise cause lower modulation rates and retries.</td><td>Improve placement, coverage and channel planning.</td></tr><tr><td>Backhaul / Internet capacity</td><td>A fast radio cannot overcome a slow switch uplink or ISP link.</td><td>Size switch uplinks, PoE and Internet bandwidth for peak demand.</td></tr><tr><td>Security and configuration</td><td>Legacy settings, excessive broadcast traffic or misconfiguration can affect service.</td><td>Use current security, firmware updates, VLANs and sensible QoS.</td></tr><tr><td>Roaming and mobility</td><td>Poor cell overlap or sticky clients can interrupt calls.</td><td>Plan coverage overlap and validate roaming in a walk test.</td></tr></table>
+<h3>4. Simple planning calculation</h3><p>150 employees ÷ 3 floors = approximately 50 employees per floor. If each employee has two devices, plan for about 100 client devices per floor at full participation. With three APs per floor, that averages about 33 devices per AP, but actual performance depends on airtime demand and device capabilities—not simply the client count.</p>
+<div class="callout warn"><b>Design caution:</b> Do not select AP count using a fixed “users per AP” rule alone. Conduct a predictive design and on-site RF survey, test peak-hour throughput/latency, and adjust AP placement, channel plan and capacity. Follow local radio regulations for allowed channels and transmit power.</div>
+</div></details>
+
+<section class="quiz">
+<h2>Quick self-test</h2><p class="small">Choose an answer for each question, then select Check answers.</p>
+<div id="questions"></div>
+<button id="check">Check answers</button> <span id="score" class="feedback" aria-live="polite"></span>
+</section>
+</main>
+<footer>Computer Networks – study resource | Review the explanations and practise describing each diagram in your own words.</footer>
+<script>
+const topics=[...document.querySelectorAll('.topic')];
+const search=document.getElementById('search');
+search.addEventListener('input',()=>{
+ const q=search.value.toLowerCase().trim();
+ topics.forEach(t=>{t.style.display=t.innerText.toLowerCase().includes(q)?'':'none';if(q&&t.style.display!=='none')t.open=true;});
+ document.getElementById('count').textContent=topics.filter(t=>t.style.display!=='none').length+' matching topics';
+});
+document.getElementById('expand').onclick=()=>topics.forEach(t=>{if(t.style.display!=='none')t.open=true});
+document.getElementById('collapse').onclick=()=>topics.forEach(t=>t.open=false);
+function updateProgress(){const opened=topics.filter(t=>t.open).length;document.getElementById('progress').style.width=(opened/topics.length*100)+'%'}
+topics.forEach(t=>t.addEventListener('toggle',updateProgress));updateProgress();
+const quiz=[
+ {q:'Which handoff follows break-before-make?',a:['Soft handoff','Hard handoff','Both always'],c:1,e:'Hard handoff releases the old link before establishing the new one.'},
+ {q:'Which MIME header identifies the body media type?',a:['Content-Type','Subject','Date'],c:0,e:'Content-Type identifies the media type, such as text/plain or image/jpeg.'},
+ {q:'Which is a common limitation of wireless communication?',a:['It always needs cables','Radio interference','No mobility'],c:1,e:'Wireless signals share spectrum and can be affected by interference.'},
+ {q:'As frequency increases, wavelength generally…',a:['Increases','Decreases','Stays fixed'],c:1,e:'Frequency and wavelength are inversely related when propagation speed is fixed.'},
+ {q:'Which GSM component controls multiple BTSs?',a:['HLR','BSC','AuC'],c:1,e:'The Base Station Controller manages radio resources for multiple BTSs.'},
+ {q:'Which protocol defines web request and response messages?',a:['HTTP','DNS','DHCP'],c:0,e:'HTTP is the web application protocol; DNS resolves names to records.'},
+ {q:'Which network is designed for communication among vehicles?',a:['WSN','VANET','WRSN'],c:1,e:'VANET means Vehicular Ad hoc Network.'},
+ {q:'In a recursive DNS query, who completes the lookup for the client?',a:['The client alone','The recursive resolver','The web browser’s renderer'],c:1,e:'The resolver performs further queries and returns the final result or an error.'},
+ {q:'Which technology is commonly preferred for low-power wearable sensors?',a:['Bluetooth LE','High-throughput Wi-Fi only','Ethernet'],c:0,e:'Bluetooth Low Energy is designed for low-power short-range device communication.'},
+ {q:'What should determine the final number and placement of Wi-Fi APs?',a:['Employee count alone','A site survey and capacity requirements','The number of floors alone'],c:1,e:'Coverage, interference, floor layout, concurrency and application demand all matter.'}
+];
+const qbox=document.getElementById('questions');
+quiz.forEach((x,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<b>${i+1}. ${x.q}</b>`+x.a.map((v,j)=>`<label><input type="radio" name="q${i}" value="${j}"> ${v}</label>`).join('')+`<div class="small" id="exp${i}"></div>`;qbox.appendChild(d)});
+document.getElementById('check').onclick=()=>{let score=0,done=0;quiz.forEach((x,i)=>{const s=document.querySelector(`input[name="q${i}"]:checked`);const out=document.getElementById('exp'+i);if(s){done++;if(+s.value===x.c)score++;out.textContent=(+s.value===x.c?'Correct. ':'Not quite. ')+x.e;out.style.color=(+s.value===x.c?'#087f55':'#a34b20')}else{out.textContent='Not answered. '+x.e;out.style.color='#5d6b7d'}});document.getElementById('score').textContent=`Score: ${score}/10 (${done} answered)`};
+</script>
+</body>
+</html>
